@@ -14,7 +14,7 @@ echo "    Created ~/.claude/, ~/.claude/teams/, ~/.claude/tasks/"
 
 # Backup and install settings.json
 # Settings include: unrestricted permissions, agent teams env var,
-# tmux teammate mode, status line config, and Opus model default
+# tmux teammate mode, and status line config
 if [ -f "$CLAUDE_DIR/settings.json" ]; then
     echo "    Backing up existing settings.json to settings.json.backup"
     cp "$CLAUDE_DIR/settings.json" "$CLAUDE_DIR/settings.json.backup"

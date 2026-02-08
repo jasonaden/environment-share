@@ -50,6 +50,14 @@ for pkg in "${BREW_PACKAGES[@]}"; do
     fi
 done
 
+# Python 3 (required by ui-ux-pro-max search script)
+if ! command -v python3 &>/dev/null; then
+    echo "    Installing Python 3..."
+    brew install python3
+else
+    echo "    Python 3 is already installed ($(python3 --version))."
+fi
+
 # Node.js
 if ! command -v node &>/dev/null; then
     echo "    Installing Node.js..."
