@@ -1,19 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GITCONFIG_SRC="$SCRIPT_DIR/gitconfig"
-
 echo "==> Installing git configuration..."
 
-if [ ! -f "$GITCONFIG_SRC" ]; then
-    echo "    ERROR: gitconfig not found at $GITCONFIG_SRC"
-    exit 1
-fi
-
-# Apply each setting from the gitconfig file individually so we merge
-# with any existing ~/.gitconfig rather than overwriting it.
-# This preserves user.name, user.email, and any other personal settings.
+# Apply settings via `git config --global` so we merge with any existing
+# ~/.gitconfig rather than overwriting it. This preserves user.name,
+# user.email, and any other personal settings.
+# This script is the single source of truth for managed git config.
 
 echo "    Installing git aliases..."
 

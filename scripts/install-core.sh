@@ -40,7 +40,7 @@ if [ ! -f "$HOME/.zshrc" ]; then
 fi
 
 # Brew packages
-BREW_PACKAGES=(tmux gh jq)
+BREW_PACKAGES=(tmux gh jq legit)
 for pkg in "${BREW_PACKAGES[@]}"; do
     if ! command -v "$pkg" &>/dev/null; then
         echo "    Installing $pkg..."

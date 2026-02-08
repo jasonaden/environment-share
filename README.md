@@ -42,4 +42,7 @@ Or install components individually:
 
 - All scripts are idempotent — safe to re-run
 - Existing configs are backed up before overwriting (to `*.backup`)
+- The core installer will prompt for your password (Homebrew install, `chsh` for zsh)
 - Claude Code must be authenticated separately after installation (`claude login`)
+- After authenticating Claude, run `./claude/install-plugins.sh` to install plugins
+- Git aliases include `legit` workflow commands (branches, publish, sync, etc.) — legit is installed automatically
