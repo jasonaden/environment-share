@@ -6,6 +6,7 @@ Personal development environment configuration and setup scripts for macOS.
 
 | Directory | Description |
 |-----------|-------------|
+| `git/` | Git aliases (st, co, ci, lg, etc.) and global settings |
 | `iterm/` | iTerm2 preferences and shell integration |
 | `tmux/` | tmux configuration |
 | `claude/` | Claude Code settings, permissions, and plugin setup |
@@ -24,7 +25,8 @@ cd ~/Projects/environment-share
 Or install components individually:
 
 ```bash
-./scripts/install-core.sh    # Homebrew, tmux, node, yarn, gh, jq, claude
+./scripts/install-core.sh    # Homebrew, zsh, tmux, node, yarn, gh, jq, claude
+./git/install.sh             # Git aliases and global settings
 ./tmux/install.sh            # tmux config
 ./iterm/install.sh           # iTerm2 preferences
 ./claude/install.sh          # Claude Code settings and permissions

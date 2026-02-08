@@ -4,10 +4,11 @@ Personal environment configuration and dotfiles sharing repository for macOS.
 
 ## Repository Structure
 
+- `git/` — Git aliases and global settings (merged into ~/.gitconfig)
 - `iterm/` — iTerm2 preferences and shell integration installer
 - `tmux/` — tmux configuration optimized for iTerm2 -CC integration
-- `claude/` — Claude Code settings, permissions, hooks, and plugin setup
-- `scripts/` — Core tooling installers and master setup orchestrator
+- `claude/` — Claude Code settings, permissions, and plugin setup
+- `scripts/` — Core tooling installers (including zsh) and master setup orchestrator
 
 ## Guidelines
 

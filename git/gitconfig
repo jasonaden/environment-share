@@ -1,0 +1,46 @@
+# Git configuration — aliases and settings
+# Installed by git/install.sh to ~/.gitconfig (merged, not overwritten)
+
+[alias]
+    br = branches
+    branches = !legit branches
+    cherry-pick-pr = !git cherry-pick upstream/pr/\"$1~$2\"..upstream/pr/\"$1\" && git closes \"$1\" && true
+    ci = commit
+    closes = !git filter-branch -f --msg-filter \"cat /dev/stdin && sed -e s/ISSUE/$@/g ~/.github.closes.txt\" HEAD~1..HEAD && git log -n1 && true
+    co = checkout
+    cp-pr = cherry-pick-pr
+    cp = cherry-pick
+    graft = !legit graft \"$@\"
+    harvest = !legit harvest \"$@\"
+    lg = log --oneline -n15
+    msg = !git log -n1
+    publish = !legit publish \"$@\"
+    sha = rev-parse HEAD
+    sm = submodule
+    sprout = !legit sprout \"$@\"
+    st = status
+    switch = !legit switch \"$@\"
+    sync = !legit sync \"$@\"
+    unpublish = !legit unpublish \"$@\"
+
+[color]
+    branch = auto
+    diff = auto
+    interactive = auto
+    status = auto
+
+[init]
+    defaultBranch = main
+
+[log]
+    abbrevCommit = true
+    decorate = true
+
+[merge]
+    keepBackup = false
+
+[push]
+    default = current
+
+[rebase]
+    autoSquash = true

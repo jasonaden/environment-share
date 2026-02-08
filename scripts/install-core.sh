@@ -16,6 +16,29 @@ else
     echo "    Homebrew is already installed."
 fi
 
+# zsh (default shell on modern macOS, but may not be present on fresh installs)
+if ! command -v zsh &>/dev/null; then
+    echo "    Installing zsh..."
+    brew install zsh
+    # Add brew zsh to allowed shells if not present
+    ZSH_PATH="$(brew --prefix)/bin/zsh"
+    if ! grep -q "$ZSH_PATH" /etc/shells 2>/dev/null; then
+        echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
+        echo "    Added $ZSH_PATH to /etc/shells"
+    fi
+    # Set as default shell
+    chsh -s "$ZSH_PATH"
+    echo "    Set zsh as default shell"
+else
+    echo "    zsh is already installed ($(zsh --version | head -1))."
+fi
+
+# Create .zshrc if it doesn't exist
+if [ ! -f "$HOME/.zshrc" ]; then
+    touch "$HOME/.zshrc"
+    echo "    Created ~/.zshrc"
+fi
+
 # Brew packages
 BREW_PACKAGES=(tmux gh jq)
 for pkg in "${BREW_PACKAGES[@]}"; do

@@ -14,6 +14,7 @@ PLUGINS=(
     "commit-commands@claude-plugins-official"
     "plugin-dev@claude-plugins-official"
     "typescript-lsp@claude-plugins-official"
+    "ui-ux-pro-max@ui-ux-pro-max-skill"
 )
 
 for plugin in "${PLUGINS[@]}"; do

@@ -26,10 +26,6 @@ echo "      - Teammate mode: tmux"
 echo "      - Status line: ccstatusline"
 echo "      - Permissions: unrestricted"
 
-# Install claude-flow hooks template
-cp "$SCRIPT_DIR/claude-flow-hooks-template.json" "$CLAUDE_DIR/claude-flow-hooks-template.json"
-echo "    Installed claude-flow-hooks-template.json"
-
 # Verify tmux is available (required for teammateMode: "tmux")
 if command -v tmux &>/dev/null; then
     echo "    tmux found ($(tmux -V)) — agent teams will use tmux for teammates"
@@ -60,7 +56,7 @@ echo "    What's configured:"
 echo "    - Unrestricted tool permissions (Bash, Read, Edit, Write, etc.)"
 echo "    - Agent teams with tmux teammate mode"
 echo "    - Status line via ccstatusline"
-echo "    - Claude-flow hooks template"
+echo "    - Recommended plugins (superpowers, ui-ux-pro-max, etc.)"
 echo ""
 echo "    Next steps:"
 echo "    1. Run 'claude login' to authenticate"
