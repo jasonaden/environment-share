@@ -23,5 +23,38 @@
     "command": "npx -y ccstatusline@latest",
     "padding": 0
   },
-  "teammateMode": "tmux"
+  "teammateMode": "tmux",
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BEFORE COMPACTING: Ensure critical state (decisions, findings, task results, current plan) is written to MEMORY.md and task metadata. If running an agent team, record teammate status and coordination state.'"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Context was compacted. MEMORY.md is in your system prompt. Check TaskList for current task state. Read task metadata for completed work results. Verify no teammate findings were lost in compaction.'"
+          }
+        ]
+      },
+      {
+        "matcher": "clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Context was cleared. MEMORY.md is in your system prompt. Run TaskList to see current tasks. Read task metadata (metadata.results) for completed work findings. Check ~/.claude/teams/ for any active team state.'"
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -49,6 +49,11 @@ else
     echo "    No .zshrc found — skipping shell env setup"
 fi
 
+# Install slash commands
+mkdir -p "$CLAUDE_DIR/commands"
+cp "$SCRIPT_DIR/commands/"*.md "$CLAUDE_DIR/commands/"
+echo "    Installed slash commands: /prep-for-clear, /after-clear"
+
 echo ""
 echo "==> Claude Code configuration installed successfully."
 echo ""
