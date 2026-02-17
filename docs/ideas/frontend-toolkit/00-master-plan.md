@@ -49,7 +49,7 @@ frontend-toolkit/
 │   ├── test-writer.md               # Writes Jest tests (RTL + Relay mocks)
 │   ├── mfe-architect.md             # Plans MFE structure, module federation config
 │   └── mfe-scaffolder.md            # Scaffolds MFE boilerplate (Webpack, routes, shell)
-├── skills/                          # 8 shared reference skills (loaded on-demand by agents)
+├── skills/                          # 9 shared reference skills (loaded on-demand by agents)
 │   ├── picnic-components/
 │   │   ├── SKILL.md                 # Overview: Picnic design system usage
 │   │   └── references/
@@ -92,12 +92,17 @@ frontend-toolkit/
 │   │       ├── rtl-patterns.md          # React Testing Library best practices
 │   │       ├── relay-mocks.md           # MockPayloadGenerator, custom resolvers
 │   │       └── coverage-standards.md    # Coverage thresholds, what to test
-│   └── storybook-patterns/
-│       ├── SKILL.md                 # Storybook conventions overview
+│   ├── storybook-patterns/
+│   │   ├── SKILL.md                 # Storybook conventions overview
+│   │   └── references/
+│   │       ├── csf3-format.md           # Component Story Format 3.0
+│   │       ├── args-controls.md         # ArgTypes, controls, actions
+│   │       └── decorators-parameters.md # Global decorators (Relay environment, theme)
+│   └── data-router/
+│       ├── SKILL.md                 # DataRouter EntryPoint patterns overview
 │       └── references/
-│           ├── csf3-format.md           # Component Story Format 3.0
-│           ├── args-controls.md         # ArgTypes, controls, actions
-│           └── decorators-parameters.md # Global decorators (Relay environment, theme)
+│           ├── entrypoint-patterns.md   # Type reference + code patterns for all EntryPoint variations
+│           └── storybook-entrypoint.md  # Storybook integration for EntryPoint components
 ├── commands/                        # 3 orchestration commands (phased workflows)
 │   ├── new-component.md             # Command: Architect → Build → Test → Story
 │   ├── new-mfe.md                   # Command: Architect MFE → Scaffold → Verify
@@ -121,15 +126,15 @@ frontend-toolkit/
 | Name | Purpose | Model | Tools | Skills Loaded |
 |------|---------|-------|-------|---------------|
 | **component-architect** | Plans React component structure, identifies Picnic primitives, designs prop interface | Sonnet 4.5 | Read, Grep, Glob | picnic-components, react-patterns, typescript-strict |
-| **component-builder** | Implements React component `.tsx`, exports via `index.ts`, enforces TypeScript strict | Opus 4.6 | Read, Edit, Write | picnic-components, react-patterns, typescript-strict |
+| **component-builder** | Implements React component `.tsx`, exports via `index.ts`, enforces TypeScript strict | Opus 4.6 | Read, Edit, Write | picnic-components, react-patterns, typescript-strict, data-router |
 | **relay-architect** | Designs GraphQL fragments, queries, connections; plans colocation strategy | Sonnet 4.5 | Read, Grep, Glob, WebFetch (schema) | relay-conventions, typescript-strict |
-| **storybook-writer** | Generates Storybook CSF3 stories with controls, decorators (Relay env, theme) | Opus 4.6 | Read, Edit, Write | storybook-patterns, picnic-components, react-patterns |
-| **frontend-reviewer** | Reviews PRs for Relay conventions, TS strict adherence, Picnic/Yogi usage, test coverage | Opus 4.6 | Read, Grep, Glob, Bash (git diff) | All 8 skills (full context) |
+| **storybook-writer** | Generates Storybook CSF3 stories with controls, decorators (Relay env, theme) | Opus 4.6 | Read, Edit, Write | storybook-patterns, picnic-components, react-patterns, data-router |
+| **frontend-reviewer** | Reviews PRs for Relay conventions, TS strict adherence, Picnic/Yogi usage, test coverage | Opus 4.6 | Read, Grep, Glob, Bash (git diff) | All 9 skills (full context) |
 | **test-writer** | Writes Jest tests (RTL + Relay mocks), enforces coverage standards | Opus 4.6 | Read, Edit, Write, Bash (jest) | testing-conventions, relay-conventions, react-patterns |
 | **mfe-architect** | Plans MFE structure, module federation config, exposed/consumed modules, routing | Sonnet 4.5 | Read, Grep, Glob | mfe-conventions, react-patterns, typescript-strict |
-| **mfe-scaffolder** | Scaffolds MFE boilerplate (Webpack config, entry point, routes, shell integration) | Opus 4.6 | Read, Edit, Write, Bash | mfe-conventions, react-patterns, typescript-strict, relay-conventions |
+| **mfe-scaffolder** | Scaffolds MFE boilerplate (Webpack config, entry point, routes, shell integration) | Opus 4.6 | Read, Edit, Write, Bash | mfe-conventions, react-patterns, typescript-strict, relay-conventions, data-router |
 
-### 3.2 Skills (8)
+### 3.2 Skills (9)
 
 | Name | Triggers | Key References |
 |------|----------|----------------|
@@ -141,6 +146,7 @@ frontend-toolkit/
 | **typescript-strict** | "TypeScript", "strict", "null check", "type", "interface", "generic" | strict-null-checks.md, type-inference.md, relay-types.md |
 | **testing-conventions** | "test", "Jest", "React Testing Library", "mock", "coverage" | rtl-patterns.md, relay-mocks.md, coverage-standards.md |
 | **storybook-patterns** | "Storybook", "story", "CSF", "controls", "decorator" | csf3-format.md, args-controls.md, decorators-parameters.md |
+| **data-router** | "DataRouter", "entry point", "createEntryPoint", "EntryPointComponentProps", "RoutesFn", "DataBundle", "route data loading", "createWrapperForEntryPoint", "page scaffolding" | entrypoint-patterns.md (type ref + patterns), storybook-entrypoint.md (Storybook integration) |
 
 ### 3.3 Commands (3)
 
@@ -205,7 +211,7 @@ frontend-toolkit/
 1. `agents/component-architect.md` (loads picnic-components, react-patterns, typescript-strict)
 2. `agents/relay-architect.md` (loads relay-conventions, typescript-strict)
 3. `agents/mfe-architect.md` (loads mfe-conventions, react-patterns, typescript-strict)
-4. `agents/frontend-reviewer.md` (loads all 8 skills)
+4. `agents/frontend-reviewer.md` (loads all 9 skills)
 
 **Validation**:
 - [ ] Each agent has role, goal, skills, tools, constraints, output format
@@ -291,7 +297,7 @@ frontend-toolkit/
 - [ ] `/new-mfe test-mfe` scaffolds buildable MFE
 - [ ] `/review-frontend` reviews sample PR and produces feedback
 - [ ] Hooks trigger on git commit/push
-- [ ] All 8 skills load on-demand (check Claude logs for skill activation)
+- [ ] All 9 skills load on-demand (check Claude logs for skill activation)
 - [ ] Run on real codebase with 3 engineers for 1 week (collect feedback)
 
 **Estimated Effort**: 2-3 days + 1 week dogfooding
@@ -493,6 +499,6 @@ For now, **single plugin is the right choice** (premature optimization to split)
 ---
 
 **Document Version**: 1.0
-**Last Updated**: 2026-02-13
+**Last Updated**: 2026-02-17
 **Owner**: Frontend Platform Team
 **Status**: Planning
