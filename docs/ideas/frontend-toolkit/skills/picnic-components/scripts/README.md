@@ -6,7 +6,7 @@ Pipeline scripts that extract component metadata from `@attentive/picnic` source
 
 - Node.js >= 18
 - `@babel/parser` and `@babel/traverse` — available in the frontend-code monorepo's `node_modules/`, or install locally with `npm install` in this directory
-- Access to `~/Projects/frontend-code` (the Attentive frontend monorepo)
+- Run from within the `frontend-code` repo (scripts auto-discover the repo root via `git rev-parse --show-toplevel`)
 
 ## Scripts
 
@@ -16,10 +16,10 @@ Parses Picnic source code using Babel AST to produce a JSON database of componen
 
 ```bash
 # Extract all components
-node scripts/extract.mjs --source ~/Projects/frontend-code/libs/picnic --output picnic-database.json
+node scripts/extract.mjs --source libs/picnic --output picnic-database.json
 
 # Extract specific components only
-node scripts/extract.mjs --source ~/Projects/frontend-code/libs/picnic --components Badge,Table --output picnic-database.json
+node scripts/extract.mjs --source libs/picnic --components Badge,Table --output picnic-database.json
 ```
 
 **Input**: Picnic library source directory (`libs/picnic/`)
@@ -49,13 +49,13 @@ Compares current Picnic source against a stored state file to identify which com
 
 ```bash
 # Check for changes since last generation
-node scripts/detect-changes.mjs --source ~/Projects/frontend-code --state .picnic-gen-state.json
+node scripts/detect-changes.mjs --source . --state .picnic-gen-state.json
 
 # Machine-readable output
-node scripts/detect-changes.mjs --source ~/Projects/frontend-code --state .picnic-gen-state.json --json
+node scripts/detect-changes.mjs --source . --state .picnic-gen-state.json --json
 
 # Create/reset initial state from current source
-node scripts/detect-changes.mjs --source ~/Projects/frontend-code --state .picnic-gen-state.json --init
+node scripts/detect-changes.mjs --source . --state .picnic-gen-state.json --init
 ```
 
 **Input**: frontend-code repo + `.picnic-gen-state.json`
@@ -67,13 +67,13 @@ Gathers all relevant source context for a component or skill — source code, ty
 
 ```bash
 # Assemble context for a single component
-node scripts/assemble-context.mjs --source ~/Projects/frontend-code/libs/picnic --component Table --output context.md
+node scripts/assemble-context.mjs --source libs/picnic --component Table --output context.md
 
 # Assemble context for all components in a skill
-node scripts/assemble-context.mjs --source ~/Projects/frontend-code/libs/picnic --skill data-table --output context.md
+node scripts/assemble-context.mjs --source libs/picnic --skill data-table --output context.md
 
 # JSON format for structured processing
-node scripts/assemble-context.mjs --source ~/Projects/frontend-code/libs/picnic --component Table --format json --output context.json
+node scripts/assemble-context.mjs --source libs/picnic --component Table --format json --output context.json
 ```
 
 **Input**: Picnic source + optional `picnic-database.json`
@@ -96,19 +96,19 @@ To run the pipeline manually:
 
 ```bash
 # 1. Detect changes
-node scripts/detect-changes.mjs --source ~/Projects/frontend-code --state .picnic-gen-state.json
+node scripts/detect-changes.mjs --source . --state .picnic-gen-state.json
 
 # 2. Extract updated components (use --components for incremental)
-node scripts/extract.mjs --source ~/Projects/frontend-code/libs/picnic --components Badge,Table --output picnic-database.json
+node scripts/extract.mjs --source libs/picnic --components Badge,Table --output picnic-database.json
 
 # 3. Format and merge into skill files
 node scripts/format.mjs --database picnic-database.json --output-dir .
 
 # 4. (Optional) Assemble context for AI curation
-node scripts/assemble-context.mjs --source ~/Projects/frontend-code/libs/picnic --skill data-table --output context.md
+node scripts/assemble-context.mjs --source libs/picnic --skill data-table --output context.md
 
 # 5. Update state file
-node scripts/detect-changes.mjs --source ~/Projects/frontend-code --state .picnic-gen-state.json --init
+node scripts/detect-changes.mjs --source . --state .picnic-gen-state.json --init
 ```
 
 ## Key Files

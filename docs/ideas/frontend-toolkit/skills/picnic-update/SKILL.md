@@ -17,10 +17,11 @@ You are running a 6-step pipeline that keeps Picnic component skills in sync wit
 ## Configuration
 
 ```
+REPO_ROOT   = $(git rev-parse --show-toplevel)
+PICNIC_DIR  = $REPO_ROOT/libs/picnic
 SKILLS_ROOT = <directory containing picnic-components skill>
 SCRIPTS_DIR = $SKILLS_ROOT/picnic-components/scripts
 STATE_FILE  = $SKILLS_ROOT/picnic-components/.picnic-gen-state.json
-SOURCE_REPO = ~/Projects/frontend-code
 SOURCE_PATH = libs/picnic/src
 DATABASE    = $SKILLS_ROOT/picnic-components/picnic-database.json
 ```
@@ -44,15 +45,18 @@ Parse these from the user's invocation. Default: all flags off (full pipeline wi
 
 **Actions**:
 
-1. Check that `SOURCE_REPO` exists and is a git repo:
+1. Discover the repo root and verify Picnic source exists:
    ```bash
-   git -C ~/Projects/frontend-code rev-parse --git-dir
+   REPO_ROOT="$(git rev-parse --show-toplevel)"
+   PICNIC_DIR="$REPO_ROOT/libs/picnic"
+   test -d "$PICNIC_DIR/src/components" || echo "Error: Picnic source not found"
    ```
-   If missing, stop with: "frontend-code repo not found at ~/Projects/frontend-code. Clone it first."
+   If `git rev-parse` fails, stop with: "Not inside the frontend-code repo. Run this from within your frontend-code checkout."
+   If Picnic source is missing, stop with: "Picnic library not found at libs/picnic. Verify you are in the frontend-code repo."
 
 2. Fetch latest from origin (non-blocking, warn if offline):
    ```bash
-   git -C ~/Projects/frontend-code fetch origin main 2>&1 || echo "Warning: could not fetch — using local state"
+   git -C "$REPO_ROOT" fetch origin main 2>&1 || echo "Warning: could not fetch — using local state"
    ```
 
 3. Read `STATE_FILE`. If it does not exist:
@@ -63,7 +67,7 @@ Parse these from the user's invocation. Default: all flags off (full pipeline wi
 
 4. If state file exists, extract `lastGeneration.sourceCommit` and compare to current HEAD:
    ```bash
-   node scripts/detect-changes.mjs --source ~/Projects/frontend-code --state .picnic-gen-state.json --json
+   node scripts/detect-changes.mjs --source "$REPO_ROOT" --state .picnic-gen-state.json --json
    ```
    Parse the JSON output. If `componentChanges` is empty AND `newComponents` and `removedComponents` are empty AND `infraChanges` is empty, print: "Skills are up to date (last generated from `<sourceCommit>`)." and stop.
 
@@ -98,14 +102,14 @@ Parse these from the user's invocation. Default: all flags off (full pipeline wi
 1. Run change detection (human-readable by default, or `--json` for machine parsing):
    ```bash
    node scripts/detect-changes.mjs \
-     --source ~/Projects/frontend-code \
+     --source "$REPO_ROOT" \
      --state .picnic-gen-state.json
    ```
    The script outputs a formatted change summary directly to stdout.
    To capture structured data for downstream steps, also run:
    ```bash
    node scripts/detect-changes.mjs \
-     --source ~/Projects/frontend-code \
+     --source "$REPO_ROOT" \
      --state .picnic-gen-state.json \
      --json > .picnic-changelog.json
    ```
@@ -172,14 +176,14 @@ EOF
 2. Run extraction. The `--source` flag points to `libs/picnic` inside frontend-code:
    ```bash
    node scripts/extract.mjs \
-     --source ~/Projects/frontend-code/libs/picnic \
+     --source "$REPO_ROOT/libs/picnic" \
      --components Badge,Select,Table \
      --output picnic-database.json
    ```
    In `--full` mode (omit `--components` to extract all):
    ```bash
    node scripts/extract.mjs \
-     --source ~/Projects/frontend-code/libs/picnic \
+     --source "$REPO_ROOT/libs/picnic" \
      --output picnic-database.json
    ```
 
@@ -288,7 +292,7 @@ EOF
 2. For each affected skill, assemble context. Use `--skill` to gather all components in a skill, or `--component` for a single component:
    ```bash
    node scripts/assemble-context.mjs \
-     --source ~/Projects/frontend-code/libs/picnic \
+     --source "$REPO_ROOT/libs/picnic" \
      --skill form-builder \
      --database picnic-database.json \
      --output .picnic-ai-context.md
@@ -296,7 +300,7 @@ EOF
    Or for individual components:
    ```bash
    node scripts/assemble-context.mjs \
-     --source ~/Projects/frontend-code/libs/picnic \
+     --source "$REPO_ROOT/libs/picnic" \
      --component Badge \
      --database picnic-database.json \
      --format json \
@@ -437,7 +441,7 @@ EOF
    Use the detect-changes script with `--init` to recompute all hashes and write a fresh state file:
    ```bash
    node scripts/detect-changes.mjs \
-     --source ~/Projects/frontend-code \
+     --source "$REPO_ROOT" \
      --state .picnic-gen-state.json \
      --init
    ```
@@ -484,7 +488,7 @@ EOF
 
 | Failure Point | Recovery |
 |---------------|----------|
-| Source repo not found | Clone frontend-code to ~/Projects/frontend-code |
+| Not in frontend-code repo | Run from within your frontend-code checkout, or `cd` into it first |
 | Git fetch fails | Proceed with local state; warn user results may be stale |
 | State file missing | Use `--full` to run initial full extraction |
 | State file corrupt | Delete it and use `--full` |

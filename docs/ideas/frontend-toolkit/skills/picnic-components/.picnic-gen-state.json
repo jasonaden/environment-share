@@ -4,7 +4,7 @@
     "timestamp": "2026-02-18T06:54:45.643Z",
     "sourceCommit": "b4f07b04efa36c138c7e99fe9694673df6d2a94b",
     "sourceBranch": "main",
-    "sourceRepo": "/Users/jaden/Projects/frontend-code"
+    "sourceRepo": "."
   },
   "componentHashes": {
     "Accordion": "0ada2694343800c413a9133000c5398d0cc530af405040b487dabd2950089651",

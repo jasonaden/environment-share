@@ -1,7 +1,7 @@
 {
   "extractedAt": "2026-02-18T06:53:31.870Z",
   "sourceCommit": "38a5daaadfc7fd08835a479a219a1ca7236124e7",
-  "sourcePath": "/Users/jaden/Projects/frontend-code/libs/picnic",
+  "sourcePath": "libs/picnic",
   "componentCount": 57,
   "components": {
     "Accordion": {

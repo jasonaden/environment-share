@@ -6,10 +6,12 @@ set -euo pipefail
 # Exits silently on any error or if prerequisites are missing.
 
 STATE_FILE="${CLAUDE_PLUGIN_ROOT:-}/../picnic-components/.picnic-gen-state.json"
-FRONTEND_REPO="$HOME/Projects/frontend-code"
 
-# Silent exit if state file or repo not found
-if [ ! -f "$STATE_FILE" ] || [ ! -d "$FRONTEND_REPO/.git" ]; then
+# Auto-discover repo root from current working directory
+FRONTEND_REPO="$(git rev-parse --show-toplevel 2>/dev/null)"
+
+# Silent exit if not in a git repo, state file missing, or picnic source missing
+if [ -z "$FRONTEND_REPO" ] || [ ! -f "$STATE_FILE" ] || [ ! -d "$FRONTEND_REPO/libs/picnic" ]; then
   exit 0
 fi
 

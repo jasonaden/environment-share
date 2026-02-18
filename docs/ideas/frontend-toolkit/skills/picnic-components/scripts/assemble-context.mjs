@@ -7,9 +7,9 @@
  * a single markdown file that becomes input to the AI curation prompts.
  *
  * Usage:
- *   node scripts/assemble-context.mjs --source ~/Projects/frontend-code/libs/picnic --component Table --output context/Table.md
- *   node scripts/assemble-context.mjs --source ~/Projects/frontend-code/libs/picnic --skill data-table --output context/data-table.md
- *   node scripts/assemble-context.mjs --source ~/Projects/frontend-code/libs/picnic --component Table --format json --output context/Table.json
+ *   node scripts/assemble-context.mjs --source libs/picnic --component Table --output context/Table.md
+ *   node scripts/assemble-context.mjs --skill data-table --output context/data-table.md
+ *   node scripts/assemble-context.mjs --component Table --format json --output context/Table.json
  */
 
 import { readdir, readFile, stat, mkdir } from 'node:fs/promises';
@@ -54,7 +54,17 @@ Options:
   process.exit(0);
 }
 
-const PICNIC_ROOT = args.source || join(process.env.HOME, 'Projects/frontend-code/libs/picnic');
+import { execSync } from 'node:child_process';
+
+function findRepoRoot() {
+  try {
+    return execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
+  } catch {
+    return process.cwd();
+  }
+}
+
+const PICNIC_ROOT = args.source || join(findRepoRoot(), 'libs', 'picnic');
 const COMPONENTS_DIR = join(PICNIC_ROOT, 'src/components');
 const DATABASE_PATH = args.database || null;
 

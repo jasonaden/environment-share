@@ -7,9 +7,9 @@
  * identify which components changed and which skill files need updating.
  *
  * Usage:
- *   node scripts/detect-changes.mjs --source ~/Projects/frontend-code --state .picnic-gen-state.json
- *   node scripts/detect-changes.mjs --source ~/Projects/frontend-code --init
- *   node scripts/detect-changes.mjs --source ~/Projects/frontend-code --json
+ *   node scripts/detect-changes.mjs --source "$(git rev-parse --show-toplevel)" --state .picnic-gen-state.json
+ *   node scripts/detect-changes.mjs --source . --init
+ *   node scripts/detect-changes.mjs --source . --json
  */
 
 import { execSync } from 'node:child_process';
@@ -311,7 +311,7 @@ function initState(sourceCommit) {
       timestamp: new Date().toISOString(),
       sourceCommit,
       sourceBranch: BRANCH,
-      sourceRepo: SOURCE_ROOT,
+      sourceRepo: '.',
     },
     componentHashes,
     themeHash: hashDirectory(THEMES_DIR),

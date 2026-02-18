@@ -7,8 +7,8 @@
  * to produce a JSON database of component metadata, design tokens, and icon lists.
  *
  * Usage:
- *   node scripts/extract.mjs --source ~/Projects/frontend-code/libs/picnic --output picnic-database.json
- *   node scripts/extract.mjs --source ~/Projects/frontend-code/libs/picnic --components Badge,Table
+ *   node scripts/extract.mjs --source libs/picnic --output picnic-database.json
+ *   node scripts/extract.mjs --source "$(git rev-parse --show-toplevel)/libs/picnic" --components Badge,Table
  *
  * Dependencies: @babel/parser, @babel/traverse (installed in frontend-code)
  */
@@ -1264,7 +1264,7 @@ async function main() {
   const output = {
     extractedAt: new Date().toISOString(),
     sourceCommit: getSourceCommit(),
-    sourcePath: PICNIC_ROOT,
+    sourcePath: 'libs/picnic',
     componentCount: Object.keys(components).length,
     components,
     tokens,
