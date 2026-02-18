@@ -1,0 +1,2377 @@
+{
+  "extractedAt": "2026-02-18T06:53:31.870Z",
+  "sourceCommit": "38a5daaadfc7fd08835a479a219a1ca7236124e7",
+  "sourcePath": "/Users/jaden/Projects/frontend-code/libs/picnic",
+  "componentCount": 57,
+  "components": {
+    "Accordion": {
+      "category": "navigation",
+      "sourceFile": "src/components/Accordion/Accordion.tsx",
+      "primitive": "div",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "error",
+            "info",
+            "neutral",
+            "warning",
+            "decorative3"
+          ],
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "Badge": {
+      "category": "data-display",
+      "sourceFile": "src/components/Badge/Badge.tsx",
+      "primitive": "em",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "active",
+            "standard",
+            "primary",
+            "error",
+            "magic"
+          ],
+          "default": "standard",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "position": {
+          "type": "enum",
+          "values": [
+            "inline",
+            "raised"
+          ],
+          "default": "raised",
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "Banner": {
+      "category": "feedback",
+      "sourceFile": "src/components/Banner/Banner.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Image",
+        "Text",
+        "Heading",
+        "Action"
+      ],
+      "props": {
+        "variant": {
+          "type": {
+            "enum": [
+              "error",
+              "info",
+              "warning",
+              "success",
+              "neutral",
+              "guidance"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "dismissible": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        },
+        "onDismiss": {
+          "type": "Function",
+          "required": false,
+          "source": "interface"
+        },
+        "iconName": {
+          "type": "IconName",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "Box": {
+      "category": "layout",
+      "sourceFile": "src/components/Box/Box.tsx",
+      "primitive": "div",
+      "compound": false,
+      "subComponents": [],
+      "props": {},
+      "deprecated": {}
+    },
+    "Breadcrumbs": {
+      "category": "layout",
+      "sourceFile": "src/components/Breadcrumbs/Breadcrumbs.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Item"
+      ],
+      "props": {},
+      "deprecated": {},
+      "subComponentProps": {
+        "Item": {
+          "itemVariant": {
+            "type": "enum",
+            "values": [
+              "current",
+              "ancestor"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          }
+        }
+      }
+    },
+    "Button": {
+      "category": "actions",
+      "sourceFile": "src/components/Button/Button.tsx",
+      "primitive": "button",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "primary",
+            "secondary",
+            "subdued",
+            "inverted",
+            "legacy-inverted"
+          ],
+          "default": "primary",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "size": {
+          "type": "enum",
+          "values": [
+            "small",
+            "medium",
+            "large"
+          ],
+          "default": "medium",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "loading": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {
+        "basic": {
+          "replacement": "secondary",
+          "line": 217
+        }
+      }
+    },
+    "ButtonBar": {
+      "category": "actions",
+      "sourceFile": "src/components/ButtonBar/ButtonBar.tsx",
+      "primitive": "div",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "layout": {
+          "type": "enum",
+          "values": [
+            "stack",
+            "stretch",
+            "auto",
+            "legacy",
+            "responsive"
+          ],
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "ButtonGroup": {
+      "category": "actions",
+      "sourceFile": "src/components/ButtonGroup/ButtonGroup.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Item",
+        "IconItem"
+      ],
+      "props": {
+        "activeItem": {
+          "type": "number | null",
+          "required": false,
+          "source": "interface"
+        },
+        "size": {
+          "type": {
+            "enum": [
+              "small",
+              "medium"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "itemSizing": {
+          "type": {
+            "enum": [
+              "auto",
+              "equal"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "Item": {
+          "position": {
+            "type": "enum",
+            "values": [
+              "first",
+              "middle",
+              "last"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          },
+          "active": {
+            "type": "boolean",
+            "required": false,
+            "source": "stitches-variant"
+          },
+          "itemSizing": {
+            "type": "enum",
+            "values": [
+              "auto",
+              "equal"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          },
+          "isActive": {
+            "type": "boolean",
+            "required": false,
+            "source": "stitches-variant"
+          },
+          "size": {
+            "type": "enum",
+            "values": [
+              "small",
+              "medium"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          }
+        },
+        "IconItem": {
+          "size": {
+            "type": "enum",
+            "values": [
+              "small",
+              "medium"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          }
+        }
+      }
+    },
+    "Card": {
+      "category": "layout",
+      "sourceFile": "src/components/Card/Card.tsx",
+      "primitive": "div",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "interactive": {
+          "type": "boolean",
+          "default": "false",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "active": {
+          "type": "boolean",
+          "default": "false",
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "Checkbox": {
+      "category": "form-input",
+      "sourceFile": "src/components/Checkbox/Checkbox.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "CheckboxItem"
+      ],
+      "props": {},
+      "deprecated": {}
+    },
+    "ContainedLabel": {
+      "category": "layout",
+      "sourceFile": "src/components/ContainedLabel/ContainedLabel.tsx",
+      "primitive": "div",
+      "compound": true,
+      "subComponents": [
+        "Icon",
+        "Tooltip"
+      ],
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "neutral",
+            "success",
+            "informational",
+            "warning",
+            "critical",
+            "decorative1",
+            "decorative2",
+            "decorative3",
+            "decorative4",
+            "overMedia",
+            "magic"
+          ],
+          "default": "neutral",
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "ContinuousScroll": {
+      "category": "scroll",
+      "sourceFile": "src/components/ContinuousScroll/ContinuousScroll.tsx",
+      "primitive": null,
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "onLoadMore": {
+          "type": "Function",
+          "required": true,
+          "source": "interface"
+        },
+        "isLoading": {
+          "type": "boolean",
+          "required": true,
+          "source": "interface"
+        },
+        "hasMore": {
+          "type": "boolean",
+          "required": true,
+          "source": "interface"
+        },
+        "direction": {
+          "type": {
+            "enum": [
+              "vertical",
+              "horizontal"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "threshold": {
+          "type": "0 | 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | 0.6 | 0.7 | 0.8 | 0.9 | 1",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "DatePicker": {
+      "category": "form-input",
+      "sourceFile": "src/components/DatePicker/DatePicker.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Root",
+        "Anchor",
+        "Trigger",
+        "Input",
+        "Popover",
+        "Control"
+      ],
+      "props": {
+        "isDayBlocked": {
+          "type": "Function",
+          "required": false,
+          "source": "interface"
+        },
+        "firstDayOfWeek": {
+          "type": "DayOfWeekShape",
+          "required": false,
+          "source": "interface"
+        },
+        "defaultOpen": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        },
+        "size": {
+          "type": {
+            "enum": [
+              "small",
+              "normal"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "state": {
+          "type": {
+            "enum": [
+              "error",
+              "normal"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "Input": {
+          "description": {
+            "type": "string",
+            "required": false,
+            "source": "interface"
+          },
+          "size": {
+            "type": {
+              "enum": [
+                "small",
+                "normal"
+              ]
+            },
+            "required": true,
+            "source": "interface"
+          },
+          "state": {
+            "type": {
+              "enum": [
+                "error",
+                "normal"
+              ]
+            },
+            "required": true,
+            "source": "interface"
+          },
+          "inputGroupRef": {
+            "type": "Ref<HTMLInputElement>",
+            "required": false,
+            "source": "interface"
+          }
+        },
+        "Control": {
+          "month": {
+            "type": "Moment",
+            "required": true,
+            "source": "interface"
+          },
+          "onMonthSelect": {
+            "type": "Function",
+            "required": true,
+            "source": "interface"
+          },
+          "onYearSelect": {
+            "type": "Function",
+            "required": true,
+            "source": "interface"
+          },
+          "isVisible": {
+            "type": "boolean",
+            "required": true,
+            "source": "interface"
+          },
+          "minExpectedYear": {
+            "type": "number",
+            "required": false,
+            "source": "interface"
+          },
+          "maxExpectedYear": {
+            "type": "number",
+            "required": false,
+            "source": "interface"
+          }
+        }
+      }
+    },
+    "Dialog": {
+      "category": "overlay",
+      "sourceFile": "src/components/Dialog/Dialog.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Content",
+        "Header",
+        "Heading",
+        "HeroImage",
+        "Body",
+        "Footer",
+        "Trigger",
+        "Close"
+      ],
+      "props": {
+        "includeOverlay": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "Content": {
+          "layout": {
+            "type": "enum",
+            "values": [
+              "dialog",
+              "portalled"
+            ],
+            "default": "dialog",
+            "required": false,
+            "source": "stitches-variant"
+          }
+        }
+      }
+    },
+    "Drawer": {
+      "category": "overlay",
+      "sourceFile": "src/components/Drawer/Drawer.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "current"
+      ],
+      "props": {
+        "includeOverlay": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        },
+        "onCloseFinish": {
+          "type": "Function",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "DropdownMenu": {
+      "category": "overlay",
+      "sourceFile": "src/components/DropdownMenu/DropdownMenu.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Trigger",
+        "SubMenuTriggerItem",
+        "Content",
+        "SubContent",
+        "Sub",
+        "Button",
+        "Label",
+        "Item",
+        "TextItem",
+        "Separator",
+        "UnstyledItem"
+      ],
+      "props": {},
+      "deprecated": {},
+      "subComponentProps": {
+        "Button": {
+          "data-state": {
+            "type": {
+              "enum": [
+                "open",
+                "closed"
+              ]
+            },
+            "required": false,
+            "source": "interface"
+          }
+        }
+      }
+    },
+    "Emoji": {
+      "category": "data-display",
+      "sourceFile": "src/components/Emoji/Emoji.tsx",
+      "primitive": "span",
+      "compound": false,
+      "subComponents": [],
+      "props": {},
+      "deprecated": {}
+    },
+    "FileInput": {
+      "category": "form-input",
+      "sourceFile": "src/components/FileInput/FileInput.tsx",
+      "primitive": null,
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "loading": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        },
+        "variant": {
+          "type": "ButtonProps['variant']",
+          "required": false,
+          "source": "interface"
+        },
+        "size": {
+          "type": "ButtonProps['size']",
+          "required": false,
+          "source": "interface"
+        },
+        "multiple": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "FooterLayout": {
+      "category": "layout",
+      "sourceFile": "src/components/FooterLayout/FooterLayout.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Content",
+        "Footer"
+      ],
+      "props": {
+        "includeSeparator": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "Footer": {
+          "includeSeparator": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "emphasized": {
+            "type": "enum",
+            "values": [
+              "true"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          }
+        }
+      }
+    },
+    "Form": {
+      "category": "form-input",
+      "sourceFile": "src/components/Form/Form.tsx",
+      "primitive": "FormikForm",
+      "compound": false,
+      "subComponents": [],
+      "props": {},
+      "deprecated": {}
+    },
+    "FormField": {
+      "category": "form-input",
+      "sourceFile": "src/components/FormField/FormField.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Label",
+        "HelperText",
+        "ErrorText",
+        "IconPopover"
+      ],
+      "props": {
+        "layout": {
+          "type": {
+            "enum": [
+              "vertical",
+              "horizontal"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "Grid": {
+      "category": "layout",
+      "sourceFile": "src/components/Grid/Grid.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Cell"
+      ],
+      "props": {
+        "columns": {
+          "type": "ResponsiveValue<number | null>",
+          "required": true,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "Cell": {
+          "colSpan": {
+            "type": "ResponsiveValue<number | null>",
+            "required": false,
+            "source": "interface"
+          }
+        }
+      }
+    },
+    "Heading": {
+      "category": "data-display",
+      "sourceFile": "src/components/Heading/Heading.tsx",
+      "primitive": "h1",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "page",
+            "xl",
+            "lg",
+            "md",
+            "sm",
+            "subheading"
+          ],
+          "default": "page",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "color": {
+          "type": "enum",
+          "values": [
+            "default",
+            "subdued",
+            "inverted",
+            "success",
+            "warning",
+            "critical",
+            "info",
+            "decorative1",
+            "decorative2",
+            "decorative3",
+            "decorative4"
+          ],
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "Icon": {
+      "category": "media",
+      "sourceFile": "src/components/Icon/IconPrimitive.tsx",
+      "primitive": "svg",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "size": {
+          "type": "enum",
+          "values": [
+            "extraSmall",
+            "small",
+            "medium",
+            "large"
+          ],
+          "default": "medium",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "color": {
+          "type": "enum",
+          "values": [
+            "default",
+            "subdued",
+            "success",
+            "warning",
+            "critical",
+            "error",
+            "neutral",
+            "info",
+            "guidance",
+            "disabled",
+            "inverted",
+            "decorative1",
+            "decorative2",
+            "decorative3",
+            "decorative4",
+            "inherit"
+          ],
+          "default": "inherit",
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "IconCircle": {
+      "category": "media",
+      "sourceFile": "src/components/IconCircle/IconCircle.tsx",
+      "primitive": "div",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "color": {
+          "type": "enum",
+          "values": [
+            "default",
+            "inverted"
+          ],
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "size": {
+          "type": "enum",
+          "values": [
+            "extraSmall",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "iconName": {
+          "type": "IconProps['name']",
+          "required": true,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "IconPopover": {
+      "category": "overlay",
+      "sourceFile": "src/components/IconPopover/IconPopover.tsx",
+      "primitive": null,
+      "compound": false,
+      "subComponents": [],
+      "props": {},
+      "deprecated": {}
+    },
+    "InputGroup": {
+      "category": "form-input",
+      "sourceFile": "src/components/InputGroup/InputGroup.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "LeftElement",
+        "RightElement",
+        "InlineButton"
+      ],
+      "props": {},
+      "deprecated": {}
+    },
+    "ImagePreview": {
+      "category": "media",
+      "sourceFile": "src/components/ImagePreview/ImagePreview.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "src"
+      ],
+      "props": {
+        "src": {
+          "type": "string | null",
+          "required": true,
+          "source": "interface"
+        },
+        "altText": {
+          "type": "string",
+          "required": true,
+          "source": "interface"
+        },
+        "size": {
+          "type": {
+            "enum": [
+              "small",
+              "medium",
+              "large"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "onRemove": {
+          "type": "Function",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "Link": {
+      "category": "actions",
+      "sourceFile": "src/components/Link/Link.tsx",
+      "primitive": "a",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "default",
+            "inverted"
+          ],
+          "default": "default",
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "List": {
+      "category": "data-display",
+      "sourceFile": "src/components/List/List.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Item"
+      ],
+      "props": {
+        "variant": {
+          "type": "VariantProps<unknown>['variant']",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "LoadingIndicator": {
+      "category": "feedback",
+      "sourceFile": "src/components/LoadingIndicator/LoadingIndicator.tsx",
+      "primitive": null,
+      "compound": false,
+      "subComponents": [],
+      "props": {},
+      "deprecated": {}
+    },
+    "LoadingPlaceholder": {
+      "category": "feedback",
+      "sourceFile": "src/components/LoadingPlaceholder/LoadingPlaceholder.tsx",
+      "primitive": "div",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "shimmer",
+            "static"
+          ],
+          "default": "shimmer",
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "Logomark": {
+      "category": "media",
+      "sourceFile": "src/components/Logomark/Logomark.tsx",
+      "primitive": "svg",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "variant": {
+          "type": "LogoVariant",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "PageLayout": {
+      "category": "layout",
+      "sourceFile": "src/components/PageLayout/PageLayout.tsx",
+      "primitive": "div",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "inline",
+            "stacked"
+          ],
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "Paginator": {
+      "category": "navigation",
+      "sourceFile": "src/components/Paginator/Paginator.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Label",
+        "ButtonGroup"
+      ],
+      "props": {
+        "totalItems": {
+          "type": "number",
+          "required": true,
+          "source": "interface"
+        },
+        "maxItemsPerPage": {
+          "type": "number",
+          "required": true,
+          "source": "interface"
+        },
+        "onOffsetChange": {
+          "type": "Function",
+          "required": true,
+          "source": "interface"
+        },
+        "offset": {
+          "type": "number",
+          "required": true,
+          "source": "interface"
+        },
+        "hasStartEndButtons": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "ButtonGroup": {
+          "hasStartEndButtons": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "hasNext": {
+            "type": "boolean",
+            "required": true,
+            "source": "interface"
+          },
+          "hasPrevious": {
+            "type": "boolean",
+            "required": true,
+            "source": "interface"
+          },
+          "loadNext": {
+            "type": "Function",
+            "required": true,
+            "source": "interface"
+          },
+          "loadPrevious": {
+            "type": "Function",
+            "required": true,
+            "source": "interface"
+          }
+        }
+      }
+    },
+    "PickerButton": {
+      "category": "actions",
+      "sourceFile": "src/components/PickerButton/PickerButton.tsx",
+      "primitive": "button",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "size": {
+          "type": "enum",
+          "values": [
+            "small",
+            "medium"
+          ],
+          "default": "medium",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "iconName": {
+          "type": "IconName",
+          "required": true,
+          "source": "interface"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "source": "interface"
+        },
+        "textCss": {
+          "type": "PicnicCss",
+          "required": false,
+          "source": "interface"
+        },
+        "iconCss": {
+          "type": "PicnicCss",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "Popover": {
+      "category": "overlay",
+      "sourceFile": "src/components/Popover/Popover.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Trigger",
+        "Anchor",
+        "Content",
+        "CloseButton",
+        "CloseIconButton"
+      ],
+      "props": {
+        "open": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        },
+        "defaultOpen": {
+          "type": "boolean",
+          "required": false,
+          "source": "interface"
+        },
+        "onOpenChange": {
+          "type": "Function",
+          "required": false,
+          "source": "interface"
+        },
+        "variant": {
+          "type": "PopoverVariants",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "Content": {
+          "showCloseButton": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "showArrow": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "variant": {
+            "type": "enum",
+            "values": [
+              "default",
+              "guidance"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          }
+        }
+      }
+    },
+    "ProgressBar": {
+      "category": "data-display",
+      "sourceFile": "src/components/ProgressBar/ProgressBar.tsx",
+      "primitive": "ProgressPrimitive.Root",
+      "compound": false,
+      "subComponents": [],
+      "props": {},
+      "deprecated": {}
+    },
+    "RadioGroup": {
+      "category": "form-input",
+      "sourceFile": "src/components/RadioGroup/RadioGroup.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "RadioItem",
+        "Radio",
+        "RadioItemWrapper"
+      ],
+      "props": {},
+      "deprecated": {}
+    },
+    "ResponsiveImage": {
+      "category": "media",
+      "sourceFile": "src/components/ResponsiveImage/ResponsiveImage.tsx",
+      "primitive": "img",
+      "compound": false,
+      "subComponents": [],
+      "props": {},
+      "deprecated": {}
+    },
+    "SearchBar": {
+      "category": "form-input",
+      "sourceFile": "src/components/SearchBar/SearchBar.tsx",
+      "primitive": null,
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "size": {
+          "type": "ComponentProps<unknown>['size']",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "Select": {
+      "category": "form-input",
+      "sourceFile": "src/components/Select/Select.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Group",
+        "Item",
+        "IconItem",
+        "ThirdPartyIconItem",
+        "Value"
+      ],
+      "props": {
+        "align": {
+          "type": {
+            "enum": [
+              "start",
+              "end"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "state": {
+          "type": {
+            "enum": [
+              "normal",
+              "error"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "size": {
+          "type": "SizeType",
+          "required": false,
+          "source": "interface"
+        },
+        "selectedLines": {
+          "type": {
+            "enum": [
+              "one-line",
+              "two-lines"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "onSearchTermChange": {
+          "type": "Function",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "Group": {
+          "label": {
+            "type": "string",
+            "required": true,
+            "source": "interface"
+          },
+          "disabled": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          }
+        },
+        "Item": {
+          "value": {
+            "type": "MenuItemValueType",
+            "required": true,
+            "source": "interface"
+          },
+          "disabled": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "icon": {
+            "type": "ReactNode",
+            "required": false,
+            "source": "interface"
+          },
+          "highlighted": {
+            "type": "enum",
+            "values": [
+              "true"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          },
+          "selected": {
+            "type": "enum",
+            "values": [
+              "true"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          }
+        }
+      }
+    },
+    "Separator": {
+      "category": "layout",
+      "sourceFile": "src/components/Separator/Separator.tsx",
+      "primitive": "RadixSeparator.Root",
+      "compound": false,
+      "subComponents": [],
+      "props": {},
+      "deprecated": {}
+    },
+    "Stack": {
+      "category": "layout",
+      "sourceFile": "src/components/Stack/Stack.tsx",
+      "primitive": null,
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "spacing": {
+          "type": "PicnicSpaceToken",
+          "required": false,
+          "source": "interface"
+        },
+        "direction": {
+          "type": {
+            "enum": [
+              "vertical",
+              "horizontal"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "StepTracker": {
+      "category": "data-display",
+      "sourceFile": "src/components/StepTracker/StepTracker.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Step"
+      ],
+      "props": {
+        "activeStep": {
+          "type": "number",
+          "required": false,
+          "source": "interface"
+        },
+        "fontSize": {
+          "type": {
+            "enum": [
+              "small",
+              "medium"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "layout": {
+          "type": {
+            "enum": [
+              "inline",
+              "stacked"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "Step": {
+          "number": {
+            "type": "number",
+            "required": true,
+            "source": "interface"
+          },
+          "variant": {
+            "type": "enum",
+            "values": [
+              "active",
+              "incompleted"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          },
+          "fontSize": {
+            "type": "enum",
+            "values": [
+              "medium",
+              "small"
+            ],
+            "default": "medium",
+            "required": false,
+            "source": "stitches-variant"
+          },
+          "layout": {
+            "type": {
+              "enum": [
+                "inline",
+                "stacked"
+              ]
+            },
+            "required": false,
+            "source": "interface"
+          },
+          "isActive": {
+            "type": "boolean",
+            "required": true,
+            "source": "interface"
+          }
+        }
+      }
+    },
+    "Switch": {
+      "category": "form-input",
+      "sourceFile": "src/components/Switch/Switch.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "SwitchItem"
+      ],
+      "props": {},
+      "deprecated": {}
+    },
+    "Tag": {
+      "category": "data-display",
+      "sourceFile": "src/components/Tag/Tag.tsx",
+      "primitive": "span",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "size": {
+          "type": "enum",
+          "values": [
+            "small",
+            "normal"
+          ],
+          "default": "normal",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "variant": {
+          "type": "enum",
+          "values": [
+            "default",
+            "error"
+          ],
+          "default": "default",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "disabled": {
+          "type": "enum",
+          "values": [
+            "true"
+          ],
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "onDelete": {
+          "type": "Function",
+          "required": true,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    },
+    "TagSelector": {
+      "category": "form-input",
+      "sourceFile": "src/components/TagSelector/TagSelector.tsx",
+      "primitive": "div",
+      "compound": false,
+      "subComponents": [],
+      "props": {},
+      "deprecated": {}
+    },
+    "TabGroup": {
+      "category": "navigation",
+      "sourceFile": "src/components/TabGroup/TabGroup.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "List",
+        "Tab",
+        "Panel"
+      ],
+      "props": {},
+      "deprecated": {}
+    },
+    "Table": {
+      "category": "data-table",
+      "sourceFile": "src/components/Table/Table.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "RowSelectorCell",
+        "HeaderSelectorCell",
+        "Header",
+        "HeaderRow",
+        "HeaderCell",
+        "SortableHeaderCell",
+        "Body",
+        "BodyRow",
+        "BodyFocusableRow",
+        "BodyCell",
+        "FocusWrapper"
+      ],
+      "props": {
+        "textVariant": {
+          "type": {
+            "enum": [
+              "body",
+              "caption"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        },
+        "columns": {
+          "type": "number | number[]",
+          "required": false,
+          "source": "interface"
+        },
+        "columnSizes": {
+          "type": "string | string[]",
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {},
+      "subComponentProps": {
+        "RowSelectorCell": {
+          "checked": {
+            "type": "boolean",
+            "required": true,
+            "source": "interface"
+          }
+        },
+        "Header": {
+          "isSortActive": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "ascending": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "align": {
+            "type": "enum",
+            "values": [
+              "left",
+              "center",
+              "right"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          }
+        },
+        "HeaderCell": {
+          "isSortActive": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "ascending": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "align": {
+            "type": "enum",
+            "values": [
+              "left",
+              "center",
+              "right"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          }
+        },
+        "SortableHeaderCell": {
+          "isSortActive": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          },
+          "ascending": {
+            "type": "boolean",
+            "required": false,
+            "source": "interface"
+          }
+        },
+        "Body": {
+          "align": {
+            "type": "enum",
+            "values": [
+              "left",
+              "center",
+              "right"
+            ],
+            "default": "left",
+            "required": false,
+            "source": "stitches-variant"
+          }
+        },
+        "BodyCell": {
+          "align": {
+            "type": "enum",
+            "values": [
+              "left",
+              "center",
+              "right"
+            ],
+            "default": "left",
+            "required": false,
+            "source": "stitches-variant"
+          }
+        },
+        "FocusWrapper": {
+          "onKeyDown": {
+            "type": "Function",
+            "required": true,
+            "source": "interface"
+          },
+          "align": {
+            "type": "enum",
+            "values": [
+              "left",
+              "center",
+              "right"
+            ],
+            "required": false,
+            "source": "stitches-variant"
+          }
+        }
+      }
+    },
+    "Text": {
+      "category": "data-display",
+      "sourceFile": "src/components/Text/Text.tsx",
+      "primitive": "p",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "lede",
+            "body",
+            "caption",
+            "micro"
+          ],
+          "default": "body",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "color": {
+          "type": "enum",
+          "values": [
+            "default",
+            "subdued",
+            "inverted",
+            "success",
+            "warning",
+            "critical",
+            "info",
+            "decorative1",
+            "decorative2",
+            "decorative3",
+            "decorative4"
+          ],
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "verticalAlignment": {
+          "type": "enum",
+          "values": [
+            "default",
+            "center"
+          ],
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "TextArea": {
+      "category": "form-input",
+      "sourceFile": "src/components/TextArea/TextArea.tsx",
+      "primitive": "textarea",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "state": {
+          "type": "enum",
+          "values": [
+            "normal",
+            "error"
+          ],
+          "default": "normal",
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "TextInput": {
+      "category": "form-input",
+      "sourceFile": "src/components/TextInput/TextInput.tsx",
+      "primitive": "input",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "state": {
+          "type": "enum",
+          "values": [
+            "normal",
+            "error"
+          ],
+          "default": "normal",
+          "required": false,
+          "source": "stitches-variant"
+        },
+        "size": {
+          "type": "enum",
+          "values": [
+            "small",
+            "normal"
+          ],
+          "default": "normal",
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "TextWithOverflowTooltip": {
+      "category": "data-display",
+      "sourceFile": "src/components/TextWithOverflowTooltip/TextWithOverflowTooltip.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "current"
+      ],
+      "props": {},
+      "deprecated": {}
+    },
+    "TimePicker": {
+      "category": "form-input",
+      "sourceFile": "src/components/TimePicker/TimePicker.tsx",
+      "primitive": "div",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "selected": {
+          "type": "boolean",
+          "required": false,
+          "source": "stitches-variant"
+        }
+      },
+      "deprecated": {}
+    },
+    "Tooltip": {
+      "category": "overlay",
+      "sourceFile": "src/components/Tooltip/Tooltip.tsx",
+      "primitive": null,
+      "compound": true,
+      "subComponents": [
+        "Provider",
+        "Trigger",
+        "Content"
+      ],
+      "props": {},
+      "deprecated": {},
+      "subComponentProps": {
+        "Content": {
+          "variant": {
+            "type": "enum",
+            "values": [
+              "normal",
+              "danger"
+            ],
+            "default": "normal",
+            "required": false,
+            "source": "stitches-variant"
+          }
+        }
+      }
+    },
+    "Wordmark": {
+      "category": "media",
+      "sourceFile": "src/components/Wordmark/Wordmark.tsx",
+      "primitive": "svg",
+      "compound": false,
+      "subComponents": [],
+      "props": {
+        "color": {
+          "type": {
+            "enum": [
+              "PicnicColorsToken",
+              "inherit"
+            ]
+          },
+          "required": false,
+          "source": "interface"
+        }
+      },
+      "deprecated": {}
+    }
+  },
+  "tokens": {
+    "scales": {
+      "borderStyles": {},
+      "borderWidths": {
+        "borderWidth0": "0px",
+        "borderWidth1": "1px",
+        "borderWidth2": "2px",
+        "borderWidth3": "4px"
+      },
+      "colors": {
+        "grayscale0": "#FFFFFF",
+        "grayscale030": "#FAFAFA",
+        "grayscale100": "#EFF0F0",
+        "grayscale200": "#E2E3E3",
+        "grayscale200_40": "rgba(226,227,227,0.4)",
+        "grayscale300": "#C6C7C8",
+        "grayscale400": "#B6B7B8",
+        "grayscale600": "#8D8F91",
+        "grayscale700": "#656567",
+        "grayscale800": "#545759",
+        "grayscale800_40": "rgba(84,87,89,0.4)",
+        "grayscale900": "#1B1F23",
+        "grayscale900_08": "rgba(27,31,35,0.08)",
+        "grayscale900_12": "rgba(27,31,35,0.12)",
+        "grayscale900_16": "rgba(27,31,35,0.16)",
+        "grayscale900_24": "rgba(27,31,35,0.24)",
+        "grayscale900_40": "rgba(27,31,35,0.4)",
+        "grayscale1000": "#000000",
+        "grayscale1000_50": "rgba(0,0,0,0.5)",
+        "yellow100": "#FFFDE5",
+        "yellow200": "#FFF8B3",
+        "yellow300": "#FFF382",
+        "yellow300_40": "rgba(255,243,130,0.4)",
+        "yellow500": "#FADF65",
+        "yellow600": "#FFE600",
+        "yellow700": "#F9D100",
+        "green100": "#D8EFE4",
+        "green200": "#9FD6BC",
+        "green700": "#3AA372",
+        "green800": "#30855D",
+        "green900": "#1F573D",
+        "red100": "#FFD7DE",
+        "red200": "#FF9CAC",
+        "red300": "#FA7F8F",
+        "red700": "#ED3553",
+        "red800": "#B3283E",
+        "creamsicleOrange100": "#FFE1A9",
+        "creamsicleOrange200": "#FBCD81",
+        "creamsicleOrange300": "#FABF61",
+        "aperolOrange100": "#FFD4BF",
+        "aperolOrange200": "#FFA175",
+        "aperolOrange700": "#E04800",
+        "aperolOrange800": "#AD3800",
+        "hyperlinkBlue200": "#94C7FA",
+        "hyperlinkBlue300": "#6FB2F9",
+        "hyperlinkBlue700": "#0074E0",
+        "hyperlinkBlue800": "#005AAD",
+        "celeryGreen100": "#E2FA9F",
+        "celeryGreen200": "#BDD185",
+        "celeryGreen700": "#788554",
+        "celeryGreen800": "#617030",
+        "cloudBlue100": "#E3F0F4",
+        "cloudBlue200": "#82C8D2",
+        "cloudBlue700": "#55838A",
+        "cloudBlue800": "#2A4A50",
+        "cloveBrown100": "#F9F7F0",
+        "cloveBrown200": "#D1BAB0",
+        "cloveBrown300": "#C1A396",
+        "cloveBrown700": "#AD6848",
+        "cloveBrown800": "#7F2801",
+        "lavenderPurple030": "#FBF3FF",
+        "lavenderPurple100": "#EDC6ED",
+        "lavenderPurple200": "#C878D1",
+        "lavenderPurple700": "#834F8A",
+        "lavenderPurple800": "#58495B",
+        "steelBlue100": "#E7F2FE",
+        "steelBlue200": "#CEE5FD",
+        "steelBlue300": "#B9CEE4",
+        "steelBlue700": "#67737E",
+        "steelBlue800": "#3E454C",
+        "bgDefault": "$grayscale0",
+        "bgAccentSubtle": "$grayscale030",
+        "bgAccent": "$grayscale100",
+        "bgAccentDark": "$grayscale200",
+        "bgPlaceholder": "$grayscale200",
+        "bgPlaceholderAlt": "$grayscale300",
+        "bgOverlay": "$grayscale1000_50",
+        "bgTooltip": "$grayscale1000",
+        "bgSuccessDefault": "$green100",
+        "bgSuccessAccent": "$green200",
+        "bgInformationalDefault": "$cloveBrown100",
+        "bgInformationalAccent": "$cloveBrown200",
+        "bgCriticalDefault": "$red100",
+        "bgCriticalAccent": "$red200",
+        "bgWarningDefault": "$creamsicleOrange100",
+        "bgWarningAccent": "$aperolOrange200",
+        "bgGuidanceDefault": "$lavenderPurple030",
+        "bgGuidanceAccent": "$lavenderPurple700",
+        "bgDecorative1Default": "$celeryGreen100",
+        "bgDecorative1Accent": "$celeryGreen200",
+        "bgDecorative2Default": "$cloudBlue100",
+        "bgDecorative2Accent": "$cloudBlue200",
+        "bgDecorative3Default": "$steelBlue100",
+        "bgDecorative3Accent": "$steelBlue200",
+        "bgDecorative4Default": "$lavenderPurple100",
+        "bgDecorative4Accent": "$lavenderPurple200",
+        "bgActionPrimary": "$yellow300",
+        "bgActionPrimaryHover": "$yellow600",
+        "bgActionPrimaryPressed": "$yellow700",
+        "bgActionPrimaryDisabled": "$yellow300_40",
+        "bgActionSecondary": "$grayscale200",
+        "bgActionSecondaryHover": "$grayscale300",
+        "bgActionSecondaryPressed": "$grayscale600",
+        "bgActionSecondaryDisabled": "$grayscale200_40",
+        "bgActionBasic": "$grayscale0",
+        "bgActionBasicHover": "$grayscale100",
+        "bgActionBasicPressed": "$grayscale200",
+        "bgBrand": "$yellow300",
+        "bgInverted": "$grayscale900",
+        "bgInvertedDisabled": "$grayscale600",
+        "bgRow": "$grayscale0",
+        "bgRowHover": "$grayscale100",
+        "bgRowPressed": "$grayscale200",
+        "bgRowSelected": "$grayscale200",
+        "bgRowSelectedHover": "$grayscale200",
+        "bgRowSelectedPressed": "$grayscale300",
+        "bgToggleDefault": "$grayscale0",
+        "bgToggleHover": "$grayscale200",
+        "bgTogglePressed": "$grayscale300",
+        "bgToggleSelected": "$grayscale900",
+        "bgHighlighted": "$steelBlue200",
+        "bgGradientMagic": "linear-gradient(90deg, $bgDecorative4Default 12.03%, $bgDecorative3Accent 91.25%)",
+        "bgGradientMagicFallback": "$bgDecorative4Default",
+        "textDefault": "$grayscale900",
+        "textSubdued": "$grayscale700",
+        "textSuccess": "$green800",
+        "textWarning": "$aperolOrange800",
+        "textCritical": "$red800",
+        "textInformational": "$cloveBrown800",
+        "textHover": "$hyperlinkBlue700",
+        "textPressed": "$hyperlinkBlue800",
+        "textInverted": "$grayscale0",
+        "textDisabled": "$grayscale900_40",
+        "textDecorative1": "$celeryGreen800",
+        "textDecorative2": "$cloudBlue800",
+        "textDecorative3": "$steelBlue800",
+        "textDecorative4": "$lavenderPurple800",
+        "textLink": "$grayscale900",
+        "textSelectedToggle": "$grayscale900",
+        "iconDefault": "$grayscale900",
+        "iconSubdued": "$grayscale600",
+        "iconSuccess": "$green700",
+        "iconWarning": "$aperolOrange700",
+        "iconCritical": "$red700",
+        "iconInfo": "$cloveBrown700",
+        "iconGuidance": "$lavenderPurple700",
+        "iconDisabled": "$grayscale900_40",
+        "iconHovered": "$hyperlinkBlue700",
+        "iconPressed": "$hyperlinkBlue800",
+        "iconInverted": "$grayscale0",
+        "iconDecorative1": "$celeryGreen700",
+        "iconDecorative2": "$cloudBlue700",
+        "iconDecorative3": "$steelBlue700",
+        "iconDecorative4": "$lavenderPurple700",
+        "borderDefault": "$grayscale200",
+        "borderLoud": "$grayscale300",
+        "borderVisualization": "$grayscale600",
+        "borderInverted": "$grayscale0",
+        "borderInput": "$grayscale800",
+        "borderInputHover": "$grayscale1000",
+        "borderInputSuccess": "$green700",
+        "borderInputError": "$red700",
+        "borderInputDisabled": "$grayscale800_40",
+        "borderActionBasic": "$grayscale300",
+        "borderActionBasicDisabled": "$grayscale800_40",
+        "borderFocus": "$grayscale900",
+        "borderSelectedToggle": "$grayscale1000"
+      },
+      "fonts": {
+        "display": "Ginto Nord",
+        "body": "Ginto Normal"
+      },
+      "fontSizes": {
+        "fontSize1": "0.75rem",
+        "fontSize2": "0.875rem",
+        "fontSize3": "1rem",
+        "fontSize4": "1.25rem",
+        "fontSize5": "1.5rem",
+        "fontSize6": "1.75rem",
+        "fontSize7": "2rem"
+      },
+      "fontWeights": {
+        "regular": "400",
+        "bold": "500"
+      },
+      "letterSpacings": {
+        "letterSpacing0": "0px",
+        "letterSpacing1": "0.3px",
+        "letterSpacing2": "0.5px"
+      },
+      "lineHeights": {
+        "lineHeight1": "1",
+        "lineHeight2": "1.25",
+        "lineHeight3": "1.285",
+        "lineHeight4": "1.333",
+        "lineHeight5": "1.4",
+        "lineHeight6": "1.428",
+        "lineHeight7": "1.5"
+      },
+      "radii": {
+        "radius1": "4px",
+        "radius2": "8px",
+        "radius3": "16px",
+        "radiusMax": "9999px"
+      },
+      "shadows": {
+        "focus": "0 0 0 2px $colors$bgDefault, 0 0 0 4px $colors$borderFocus",
+        "inputFocus": "0 0 0 1px $colors$borderFocus",
+        "drastic": "0 8px 16px 0 rgba(0, 48, 45, 0.25)",
+        "shadow1": "0px 4px 12px 0px $colors$grayscale900_08",
+        "shadow2": "0 4px 16px 0 $colors$grayscale900_12",
+        "shadow3": "6px 6px 20px 4px $colors$grayscale900_16",
+        "shadow4": "0 10px 25px 6px $colors$grayscale900_24"
+      },
+      "sizes": {
+        "size0": "0",
+        "size1": "4px",
+        "size2": "8px",
+        "size3": "12px",
+        "size4": "16px",
+        "size5": "20px",
+        "size6": "24px",
+        "size7": "28px",
+        "size8": "32px",
+        "size9": "36px",
+        "size10": "40px",
+        "size11": "44px",
+        "size12": "48px",
+        "size13": "52px",
+        "size14": "56px",
+        "size15": "60px",
+        "size16": "64px"
+      },
+      "space": {
+        "space0": "0",
+        "space1": "4px",
+        "space2": "8px",
+        "space3": "12px",
+        "space4": "16px",
+        "space5": "20px",
+        "space6": "24px",
+        "space7": "28px",
+        "space8": "32px",
+        "space9": "36px",
+        "space10": "40px",
+        "space11": "44px",
+        "space12": "48px",
+        "space13": "52px",
+        "space14": "56px",
+        "space15": "60px",
+        "space16": "64px"
+      },
+      "transitions": {},
+      "zIndices": {
+        "layer0": 0,
+        "layer1": 10000,
+        "layer2": 20000,
+        "layer3": 30000,
+        "layer4": 40000,
+        "layerMax": 2147483647
+      }
+    },
+    "darkOverrides": {
+      "colors": {
+        "bgDefault": "$grayscale900",
+        "bgActionBasic": "$grayscale900",
+        "bgInformationalDefault": "$cloveBrown800",
+        "bgBrand": "$yellow300_40",
+        "bgRow": "$grayscale900",
+        "bgRowHover": "$grayscale800",
+        "bgRowSelected": "$grayscale700",
+        "bgRowPressed": "$grayscale700",
+        "bgWarningDefault": "$aperolOrange700",
+        "bgWarningAccent": "$aperolOrange800",
+        "textDefault": "$grayscale0",
+        "textInverted": "$grayscale900",
+        "textLink": "$grayscale0,"
+      }
+    },
+    "breakpoints": {
+      "bp1": "640px",
+      "bp2": "768px",
+      "bp3": "1024px",
+      "bp4": "1280px"
+    }
+  },
+  "icons": {
+    "builtIn": [
+      "Accessibility",
+      "AlignBottom",
+      "AlignCenter",
+      "AlignLeft",
+      "AlignMiddle",
+      "AlignRight",
+      "AlignTop",
+      "ArrowBottom",
+      "ArrowLeft",
+      "ArrowLeftCircle",
+      "ArrowRight",
+      "ArrowRightCircle",
+      "ArrowTop",
+      "Bag",
+      "BagArrowRight",
+      "BagCheckmark",
+      "BagDollar",
+      "BarChart",
+      "Barcode",
+      "Bell",
+      "BookOpen",
+      "Brackets",
+      "BrandKit",
+      "Briefcase",
+      "Bubble",
+      "Button",
+      "Calendar",
+      "Cart",
+      "Checkbox",
+      "Checkmark",
+      "ChevronDown",
+      "ChevronEnd",
+      "ChevronLeft",
+      "ChevronRight",
+      "ChevronStart",
+      "ChevronUp",
+      "CircleCheckmark",
+      "CircleError",
+      "CircleExclamation",
+      "CircleInformation",
+      "CirclePause",
+      "CirclePerson",
+      "CirclePlay",
+      "CircleQuestion",
+      "Clock",
+      "ClockStrikethrough",
+      "Cog",
+      "Compass",
+      "ConsolidatedCreatives",
+      "ContactCard",
+      "Cookie",
+      "Copy",
+      "Coupon",
+      "Delete",
+      "Document",
+      "Dollar",
+      "DotsHorizontal",
+      "DotsVertical",
+      "Download",
+      "DragHandle",
+      "DropdownSelect",
+      "EndJourney",
+      "EnvelopeFilled",
+      "EnvelopeOutline",
+      "Expand",
+      "Eye",
+      "EyeStrikethrough",
+      "Filter",
+      "FinanceBuilding",
+      "Flag",
+      "Flower",
+      "Folder",
+      "FrownOutline",
+      "GIF",
+      "GenericProduct",
+      "HandWaving",
+      "Headset",
+      "Heart",
+      "HeartChart",
+      "Home",
+      "ImageFilled",
+      "ImageOutline",
+      "Keyboard",
+      "LaptopDisplay",
+      "LaptopMediaPlayer",
+      "LaptopPage",
+      "Lightbulb",
+      "LightningBolt",
+      "LineChart",
+      "Link",
+      "List",
+      "Location",
+      "Lock",
+      "Logo",
+      "Magic",
+      "MagnifyingGlass",
+      "Megaphone",
+      "Menu",
+      "MessageBubbleArrowLeft",
+      "MessageBubbleArrowRight",
+      "MessageBubbleDots",
+      "MessageBubbleDotsReversed",
+      "MessageBubbleDotsStacked",
+      "MessageBubbleRCSStacked",
+      "MinusSign",
+      "MobileDisplay",
+      "NewWindow",
+      "NoData",
+      "NotificationBell",
+      "OfficeBuilding",
+      "PaperAirplane",
+      "Pencil",
+      "Percentage",
+      "Person",
+      "PersonStacked",
+      "PieChart",
+      "PlusSign",
+      "Push",
+      "RadioButton",
+      "ReferralURL",
+      "RichCard",
+      "Rocket",
+      "Segments",
+      "Send",
+      "SendStrikethrough",
+      "Shield",
+      "ShieldPerson",
+      "SmileFilled",
+      "SmileOutline",
+      "SoupBowl",
+      "SquaresIntersecting",
+      "Stairs",
+      "Star",
+      "Sun",
+      "Sync",
+      "Tag",
+      "Target",
+      "Template",
+      "TestTube",
+      "Text",
+      "TextFileFilled",
+      "TextFileOutline",
+      "TextInput",
+      "TextInputOutline",
+      "ThumbsDownFilled",
+      "ThumbsDownOutline",
+      "ThumbsUpFilled",
+      "ThumbsUpOutline",
+      "Timer",
+      "Total",
+      "TrafficCone",
+      "TrashCan",
+      "Unlink",
+      "Unsync",
+      "Upload",
+      "Wheel",
+      "Workflow",
+      "World",
+      "X"
+    ],
+    "thirdParty": [
+      "AftershipColor",
+      "BazaarvoiceBlack",
+      "BazaarvoiceColor",
+      "BazaarvoiceWhite",
+      "IOSCarousel",
+      "IOSPhone",
+      "IOSSafari",
+      "KlaviyoColor",
+      "KlaviyoWhite",
+      "MParticleColor",
+      "MParticleWhite",
+      "MailchimpColor",
+      "MailchimpWhite",
+      "NarvarColor",
+      "OloColor",
+      "PunchhColor",
+      "PunchhWhite",
+      "ReChargeColor",
+      "ReChargeWhite",
+      "SalesforceColor",
+      "SalesforceWhite",
+      "SegmentIOColor",
+      "ShopifyColor",
+      "ShopifyWhite",
+      "SmileColor",
+      "SmileWhite",
+      "ThanxColor",
+      "ThanxWhite",
+      "YotpoColor"
+    ],
+    "colors": [
+      "default",
+      "subdued",
+      "success",
+      "warning",
+      "critical",
+      "error",
+      "neutral",
+      "info",
+      "guidance",
+      "disabled",
+      "inverted",
+      "decorative1",
+      "decorative2",
+      "decorative3",
+      "decorative4",
+      "inherit"
+    ],
+    "sizes": [
+      "extraSmall",
+      "small",
+      "medium",
+      "large"
+    ],
+    "count": {
+      "builtIn": 159,
+      "thirdParty": 29
+    }
+  }
+}

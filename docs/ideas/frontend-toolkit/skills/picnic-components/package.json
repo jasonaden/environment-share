@@ -1,0 +1,17 @@
+{
+  "name": "picnic-skills-generator",
+  "version": "1.0.0",
+  "description": "Pipeline scripts for generating and maintaining Picnic component skill files from source code",
+  "type": "module",
+  "scripts": {
+    "extract": "node scripts/extract.mjs --source ~/Projects/frontend-code/libs/picnic",
+    "format": "node scripts/format.mjs",
+    "detect": "node scripts/detect-changes.mjs --source ~/Projects/frontend-code",
+    "context": "node scripts/assemble-context.mjs --source ~/Projects/frontend-code/libs/picnic",
+    "init-state": "node scripts/detect-changes.mjs --source ~/Projects/frontend-code --init"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.x",
+    "@babel/traverse": "^7.x"
+  }
+}
