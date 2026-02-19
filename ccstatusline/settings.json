@@ -1,0 +1,123 @@
+{
+  "version": 3,
+  "lines": [
+    [
+      {
+        "id": "d702f5b7-600c-49fd-a6b2-d7d400516dfc",
+        "type": "model",
+        "rawValue": true
+      },
+      {
+        "id": "74579f47-4895-44b9-9203-7d27f325e9e4",
+        "type": "separator"
+      },
+      {
+        "id": "4667aeb4-3e7d-4bb7-84fc-0de74984b35a",
+        "type": "context-percentage",
+        "rawValue": true
+      },
+      {
+        "id": "c0637443-1e5b-4d6f-8c66-2e88ad3ede68",
+        "type": "separator"
+      },
+      {
+        "id": "75459bbc-20dc-4136-940f-07e73950db05",
+        "type": "tokens-input",
+        "rawValue": true
+      },
+      {
+        "id": "c06d3b90-7b37-4d2b-b06c-252810bf01c3",
+        "type": "custom-text",
+        "customText": "/"
+      },
+      {
+        "id": "45c88b0f-a090-446d-945c-e9ee2b38f302",
+        "type": "tokens-output",
+        "rawValue": true
+      },
+      {
+        "id": "efb283c4-a1eb-4e78-a675-8eefa324234c",
+        "type": "custom-text",
+        "customText": "/"
+      },
+      {
+        "id": "e3358295-6bce-4994-b1f3-5ae74309fe67",
+        "type": "tokens-cached",
+        "rawValue": true
+      },
+      {
+        "id": "ef7f6a36-17de-4cb6-8c10-c8aa10574829",
+        "type": "separator"
+      },
+      {
+        "id": "36910f07-8c0d-4548-b5e7-4bec59e7eb57",
+        "type": "git-branch"
+      },
+      {
+        "id": "0c22e92b-b2d9-4c69-a8b0-2ed8709c2387",
+        "type": "separator"
+      },
+      {
+        "id": "393e27db-d68f-4ccc-8202-dff86e0aa77c",
+        "type": "git-worktree"
+      },
+      {
+        "id": "ae126fca-1bd7-47d5-b22f-bab57782465e",
+        "type": "separator"
+      },
+      {
+        "id": "cb9eedb0-f188-40b2-b605-7eb2c2c6df92",
+        "type": "git-changes"
+      }
+    ],
+    [
+      {
+        "id": "b8b75d18-f734-4c93-9538-d3969f7a9406",
+        "type": "block-timer",
+        "metadata": {
+          "display": "progress-short"
+        }
+      },
+      {
+        "id": "9839a250-bbb7-4f0a-b8b3-47a0cdf277b6",
+        "type": "custom-text",
+        "customText": "  "
+      },
+      {
+        "id": "ba50c47c-2ed5-4928-af3a-1d8eb836593e",
+        "type": "block-timer",
+        "metadata": {
+          "display": "time"
+        },
+        "rawValue": true
+      },
+      {
+        "id": "aeaa2a7f-8753-4f18-a42c-f059b2bcec9b",
+        "type": "separator"
+      },
+      {
+        "id": "e26cb26e-60e0-4d8d-952d-5d3bfc732aa4",
+        "type": "current-working-dir",
+        "rawValue": true
+      }
+    ],
+    []
+  ],
+  "flexMode": "full-minus-40",
+  "compactThreshold": 60,
+  "colorLevel": 2,
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "powerline": {
+    "enabled": false,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "autoAlign": false
+  }
+}
