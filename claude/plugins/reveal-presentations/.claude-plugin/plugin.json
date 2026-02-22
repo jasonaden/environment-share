@@ -1,0 +1,8 @@
+{
+  "name": "reveal-presentations",
+  "version": "1.0.0",
+  "description": "Generate elegant HTML presentations with Reveal.js using the Autonomee.ai design system - dark background, serif headlines, muted accents.",
+  "author": {
+    "name": "Goda"
+  }
+}
