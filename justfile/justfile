@@ -1,0 +1,51 @@
+# Global task runner
+# Usage: j <recipe> (works from anywhere under ~)
+# Tip: alias j='just --justfile ~/justfile --working-directory .'
+
+set dotenv-load := false
+
+# List available recipes
+default:
+    @just --list
+
+# ── Claude Code ───────────────────────────────────────
+
+# CC: start claude code (skip permissions)
+cc *args:
+    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions {{args}}
+
+# CC: start with worktree (isolated git branch)
+ccw name="" *args:
+    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --worktree {{ if name != "" { name } else { "" } }} {{args}}
+
+# CC: start with worktree + tmux pane
+ccwt name="" *args:
+    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --worktree {{ if name != "" { name } else { "" } }} --tmux {{args}}
+
+# CC: continue last session
+ccc *args:
+    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --continue {{args}}
+
+# CC: resume a session (interactive picker)
+ccr session="" *args:
+    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --resume {{ if session != "" { session } else { "" } }} {{args}}
+
+# CC: one-shot print mode (pipe friendly)
+ccp *args:
+    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --print {{args}}
+
+# CC: start with specific model
+ccm model *args:
+    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --model {{model}} {{args}}
+
+# CC: start with model + worktree
+ccmw model name="" *args:
+    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --model {{model}} --worktree {{ if name != "" { name } else { "" } }} {{args}}
+
+# CC: plan mode (no edits)
+ccplan *args:
+    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --permission-mode plan {{args}}
+
+# CC: passthrough any claude command
+claude-raw *args:
+    cd "{{invocation_directory()}}" && claude {{args}}
