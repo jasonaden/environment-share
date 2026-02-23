@@ -34,4 +34,8 @@ if [ -n "$SHELL_RC" ]; then
   fi
 fi
 
-echo "==> Done. Run 'just --list' or 'j' to see available recipes."
+echo ""
+echo "==> Done. To activate the 'j' alias in your current shell:"
+echo "    source $SHELL_RC"
+echo ""
+echo "    Then run 'j' to see available recipes."
