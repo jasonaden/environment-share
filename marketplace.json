@@ -12,7 +12,7 @@
       "author": {
         "name": "Goda"
       },
-      "source": "./reveal-presentations",
+      "source": "./claude/plugins/reveal-presentations",
       "category": "productivity"
     },
     {
@@ -22,7 +22,7 @@
       "author": {
         "name": "Jaden"
       },
-      "source": "./just",
+      "source": "./claude/plugins/just",
       "category": "productivity"
     }
   ]
