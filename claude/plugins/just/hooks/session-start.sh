@@ -13,8 +13,8 @@ if [ -z "$summary" ]; then
   exit 0
 fi
 
-# Get the detailed list with comments
-list=$(just --list 2>/dev/null || true)
+# Get the detailed list with comments (strip default heading to avoid duplication)
+list=$(just --list --list-heading '' 2>/dev/null || true)
 
 # Find which justfile just resolved to
 justfile_path=$(just --justfile 2>/dev/null || echo "justfile")
