@@ -49,6 +49,36 @@ deploy:
     echo "deploying..."
 ```
 
+## Creating and Editing Justfiles
+
+When the user asks you to add a recipe or create a justfile:
+
+1. **Check for existing justfile first.** Run `just --justfile 2>/dev/null` or look for a `justfile` in the project root.
+2. **Follow existing style.** If a justfile exists, match its patterns — comment style, indentation, section headers, alias conventions.
+3. **Always add a comment** above recipes — it becomes the description shown by `just --list`.
+4. **Use `{{invocation_directory()}}` for cd** if the justfile is global (like `~/justfile`), so recipes work from any directory.
+5. **Add an alias** for frequently-used recipes: `alias d := deploy`.
+6. **Group related recipes** under section comments: `# ── Deploy ──────────────`
+
+### Recipe template
+
+```just
+# Short description of what this does
+recipe-name arg1 arg2="default":
+    command {{arg1}} {{arg2}}
+alias rn := recipe-name
+```
+
+### Multi-line recipe template
+
+```just
+# Short description of what this does
+recipe-name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "doing the thing..."
+```
+
 ## Inheritance
 
 `just` walks up the directory tree to find justfiles (like git finds `.git`). Recipes from parent justfiles are available in child directories. The `import` keyword pulls in recipes from other files.
