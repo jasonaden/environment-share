@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Justfiles: A Team Task Runner</title>
+
+  <!-- Google Fonts - Autonomee Style -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+  <!-- Reveal.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+/*
+ * Autonomee.ai Presentation Theme
+ * Editorial, minimal, serif headlines
+ * For use with Reveal.js 4.5+
+ */
+
+/* ===== CSS VARIABLES - AUTONOMEE PALETTE ===== */
+:root {
+  /* Backgrounds */
+  --bg-dark: #0a0a0a;
+  --bg-card: #111111;
+  --bg-card-hover: #1a1a1a;
+
+  /* Accent - Muted Steel Blue */
+  --accent: #7b8fa8;
+  --accent-light: #9bb0c9;
+  --accent-glow: rgba(123, 143, 168, 0.15);
+
+  /* Semantic Colors - Muted */
+  --success: #7b9a7b;
+  --warning: #c9a85b;
+  --error: #c97b7b;
+
+  /* Text Colors */
+  --text-primary: #f5f4f0;
+  --text-secondary: #a8a8a8;
+  --text-muted: #666666;
+
+  /* Borders */
+  --border: #2a2a2a;
+
+  /* Typography */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 40px;
+  --spacing-xl: 60px;
+}
+
+/* ===== BASE STYLES ===== */
+html, body {
+  background: var(--bg-dark) !important;
+  color: var(--text-primary);
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.reveal-viewport {
+  background: var(--bg-dark) !important;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px) !important;
+  background-size: 60px 60px !important;
+}
+
+.reveal {
+  background: var(--bg-dark);
+  font-family: var(--font-sans);
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slides section {
+  padding: 0;
+  background: var(--bg-dark);
+}
+
+/* ===== SLIDE BASE ===== */
+.slide {
+  height: 100%;
+  width: 100%;
+  padding: var(--spacing-xl);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  position: relative;
+}
+
+.slide > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== SLIDE VARIANTS ===== */
+.slide--center {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.slide--section {
+  background: transparent;
+}
+
+.slide--section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== HEADER BAR ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.header__logo {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0.02em;
+}
+
+.header__logo svg {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+}
+
+/* ===== TYPOGRAPHY ===== */
+.kicker {
+  font-size: 0.7rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kicker::after {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.5;
+}
+
+h1, .h1 {
+  font-family: var(--font-serif);
+  font-size: 4rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.1;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-primary);
+}
+
+h2, .h2 {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+h3, .h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.3;
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+h4, .h4 {
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0 0 var(--spacing-xs) 0;
+  letter-spacing: 0.02em;
+}
+
+.lead {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 600px;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.highlight, .accent-text {
+  color: var(--accent);
+}
+
+/* ===== CODE STYLING ===== */
+code, .code {
+  font-family: var(--font-mono);
+  background: rgba(123, 143, 168, 0.1);
+  padding: 2px 8px;
+  font-size: 0.85em;
+  color: var(--accent-light);
+  border: 1px solid var(--border);
+}
+
+pre {
+  background: #0d0d0d;
+  border: 1px solid var(--border);
+  padding: var(--spacing-md);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  color: var(--text-secondary);
+}
+
+.command {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.command:hover {
+  background: var(--bg-card);
+}
+
+.command__prompt {
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.command__text {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.command__desc {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-left: auto;
+  font-style: italic;
+}
+
+/* ===== LAYOUT UTILITIES ===== */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  align-items: center;
+  flex: 1;
+}
+
+.split--60-40 {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.split--40-60 {
+  grid-template-columns: 1fr 1.5fr;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: var(--spacing-md);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  background: var(--bg-card);
+  border-color: var(--accent);
+}
+
+.card__icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--spacing-sm);
+  color: var(--accent);
+}
+
+.card__icon svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: 1.5;
+}
+
+.card__title {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: var(--spacing-xs);
+}
+
+.card__text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ===== LISTS ===== */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list li {
+  padding: var(--spacing-sm) 0;
+  padding-left: var(--spacing-lg);
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+
+.list li:last-child {
+  border-bottom: none;
+}
+
+.list li::before {
+  content: '\2014';
+  position: absolute;
+  left: 0;
+  top: var(--spacing-sm);
+  color: var(--accent);
+  font-weight: 400;
+}
+
+.list--numbered {
+  counter-reset: list-counter;
+}
+
+.list--numbered li {
+  counter-increment: list-counter;
+}
+
+.list--numbered li::before {
+  content: counter(list-counter, decimal-leading-zero);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 28px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--text-primary);
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.btn:hover {
+  background: var(--text-primary);
+  color: var(--bg-dark);
+}
+
+.btn--accent {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn--accent:hover {
+  background: var(--accent);
+  color: var(--bg-dark);
+}
+
+/* ===== REVEAL.JS OVERRIDES ===== */
+.reveal .controls {
+  color: var(--accent);
+}
+
+.reveal .progress {
+  background: var(--border);
+  height: 2px;
+}
+
+.reveal .progress span {
+  background: var(--accent);
+}
+
+.reveal .slide-number {
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  right: 20px;
+  bottom: 20px;
+}
+
+/* ===== FRAGMENT ANIMATIONS ===== */
+.reveal .slides section .fragment {
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.reveal .slides section .fragment.visible {
+  opacity: 1;
+}
+
+.reveal .slides section .fragment.fade-up {
+  transform: translateY(20px);
+}
+
+.reveal .slides section .fragment.fade-up.visible {
+  transform: translateY(0);
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg-dark);
+}
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- SLIDE 1: Title -->
+      <section>
+        <div class="slide slide--section slide--center">
+          <div class="content flex-center" style="flex-direction: column; text-align: center;">
+            <p class="kicker" style="justify-content: center;">Developer Tooling</p>
+            <h1>Justfiles<br><span class="accent-text">A Team Task Runner</span></h1>
+            <p class="lead" style="max-width: 600px; margin: 0 auto;">
+              One file. Every command your team needs. Zero tribal knowledge.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: The Problem -->
+      <section>
+        <div class="slide">
+          <div class="header">
+            <div class="header__logo">
+              <i data-lucide="alert-triangle"></i>
+              The Problem
+            </div>
+          </div>
+          <div class="split">
+            <div>
+              <p class="kicker">01 // The Problem</p>
+              <h2>Tribal<br>Knowledge</h2>
+              <p class="lead">Every project has commands that only some people know. They live in places nobody checks.</p>
+            </div>
+            <div>
+              <ul class="list list--numbered">
+                <li class="fragment">
+                  <strong>Scattered READMEs</strong><br>
+                  <span class="muted">"Check the README... no, the other one... in the docs folder..."</span>
+                </li>
+                <li class="fragment">
+                  <strong>Slack archaeology</strong><br>
+                  <span class="muted">"Someone posted the deploy command last month, search for it"</span>
+                </li>
+                <li class="fragment">
+                  <strong>Stale onboarding docs</strong><br>
+                  <span class="muted">"That guide is from 2023, half those commands changed"</span>
+                </li>
+                <li class="fragment">
+                  <strong>The one person who knows</strong><br>
+                  <span class="muted">"Ask Sarah, she wrote the deploy script"</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: What is just? -->
+      <section>
+        <div class="slide">
+          <div class="header">
+            <div class="header__logo">
+              <i data-lucide="terminal"></i>
+              just
+            </div>
+          </div>
+          <div class="split">
+            <div>
+              <p class="kicker">02 // The Solution</p>
+              <h2>What is <span class="accent-text">just</span>?</h2>
+              <p class="lead">A command runner. Like <code>make</code> but without the build system baggage.</p>
+              <ul class="list" style="margin-top: 24px;">
+                <li class="fragment">Language-agnostic &mdash; works with any stack</li>
+                <li class="fragment">Cross-platform &mdash; macOS, Linux, Windows</li>
+                <li class="fragment">Single file &mdash; <code>justfile</code> in your project root</li>
+                <li class="fragment">Self-documenting &mdash; comments become help text</li>
+              </ul>
+            </div>
+            <div>
+              <div class="command fragment">
+                <span class="command__prompt">$</span>
+                <span class="command__text">brew install just</span>
+                <span class="command__desc">Install</span>
+              </div>
+              <div class="command fragment">
+                <span class="command__prompt">$</span>
+                <span class="command__text">just --list</span>
+                <span class="command__desc">See all recipes</span>
+              </div>
+              <div class="command fragment">
+                <span class="command__prompt">$</span>
+                <span class="command__text">just deploy staging</span>
+                <span class="command__desc">Run a recipe</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: Syntax Tour -->
+      <section>
+        <div class="slide">
+          <div class="header">
+            <div class="header__logo">
+              <i data-lucide="code"></i>
+              Syntax
+            </div>
+          </div>
+          <div class="content">
+            <p class="kicker">03 // Syntax Tour</p>
+            <h2>Anatomy of a Justfile</h2>
+            <div style="margin-top: 24px;">
+              <pre><code class="language-bash"># Variables
+db_name := "myapp_dev"
+
+# Comment becomes the description in --list
+deploy env="staging":
+    ./scripts/deploy.sh {{env}}
+
+# Aliases provide shorthand
+alias d := deploy
+
+# Recipes can depend on other recipes
+release: test lint build
+    just deploy production
+
+# Multi-line shell blocks
+setup:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "Installing dependencies..."
+    npm install && npm run db:migrate</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: Real Example -->
+      <section>
+        <div class="slide">
+          <div class="header">
+            <div class="header__logo">
+              <i data-lucide="terminal"></i>
+              Real Usage
+            </div>
+          </div>
+          <div class="content">
+            <p class="kicker">04 // Real Example</p>
+            <h2>My Claude Code Recipes</h2>
+            <p class="lead" style="margin-bottom: 24px;">From my actual <code>~/justfile</code> &mdash; I type <code>j cc</code> from anywhere.</p>
+            <div class="grid-2">
+              <div>
+                <div class="command fragment">
+                  <span class="command__prompt">j</span>
+                  <span class="command__text">cc</span>
+                  <span class="command__desc">Start Claude Code</span>
+                </div>
+                <div class="command fragment">
+                  <span class="command__prompt">j</span>
+                  <span class="command__text">ccw feature</span>
+                  <span class="command__desc">Start in worktree</span>
+                </div>
+                <div class="command fragment">
+                  <span class="command__prompt">j</span>
+                  <span class="command__text">ccc</span>
+                  <span class="command__desc">Continue last session</span>
+                </div>
+              </div>
+              <div>
+                <div class="command fragment">
+                  <span class="command__prompt">j</span>
+                  <span class="command__text">ccr</span>
+                  <span class="command__desc">Resume a session</span>
+                </div>
+                <div class="command fragment">
+                  <span class="command__prompt">j</span>
+                  <span class="command__text">ccplan</span>
+                  <span class="command__desc">Plan mode (no edits)</span>
+                </div>
+                <div class="command fragment">
+                  <span class="command__prompt">j</span>
+                  <span class="command__text">ccp "explain this"</span>
+                  <span class="command__desc">One-shot print mode</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: Team Use Cases -->
+      <section>
+        <div class="slide">
+          <div class="header">
+            <div class="header__logo">
+              <i data-lucide="users"></i>
+              Team Workflows
+            </div>
+          </div>
+          <div class="content">
+            <p class="kicker">05 // Team Use Cases</p>
+            <h2>Your Justfile Is Your<br><span class="accent-text">Team Runbook</span></h2>
+            <div class="grid-2" style="margin-top: 32px;">
+              <div class="card fragment fade-up">
+                <div class="card__icon"><i data-lucide="siren"></i></div>
+                <h4 class="card__title">On-Call Scripts</h4>
+                <p class="card__text"><code>just restart-service payments</code><br>No more hunting for runbooks at 3am.</p>
+              </div>
+              <div class="card fragment fade-up">
+                <div class="card__icon"><i data-lucide="rocket"></i></div>
+                <h4 class="card__title">Deploy Workflows</h4>
+                <p class="card__text"><code>just deploy staging</code><br>Consistent deploys, every time.</p>
+              </div>
+              <div class="card fragment fade-up">
+                <div class="card__icon"><i data-lucide="laptop"></i></div>
+                <h4 class="card__title">Dev Environment</h4>
+                <p class="card__text"><code>just setup</code><br>New hire runs one command on day one.</p>
+              </div>
+              <div class="card fragment fade-up">
+                <div class="card__icon"><i data-lucide="check-circle"></i></div>
+                <h4 class="card__title">CI Shortcuts</h4>
+                <p class="card__text"><code>just test</code> / <code>just lint</code><br>Same commands locally and in CI.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: Claude + Justfiles -->
+      <section>
+        <div class="slide">
+          <div class="header">
+            <div class="header__logo">
+              <i data-lucide="bot"></i>
+              AI-Aware
+            </div>
+          </div>
+          <div class="split">
+            <div>
+              <p class="kicker">06 // AI Integration</p>
+              <h2>Claude<br><span class="accent-text">Understands</span><br>Justfiles</h2>
+              <p class="lead">Claude Code auto-discovers your recipes at session start. It reads the justfile, understands the commands, and uses them.</p>
+            </div>
+            <div>
+              <ul class="list">
+                <li class="fragment">
+                  <strong>Auto-discovers recipes</strong><br>
+                  <span class="muted">SessionStart hook runs <code>just --list</code> automatically</span>
+                </li>
+                <li class="fragment">
+                  <strong>Prefers recipes over raw commands</strong><br>
+                  <span class="muted">Says <code>just test</code> instead of writing a shell script</span>
+                </li>
+                <li class="fragment">
+                  <strong>Walks the tree</strong><br>
+                  <span class="muted">Finds justfiles in parent directories, resolves imports</span>
+                </li>
+                <li class="fragment">
+                  <strong>Inspects before running</strong><br>
+                  <span class="muted">Uses <code>just --show</code> to understand recipes first</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Get Started -->
+      <section>
+        <div class="slide slide--section slide--center">
+          <div class="content flex-center" style="flex-direction: column;">
+            <p class="kicker" style="justify-content: center;">07 // Get Started</p>
+            <h1>Three Commands<br><span class="accent-text">That's It</span></h1>
+            <div style="margin-top: 40px; width: 100%; max-width: 500px;">
+              <div class="command fragment">
+                <span class="command__prompt">$</span>
+                <span class="command__text">brew install just</span>
+                <span class="command__desc">Install</span>
+              </div>
+              <div class="command fragment">
+                <span class="command__prompt">$</span>
+                <span class="command__text">touch justfile</span>
+                <span class="command__desc">Create</span>
+              </div>
+              <div class="command fragment">
+                <span class="command__prompt">$</span>
+                <span class="command__text">just --list</span>
+                <span class="command__desc">Discover</span>
+              </div>
+            </div>
+            <p class="lead fragment" style="margin-top: 40px;">
+              <span class="accent-text">just.systems</span> &mdash; docs, examples, and more
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Reveal.js Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      controls: true,
+      controlsLayout: 'bottom-right',
+      controlsBackArrows: 'faded',
+      progress: true,
+      center: false,
+      transition: 'slide',
+      backgroundTransition: 'fade',
+      width: 1280,
+      height: 720,
+      margin: 0,
+      minScale: 0.2,
+      maxScale: 2,
+      autoAnimate: true,
+      autoAnimateDuration: 0.7,
+      plugins: [RevealHighlight]
+    });
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+
+</body>
+</html>
