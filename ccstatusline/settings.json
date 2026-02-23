@@ -72,33 +72,9 @@
     ],
     [
       {
-        "id": "b8b75d18-f734-4c93-9538-d3969f7a9406",
-        "type": "block-timer",
-        "metadata": {
-          "display": "progress-short"
-        }
-      },
-      {
-        "id": "9839a250-bbb7-4f0a-b8b3-47a0cdf277b6",
-        "type": "custom-text",
-        "customText": "  "
-      },
-      {
-        "id": "ba50c47c-2ed5-4928-af3a-1d8eb836593e",
-        "type": "block-timer",
-        "metadata": {
-          "display": "time"
-        },
-        "rawValue": true
-      },
-      {
-        "id": "aeaa2a7f-8753-4f18-a42c-f059b2bcec9b",
-        "type": "separator"
-      },
-      {
         "id": "e26cb26e-60e0-4d8d-952d-5d3bfc732aa4",
         "type": "current-working-dir",
-        "rawValue": true
+        "rawValue": false
       }
     ],
     []
@@ -111,7 +87,7 @@
   "powerline": {
     "enabled": false,
     "separators": [
-      ""
+      ""
     ],
     "separatorInvertBackground": [
       false

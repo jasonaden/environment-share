@@ -82,14 +82,4 @@ else
     echo "    Claude Code is already installed ($(claude --version 2>/dev/null || echo 'unknown version'))."
 fi
 
-# Pre-cache ccstatusline so the status line works immediately
-echo "    Pre-caching ccstatusline for Claude status line..."
-npx -y ccstatusline@latest --help &>/dev/null || echo "    Note: ccstatusline will be fetched on first Claude Code launch"
-
-# Install ccstatusline settings
-CCSTATUSLINE_CONFIG="$HOME/.config/ccstatusline"
-mkdir -p "$CCSTATUSLINE_CONFIG"
-cp "$SCRIPT_DIR/../ccstatusline/settings.json" "$CCSTATUSLINE_CONFIG/settings.json"
-echo "    Installed ccstatusline settings to ~/.config/ccstatusline/settings.json"
-
 echo "==> Core development tools installed successfully."

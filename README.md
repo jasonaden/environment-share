@@ -6,6 +6,7 @@ Personal development environment configuration and setup scripts for macOS.
 
 | Directory | Description |
 |-----------|-------------|
+| `ccstatusline/` | Claude Code status line config and standalone installer |
 | `git/` | Git aliases (st, co, ci, lg, etc.) and global settings |
 | `iterm/` | iTerm2 preferences and shell integration |
 | `tmux/` | tmux configuration |
@@ -25,12 +26,13 @@ cd ~/Projects/environment-share
 Or install components individually:
 
 ```bash
-./scripts/install-core.sh    # Homebrew, zsh, tmux, node, yarn, gh, jq, claude
-./git/install.sh             # Git aliases and global settings
-./tmux/install.sh            # tmux config
-./iterm/install.sh           # iTerm2 preferences
-./claude/install.sh          # Claude Code settings and permissions
-./claude/install-plugins.sh  # Claude Code plugins
+./scripts/install-core.sh        # Homebrew, zsh, tmux, node, yarn, gh, jq, claude
+./git/install.sh                 # Git aliases and global settings
+./tmux/install.sh                # tmux config
+./iterm/install.sh               # iTerm2 preferences
+./claude/install.sh              # Claude Code settings and permissions
+./claude/install-plugins.sh      # Claude Code plugins
+./ccstatusline/install.sh        # Claude Code status line (can be run standalone)
 ```
 
 ## Requirements
