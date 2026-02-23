@@ -11,6 +11,7 @@ Personal development environment configuration and setup scripts for macOS.
 | `iterm/` | iTerm2 preferences and shell integration |
 | `tmux/` | tmux configuration |
 | `claude/` | Claude Code settings, permissions, and plugin setup |
+| `justfile/` | Global justfile with Claude Code recipes and `j` alias |
 | `scripts/` | Core tooling installers and master setup script |
 
 ## Quick Start
@@ -26,13 +27,27 @@ cd ~/Projects/environment-share
 Or install components individually:
 
 ```bash
-./scripts/install-core.sh        # Homebrew, zsh, tmux, node, yarn, gh, jq, claude
+./scripts/install-core.sh        # Homebrew, zsh, tmux, node, yarn, gh, jq, just, claude
 ./git/install.sh                 # Git aliases and global settings
 ./tmux/install.sh                # tmux config
 ./iterm/install.sh               # iTerm2 preferences
 ./claude/install.sh              # Claude Code settings and permissions
 ./claude/install-plugins.sh      # Claude Code plugins
+./justfile/install.sh            # Global justfile + 'j' alias
 ./ccstatusline/install.sh        # Claude Code status line (can be run standalone)
+```
+
+## Using Just
+
+After installation, use the `j` alias from any directory to run recipes:
+
+```bash
+j              # List all recipes
+j cc           # Start Claude Code (skip permissions)
+j ccc          # Continue last Claude session
+j ccw mybranch # Start Claude in an isolated worktree
+j ccm opus     # Start Claude with a specific model
+j ccplan       # Start Claude in plan mode
 ```
 
 ## Requirements
