@@ -1,6 +1,5 @@
 # Global task runner
 # Usage: j <recipe> (works from anywhere under ~)
-# Tip: alias j='just --justfile ~/justfile --working-directory .'
 
 set dotenv-load := false
 
@@ -10,12 +9,20 @@ default:
 
 # ── Claude Code ───────────────────────────────────────
 
-# CC: start claude code (skip permissions)
+# CC: start claude code (accept edits mode)
 cc *args:
+    cd "{{invocation_directory()}}" && claude --permission-mode acceptEdits {{args}}
+
+# CC: start with dangerous mode (skip all permissions)
+ccd *args:
     cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions {{args}}
 
 # CC: start with worktree (isolated git branch)
 ccw name="" *args:
+    cd "{{invocation_directory()}}" && claude --permission-mode acceptEdits --worktree {{ if name != "" { name } else { "" } }} {{args}}
+
+# CC: start with worktree + dangerous mode
+ccwd name="" *args:
     cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --worktree {{ if name != "" { name } else { "" } }} {{args}}
 
 # CC: start with worktree + tmux pane
@@ -24,11 +31,11 @@ ccwt name="" *args:
 
 # CC: continue last session
 ccc *args:
-    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --continue {{args}}
+    cd "{{invocation_directory()}}" && claude --permission-mode acceptEdits --continue {{args}}
 
 # CC: resume a session (interactive picker)
 ccr session="" *args:
-    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --resume {{ if session != "" { session } else { "" } }} {{args}}
+    cd "{{invocation_directory()}}" && claude --permission-mode acceptEdits --resume {{ if session != "" { session } else { "" } }} {{args}}
 
 # CC: one-shot print mode (pipe friendly)
 ccp *args:
@@ -36,15 +43,15 @@ ccp *args:
 
 # CC: start with specific model
 ccm model *args:
-    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --model {{model}} {{args}}
+    cd "{{invocation_directory()}}" && claude --permission-mode acceptEdits --model {{model}} {{args}}
 
 # CC: start with model + worktree
 ccmw model name="" *args:
-    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --model {{model}} --worktree {{ if name != "" { name } else { "" } }} {{args}}
+    cd "{{invocation_directory()}}" && claude --permission-mode acceptEdits --model {{model}} --worktree {{ if name != "" { name } else { "" } }} {{args}}
 
 # CC: plan mode (no edits)
 ccplan *args:
-    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --permission-mode plan {{args}}
+    cd "{{invocation_directory()}}" && claude --permission-mode plan {{args}}
 
 # CC: passthrough any claude command
 claude-raw *args:

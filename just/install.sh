@@ -27,7 +27,7 @@ if [ -n "$SHELL_RC" ]; then
   if ! grep -q 'alias j=' "$SHELL_RC" 2>/dev/null; then
     echo "" >> "$SHELL_RC"
     echo '# just global task runner' >> "$SHELL_RC"
-    echo "alias j='just --justfile ~/justfile --working-directory .'" >> "$SHELL_RC"
+    echo "alias j='just'" >> "$SHELL_RC"
     echo "    Added 'j' alias to $SHELL_RC (restart shell or source it)"
   else
     echo "    'j' alias already exists in $SHELL_RC"
@@ -35,7 +35,9 @@ if [ -n "$SHELL_RC" ]; then
 fi
 
 echo ""
-echo "==> Done. To activate the 'j' alias in your current shell:"
-echo "    source $SHELL_RC"
-echo ""
+if [ -n "$SHELL_RC" ]; then
+  echo "==> Done. To activate the 'j' alias in your current shell:"
+  echo "    source $SHELL_RC"
+  echo ""
+fi
 echo "    Then run 'j' to see available recipes."
