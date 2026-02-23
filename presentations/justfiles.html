@@ -542,46 +542,7 @@ pre code {
         </div>
       </section>
 
-      <!-- SLIDE 2: The Problem -->
-      <section>
-        <div class="slide">
-          <div class="header">
-            <div class="header__logo">
-              <i data-lucide="alert-triangle"></i>
-              The Problem
-            </div>
-          </div>
-          <div class="split">
-            <div>
-              <p class="kicker">01 // The Problem</p>
-              <h2>Tribal<br>Knowledge</h2>
-              <p class="lead">Every project has commands that only some people know. They live in places nobody checks.</p>
-            </div>
-            <div>
-              <ul class="list list--numbered">
-                <li class="fragment">
-                  <strong>Scattered READMEs</strong><br>
-                  <span class="muted">"Check the README... no, the other one... in the docs folder..."</span>
-                </li>
-                <li class="fragment">
-                  <strong>Slack archaeology</strong><br>
-                  <span class="muted">"Someone posted the deploy command last month, search for it"</span>
-                </li>
-                <li class="fragment">
-                  <strong>Stale onboarding docs</strong><br>
-                  <span class="muted">"That guide is from 2023, half those commands changed"</span>
-                </li>
-                <li class="fragment">
-                  <strong>The one person who knows</strong><br>
-                  <span class="muted">"Ask Sarah, she wrote the deploy script"</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SLIDE 3: What is just? -->
+      <!-- SLIDE 2: What is just? -->
       <section>
         <div class="slide">
           <div class="header">
@@ -592,14 +553,13 @@ pre code {
           </div>
           <div class="split">
             <div>
-              <p class="kicker">02 // The Solution</p>
-              <h2>What is <span class="accent-text">just</span>?</h2>
-              <p class="lead">A command runner. Like <code>make</code> but without the build system baggage.</p>
+              <p class="kicker">01 // What is just?</p>
+              <h2>A Command Runner<br><span class="accent-text">Without the Baggage</span></h2>
+              <p class="lead">Like <code>make</code> but no build system opinions. One file, any stack, cross-platform.</p>
               <ul class="list" style="margin-top: 24px;">
-                <li class="fragment">Language-agnostic &mdash; works with any stack</li>
-                <li class="fragment">Cross-platform &mdash; macOS, Linux, Windows</li>
-                <li class="fragment">Single file &mdash; <code>justfile</code> in your project root</li>
                 <li class="fragment">Self-documenting &mdash; comments become help text</li>
+                <li class="fragment">Variables, arguments, aliases, dependencies</li>
+                <li class="fragment">Walks up the directory tree &mdash; works from anywhere</li>
               </ul>
             </div>
             <div>
@@ -623,7 +583,7 @@ pre code {
         </div>
       </section>
 
-      <!-- SLIDE 4: Syntax Tour -->
+      <!-- SLIDE 3: Syntax Tour -->
       <section>
         <div class="slide">
           <div class="header">
@@ -633,13 +593,10 @@ pre code {
             </div>
           </div>
           <div class="content">
-            <p class="kicker">03 // Syntax Tour</p>
+            <p class="kicker">02 // Syntax Tour</p>
             <h2>Anatomy of a Justfile</h2>
             <div style="margin-top: 24px;">
-              <pre><code class="language-bash"># Variables
-db_name := "myapp_dev"
-
-# Comment becomes the description in --list
+              <pre><code class="language-bash"># Comment becomes the description in --list
 deploy env="staging":
     ./scripts/deploy.sh {{env}}
 
@@ -654,67 +611,13 @@ release: test lint build
 setup:
     #!/usr/bin/env bash
     set -euo pipefail
-    echo "Installing dependencies..."
     npm install && npm run db:migrate</code></pre>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 5: Real Example -->
-      <section>
-        <div class="slide">
-          <div class="header">
-            <div class="header__logo">
-              <i data-lucide="terminal"></i>
-              Real Usage
-            </div>
-          </div>
-          <div class="content">
-            <p class="kicker">04 // Real Example</p>
-            <h2>My Claude Code Recipes</h2>
-            <p class="lead" style="margin-bottom: 24px;">From my actual <code>~/justfile</code> &mdash; I type <code>j cc</code> from anywhere.</p>
-            <div class="grid-2">
-              <div>
-                <div class="command fragment">
-                  <span class="command__prompt">j</span>
-                  <span class="command__text">cc</span>
-                  <span class="command__desc">Start Claude Code</span>
-                </div>
-                <div class="command fragment">
-                  <span class="command__prompt">j</span>
-                  <span class="command__text">ccw feature</span>
-                  <span class="command__desc">Start in worktree</span>
-                </div>
-                <div class="command fragment">
-                  <span class="command__prompt">j</span>
-                  <span class="command__text">ccc</span>
-                  <span class="command__desc">Continue last session</span>
-                </div>
-              </div>
-              <div>
-                <div class="command fragment">
-                  <span class="command__prompt">j</span>
-                  <span class="command__text">ccr</span>
-                  <span class="command__desc">Resume a session</span>
-                </div>
-                <div class="command fragment">
-                  <span class="command__prompt">j</span>
-                  <span class="command__text">ccplan</span>
-                  <span class="command__desc">Plan mode (no edits)</span>
-                </div>
-                <div class="command fragment">
-                  <span class="command__prompt">j</span>
-                  <span class="command__text">ccp "explain this"</span>
-                  <span class="command__desc">One-shot print mode</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SLIDE 6: Team Use Cases -->
+      <!-- SLIDE 4: Team Use Cases -->
       <section>
         <div class="slide">
           <div class="header">
@@ -724,7 +627,7 @@ setup:
             </div>
           </div>
           <div class="content">
-            <p class="kicker">05 // Team Use Cases</p>
+            <p class="kicker">03 // Team Use Cases</p>
             <h2>Your Justfile Is Your<br><span class="accent-text">Team Runbook</span></h2>
             <div class="grid-2" style="margin-top: 32px;">
               <div class="card fragment fade-up">
@@ -752,71 +655,147 @@ setup:
         </div>
       </section>
 
-      <!-- SLIDE 7: Claude + Justfiles -->
+      <!-- SLIDE 5: Claude + Justfiles -->
       <section>
         <div class="slide">
           <div class="header">
             <div class="header__logo">
               <i data-lucide="bot"></i>
-              AI-Aware
+              Claude + just
             </div>
           </div>
           <div class="split">
             <div>
-              <p class="kicker">06 // AI Integration</p>
+              <p class="kicker">04 // AI Integration</p>
               <h2>Claude<br><span class="accent-text">Understands</span><br>Justfiles</h2>
-              <p class="lead">Claude Code auto-discovers your recipes at session start. It reads the justfile, understands the commands, and uses them.</p>
+              <p class="lead">Install the <code>just</code> plugin and Claude auto-discovers your recipes every session. It prefers <code>just &lt;recipe&gt;</code> over raw commands.</p>
+              <p class="lead" style="margin-top: 16px;">Use the <code>/just</code> skill to have Claude create or modify recipes for you:</p>
+              <div class="command fragment" style="margin-top: 16px;">
+                <span class="command__prompt">/just</span>
+                <span class="command__text">add a command to start the frontend</span>
+              </div>
             </div>
             <div>
-              <ul class="list">
-                <li class="fragment">
-                  <strong>Auto-discovers recipes</strong><br>
-                  <span class="muted">SessionStart hook runs <code>just --list</code> automatically</span>
-                </li>
-                <li class="fragment">
-                  <strong>Prefers recipes over raw commands</strong><br>
-                  <span class="muted">Says <code>just test</code> instead of writing a shell script</span>
-                </li>
-                <li class="fragment">
-                  <strong>Walks the tree</strong><br>
-                  <span class="muted">Finds justfiles in parent directories, resolves imports</span>
-                </li>
-                <li class="fragment">
-                  <strong>Inspects before running</strong><br>
-                  <span class="muted">Uses <code>just --show</code> to understand recipes first</span>
-                </li>
-              </ul>
+              <div class="command fragment">
+                <span class="command__prompt">j</span>
+                <span class="command__text">cc</span>
+                <span class="command__desc">Start Claude Code</span>
+              </div>
+              <div class="command fragment">
+                <span class="command__prompt">j</span>
+                <span class="command__text">ccw my-feature</span>
+                <span class="command__desc">Start in a worktree</span>
+              </div>
+              <div class="command fragment">
+                <span class="command__prompt">j</span>
+                <span class="command__text">ccc</span>
+                <span class="command__desc">Continue last session</span>
+              </div>
+              <div class="command fragment">
+                <span class="command__prompt">j</span>
+                <span class="command__text">ccplan</span>
+                <span class="command__desc">Plan mode (no edits)</span>
+              </div>
+              <div class="command fragment">
+                <span class="command__prompt">just</span>
+                <span class="command__text">deploy staging</span>
+                <span class="command__desc">Works from anywhere</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 8: Get Started -->
+      <!-- SLIDE 6: Get Started -->
       <section>
         <div class="slide slide--section slide--center">
           <div class="content flex-center" style="flex-direction: column;">
-            <p class="kicker" style="justify-content: center;">07 // Get Started</p>
-            <h1>Three Commands<br><span class="accent-text">That's It</span></h1>
-            <div style="margin-top: 40px; width: 100%; max-width: 500px;">
+            <p class="kicker" style="justify-content: center;">05 // Get Started</p>
+            <h1>Install &amp;<br><span class="accent-text">Go</span></h1>
+            <div style="margin-top: 40px; width: 100%; max-width: 650px;">
               <div class="command fragment">
                 <span class="command__prompt">$</span>
                 <span class="command__text">brew install just</span>
-                <span class="command__desc">Install</span>
+                <span class="command__desc">Install just</span>
               </div>
               <div class="command fragment">
                 <span class="command__prompt">$</span>
-                <span class="command__text">touch justfile</span>
-                <span class="command__desc">Create</span>
+                <span class="command__text">claude plugin add jasonaden/environment-share</span>
+                <span class="command__desc">Install the just plugin</span>
               </div>
               <div class="command fragment">
                 <span class="command__prompt">$</span>
-                <span class="command__text">just --list</span>
-                <span class="command__desc">Discover</span>
+                <span class="command__text">j cc</span>
+                <span class="command__desc">Start Claude Code</span>
               </div>
             </div>
             <p class="lead fragment" style="margin-top: 40px;">
               <span class="accent-text">just.systems</span> &mdash; docs, examples, and more
             </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: This Presentation -->
+      <section>
+        <div class="slide">
+          <div class="header">
+            <div class="header__logo">
+              <i data-lucide="presentation"></i>
+              Meta
+            </div>
+          </div>
+          <div class="split">
+            <div>
+              <p class="kicker">06 // One More Thing</p>
+              <h2>This Deck Was<br><span class="accent-text">Made by Claude</span></h2>
+              <p class="lead">This presentation was generated using the <code>/presentation</code> skill &mdash; a Claude Code plugin that creates Reveal.js slide decks from a text prompt.</p>
+              <p class="lead" style="margin-top: 16px;">Just type <code>/presentation</code> followed by your topic and Claude builds the whole deck.</p>
+            </div>
+            <div>
+              <div class="command fragment">
+                <span class="command__prompt">/presentation</span>
+                <span class="command__text">Justfiles: A Team Task Runner</span>
+              </div>
+              <div class="command fragment" style="margin-top: 24px;">
+                <span class="command__prompt">/presentation</span>
+                <span class="command__text">Q3 sprint retrospective</span>
+              </div>
+              <div class="command fragment" style="margin-top: 24px;">
+                <span class="command__prompt">/presentation</span>
+                <span class="command__text">Onboarding guide for new engineers</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Install Both Plugins -->
+      <section>
+        <div class="slide slide--section slide--center">
+          <div class="content flex-center" style="flex-direction: column;">
+            <p class="kicker" style="justify-content: center;">07 // Install</p>
+            <h1>Two Plugins<br><span class="accent-text">One Repo</span></h1>
+            <p class="lead" style="margin-bottom: 32px;">Both plugins install from the same marketplace.</p>
+            <div style="width: 100%; max-width: 650px;">
+              <div class="command fragment">
+                <span class="command__prompt">$</span>
+                <span class="command__text">claude plugin add jasonaden/environment-share</span>
+                <span class="command__desc">just + presentations</span>
+              </div>
+            </div>
+            <div class="grid-2 fragment" style="margin-top: 48px; width: 100%; max-width: 650px;">
+              <div class="card">
+                <div class="card__icon"><i data-lucide="terminal"></i></div>
+                <h4 class="card__title">just</h4>
+                <p class="card__text">Auto-discovers justfile recipes. Claude prefers <code>just &lt;recipe&gt;</code> over raw commands.</p>
+              </div>
+              <div class="card">
+                <div class="card__icon"><i data-lucide="monitor"></i></div>
+                <h4 class="card__title">reveal-presentations</h4>
+                <p class="card__text">Generate Reveal.js slide decks from a text prompt with <code>/presentation</code>.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
