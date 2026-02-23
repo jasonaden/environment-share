@@ -1,0 +1,8 @@
+{
+  "name": "just",
+  "version": "1.0.0",
+  "description": "Makes Claude aware of justfile recipes — auto-discovers available recipes at session start and prefers just <recipe> over raw commands.",
+  "author": {
+    "name": "Jaden"
+  }
+}
