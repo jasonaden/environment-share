@@ -13,11 +13,13 @@ The `frontend-toolkit` plugin provides specialized Claude Code agents, skills, a
 ### Tech Stack Context
 - **Framework**: React 18+ (functional components, hooks)
 - **Data Layer**: Relay Modern (GraphQL client with fragment colocation)
-- **Type System**: TypeScript 5+ (strict mode: `noImplicitAny`, `strictNullChecks`, etc.)
-- **Testing**: Jest + React Testing Library + Relay Test Utils
-- **Component Documentation**: Storybook 7+
+- **Type System**: TypeScript 5.4+ (strict mode: `noImplicitAny`, `strictNullChecks`, etc.)
+- **Styling**: Stitches CSS-in-JS (`@stitches/react` 1.2.8) — `css` prop, `$tokenName` syntax
+- **Testing**: Vitest + React Testing Library + `@attentive/test-utils`
+- **Component Documentation**: Storybook 9.1.x + Chromatic visual testing
+- **Routing**: `@attentive/data-router` — React Router 6 Data Router + Relay EntryPoint pattern
 - **Internal Libraries**:
-  - **Picnic**: Design system component library (buttons, inputs, modals, layouts, etc.)
+  - **Picnic** (`@attentive/picnic`): Design system — 57 components, Stitches tokens, compound component pattern, Radix UI primitives, Formik forms
   - **Yogi**: Higher-order components and hooks that connect Picnic components to Relay data (e.g., `YogiUserCard`, `useYogiPagination`)
 - **Architecture**: Micro-frontends (MFEs) with Webpack Module Federation
 
@@ -49,68 +51,112 @@ frontend-toolkit/
 │   ├── test-writer.md               # Writes Jest tests (RTL + Relay mocks)
 │   ├── mfe-architect.md             # Plans MFE structure, module federation config
 │   └── mfe-scaffolder.md            # Scaffolds MFE boilerplate (Webpack, routes, shell)
-├── skills/                          # 9 shared reference skills (loaded on-demand by agents)
-│   ├── picnic-components/
-│   │   ├── SKILL.md                 # Overview: Picnic design system usage
+├── skills/                          # Shared reference skills (loaded on-demand by agents)
+│   ├── picnic-components/           # ✅ BUILT — Router + 10 sub-skills + 4 refs + validator
+│   │   ├── SKILL.md                 # Router: routes intent to sub-skills via keyword table
+│   │   ├── .picnic-gen-state.json   # Generation pipeline state tracking
+│   │   ├── picnic-database.json     # AST-extracted component data (57 components)
+│   │   ├── package.json             # Dependencies for extraction scripts
+│   │   ├── foundation/              # 3 foundation sub-skills
+│   │   │   ├── design-tokens/
+│   │   │   │   ├── SKILL.md         # Semantic tokens, spacing, radii, shadows, breakpoints
+│   │   │   │   └── references/
+│   │   │   │       └── token-tables.md  # Complete token value tables
+│   │   │   ├── stitches-patterns/
+│   │   │   │   ├── SKILL.md         # css prop, styled(), variants, responsive, themes
+│   │   │   │   └── references/
+│   │   │   │       └── utils-reference.md  # Custom Stitches utility reference
+│   │   │   └── layout-primitives/
+│   │   │       └── SKILL.md         # Box, Stack, Grid, PageLayout, FooterLayout, Separator
+│   │   ├── problem/                 # 5 problem-domain sub-skills
+│   │   │   ├── data-table/
+│   │   │   │   └── SKILL.md         # Table (11 subs), sorting, selection, ContinuousScroll
+│   │   │   ├── form-builder/
+│   │   │   │   └── SKILL.md         # Form + Formik, 17 inputs, Select tree, Yup validation
+│   │   │   ├── dialog-drawer/
+│   │   │   │   └── SKILL.md         # Dialog, Drawer, Popover, DropdownMenu (all overlays)
+│   │   │   ├── navigation/
+│   │   │   │   └── SKILL.md         # Breadcrumbs, TabGroup, Paginator, StepTracker
+│   │   │   └── feedback-notifications/
+│   │   │       └── SKILL.md         # Banner, Accordion, Tooltip, IconPopover, Loading*
+│   │   ├── references/              # 4 component-category reference files
+│   │   │   ├── actions-ref.md       # Button, IconButton, ButtonBar, ButtonGroup, PickerButton
+│   │   │   ├── typography-ref.md    # Heading, Text, TextWithOverflowTooltip
+│   │   │   ├── data-display-ref.md  # Badge, Tag, ContainedLabel, ProgressBar, List
+│   │   │   └── media-ref.md         # Icon, ThirdPartyIcon, IconCircle, ResponsiveImage, etc.
+│   │   ├── validator/
+│   │   │   └── SKILL.md             # Post-generation validation: 125 rules, 8 categories
+│   │   ├── prompts/                 # AI curation prompt templates
+│   │   │   ├── decision-guide.md
+│   │   │   ├── gotchas.md
+│   │   │   ├── anti-patterns.md
+│   │   │   ├── canonical-example.md
+│   │   │   └── common-mistakes.md
+│   │   └── scripts/                 # Extraction/generation pipeline scripts
+│   │       ├── README.md
+│   │       ├── extract.mjs          # AST-parse Picnic source → picnic-database.json
+│   │       ├── detect-changes.mjs   # Diff source commits → identify affected skills
+│   │       ├── assemble-context.mjs # Gather source + tests + stories for AI curation
+│   │       └── format.mjs           # Transform database → compact skill notation
+│   ├── picnic-update/               # ✅ BUILT — Maintenance pipeline skill
+│   │   ├── SKILL.md                 # 6-step pipeline: detect → extract → format → AI → review → finalize
+│   │   └── hooks/
+│   │       └── session-start-drift-check.sh  # SessionStart hook: warns if skills are stale
+│   ├── data-router/                 # ✅ BUILT — EntryPoint patterns
+│   │   ├── SKILL.md                 # createEntryPoint, RoutesFn, DataBundle, Storybook integration
 │   │   └── references/
-│   │       ├── component-catalog.md # Full component API reference
-│   │       ├── layout-system.md     # Flex/Grid primitives
-│   │       └── theming.md           # Design tokens, color scales, spacing
-│   ├── relay-conventions/
-│   │   ├── SKILL.md                 # Relay best practices overview
+│   │       ├── entrypoint-patterns.md   # Type reference + code patterns for all variations
+│   │       └── storybook-entrypoint.md  # createWrapperForEntryPoint, decorators, mock data
+│   ├── relay-conventions/           # NOT YET BUILT
+│   │   ├── SKILL.md
 │   │   └── references/
-│   │       ├── fragment-colocation.md  # Fragment naming, placement, composition
-│   │       ├── connections-pagination.md  # @connection, @refetchable, pagination hooks
-│   │       └── mutations.md         # Mutation patterns, optimistic updates, error handling
-│   ├── react-patterns/
-│   │   ├── SKILL.md                 # React conventions overview
+│   │       ├── fragment-colocation.md
+│   │       ├── connections-pagination.md
+│   │       └── mutations.md
+│   ├── react-patterns/              # NOT YET BUILT
+│   │   ├── SKILL.md
 │   │   └── references/
-│   │       ├── component-structure.md  # File organization, exports, prop types
-│   │       ├── hooks-guidelines.md     # Custom hooks, dependency arrays, memoization
-│   │       └── error-boundaries.md     # Error handling patterns
-│   ├── yogi-patterns/
-│   │   ├── SKILL.md                 # Yogi library usage overview
+│   │       ├── component-structure.md
+│   │       ├── hooks-guidelines.md
+│   │       └── error-boundaries.md
+│   ├── yogi-patterns/               # NOT YET BUILT
+│   │   ├── SKILL.md
 │   │   └── references/
-│   │       ├── connected-components.md  # YogiButton, YogiCard, etc. (Picnic + Relay)
-│   │       ├── data-hooks.md            # useYogiQuery, useYogiMutation, useYogiPagination
-│   │       └── composition.md           # Composing Yogi + Picnic + custom logic
-│   ├── mfe-conventions/
-│   │   ├── SKILL.md                 # MFE architecture overview
+│   │       ├── connected-components.md
+│   │       ├── data-hooks.md
+│   │       └── composition.md
+│   ├── mfe-conventions/             # NOT YET BUILT
+│   │   ├── SKILL.md
 │   │   └── references/
-│   │       ├── module-federation.md     # Webpack config, exposed/consumed modules
-│   │       ├── routing.md               # React Router integration across MFEs
-│   │       └── shared-state.md          # Cross-MFE communication patterns
-│   ├── typescript-strict/
-│   │   ├── SKILL.md                 # TypeScript strict mode overview
+│   │       ├── module-federation.md
+│   │       ├── routing.md
+│   │       └── shared-state.md
+│   ├── typescript-strict/           # NOT YET BUILT
+│   │   ├── SKILL.md
 │   │   └── references/
-│   │       ├── strict-null-checks.md    # Handling undefined/null, optional chaining
-│   │       ├── type-inference.md        # Type narrowing, discriminated unions, generics
-│   │       └── relay-types.md           # Generated types, fragment refs, connection types
-│   ├── testing-conventions/
-│   │   ├── SKILL.md                 # Testing standards overview
+│   │       ├── strict-null-checks.md
+│   │       ├── type-inference.md
+│   │       └── relay-types.md
+│   ├── testing-conventions/         # NOT YET BUILT
+│   │   ├── SKILL.md
 │   │   └── references/
-│   │       ├── rtl-patterns.md          # React Testing Library best practices
-│   │       ├── relay-mocks.md           # MockPayloadGenerator, custom resolvers
-│   │       └── coverage-standards.md    # Coverage thresholds, what to test
-│   ├── storybook-patterns/
-│   │   ├── SKILL.md                 # Storybook conventions overview
-│   │   └── references/
-│   │       ├── csf3-format.md           # Component Story Format 3.0
-│   │       ├── args-controls.md         # ArgTypes, controls, actions
-│   │       └── decorators-parameters.md # Global decorators (Relay environment, theme)
-│   └── data-router/
-│       ├── SKILL.md                 # DataRouter EntryPoint patterns overview
+│   │       ├── rtl-patterns.md
+│   │       ├── relay-mocks.md
+│   │       └── coverage-standards.md
+│   └── storybook-patterns/          # NOT YET BUILT
+│       ├── SKILL.md
 │       └── references/
-│           ├── entrypoint-patterns.md   # Type reference + code patterns for all EntryPoint variations
-│           └── storybook-entrypoint.md  # Storybook integration for EntryPoint components
+│           ├── csf3-format.md
+│           ├── args-controls.md
+│           └── decorators-parameters.md
 ├── commands/                        # 3 orchestration commands (phased workflows)
 │   ├── new-component.md             # Command: Architect → Build → Test → Story
 │   ├── new-mfe.md                   # Command: Architect MFE → Scaffold → Verify
 │   └── review-frontend.md           # Command: Multi-agent PR review (parallel agents)
 ├── hooks/
-│   ├── hooks.json                   # Declares pre-commit, pre-push hooks
+│   ├── hooks.json                   # Declares PostToolUse and SubagentStop hooks
 │   └── scripts/
-│       ├── validate-typescript.sh   # Runs tsc --noEmit, fails on strict mode errors
+│       ├── validate-typescript.sh   # Runs tsc --noEmit on modified .ts/.tsx files
 │       ├── check-relay-fragments.sh # Validates fragment naming, colocation
 │       └── component-completeness.sh # Checks for test + story + index.ts export
 └── scripts/
@@ -134,19 +180,36 @@ frontend-toolkit/
 | **mfe-architect** | Plans MFE structure, module federation config, exposed/consumed modules, routing | Sonnet 4.5 | Read, Grep, Glob | mfe-conventions, react-patterns, typescript-strict |
 | **mfe-scaffolder** | Scaffolds MFE boilerplate (Webpack config, entry point, routes, shell integration) | Opus 4.6 | Read, Edit, Write, Bash | mfe-conventions, react-patterns, typescript-strict, relay-conventions, data-router |
 
-### 3.2 Skills (9)
+### 3.2 Skills
+
+#### Built Skills (3)
+
+| Name | Status | Architecture | Key Content |
+|------|--------|-------------|-------------|
+| **picnic-components** | ✅ Built | Router → 10 sub-skills + 4 refs + validator | 57-component catalog, Stitches tokens, compound components, Formik forms. Router SKILL.md dispatches to sub-skills by intent keyword. |
+| **picnic-update** | ✅ Built | Pipeline skill (6 steps) + session-start hook | `/picnic-update` command: detect changes → AST extract → format → AI curate → human review → finalize. Each step produces a git commit. Includes `/picnic-rollback`. |
+| **data-router** | ✅ Built | SKILL.md + 2 references | createEntryPoint, EntryPointComponentProps, RoutesFn, DataBundle, Storybook integration with createWrapperForEntryPoint, 3-file page scaffolding pattern. |
+
+**Picnic sub-skill breakdown** (all loaded via the picnic-components router):
+
+| Layer | Sub-Skills | Purpose |
+|-------|-----------|---------|
+| Foundation (3) | design-tokens, stitches-patterns, layout-primitives | Token values, css prop patterns, Box/Stack/Grid |
+| Problem (5) | data-table, form-builder, dialog-drawer, navigation, feedback-notifications | Domain-specific component patterns and decision guides |
+| References (4) | actions-ref, typography-ref, data-display-ref, media-ref | Lookup tables for simpler component categories |
+| Validator (1) | validator | Post-generation validation: 125 rules across 8 categories |
+
+#### Remaining Skills (7)
 
 | Name | Triggers | Key References |
 |------|----------|----------------|
-| **picnic-components** | "Picnic", "component library", "design system", "Button", "Card", "Modal" | component-catalog.md (API docs), layout-system.md, theming.md |
 | **relay-conventions** | "Relay", "fragment", "query", "mutation", "connection", "pagination" | fragment-colocation.md, connections-pagination.md, mutations.md |
 | **react-patterns** | "React", "hooks", "component", "props", "state", "context" | component-structure.md, hooks-guidelines.md, error-boundaries.md |
 | **yogi-patterns** | "Yogi", "YogiButton", "YogiCard", "useYogiQuery", "connected component" | connected-components.md, data-hooks.md, composition.md |
 | **mfe-conventions** | "micro-frontend", "MFE", "module federation", "Webpack", "shell" | module-federation.md, routing.md, shared-state.md |
 | **typescript-strict** | "TypeScript", "strict", "null check", "type", "interface", "generic" | strict-null-checks.md, type-inference.md, relay-types.md |
-| **testing-conventions** | "test", "Jest", "React Testing Library", "mock", "coverage" | rtl-patterns.md, relay-mocks.md, coverage-standards.md |
+| **testing-conventions** | "test", "Vitest", "React Testing Library", "mock", "coverage" | rtl-patterns.md, relay-mocks.md, coverage-standards.md |
 | **storybook-patterns** | "Storybook", "story", "CSF", "controls", "decorator" | csf3-format.md, args-controls.md, decorators-parameters.md |
-| **data-router** | "DataRouter", "entry point", "createEntryPoint", "EntryPointComponentProps", "RoutesFn", "DataBundle", "route data loading", "createWrapperForEntryPoint", "page scaffolding" | entrypoint-patterns.md (type ref + patterns), storybook-entrypoint.md (Storybook integration) |
 
 ### 3.3 Commands (3)
 
@@ -156,51 +219,93 @@ frontend-toolkit/
 | **/new-mfe** | Scaffold new micro-frontend | 1. mfe-architect (plan) → 2. mfe-scaffolder (scaffold) → 3. component-builder (entry component) → 4. Validation (build, type-check) | 3 agents, sequential + validation |
 | **/review-frontend** | Multi-agent PR review | 1. frontend-reviewer (general review) in parallel with 2. test-writer (coverage check) + 3. relay-architect (data layer review) → 4. Aggregate feedback | 3 agents, parallel + aggregation |
 
-### 3.4 Hooks (3)
+### 3.4 Hooks (4)
 
-| Hook | Trigger | Script | Purpose |
-|------|---------|--------|---------|
-| **pre-commit** | `git commit` | `validate-typescript.sh` | Runs `tsc --noEmit` to catch strict mode errors before commit |
-| **pre-commit** | `git commit` | `component-completeness.sh` | Checks if new components have tests, stories, and index.ts exports |
-| **pre-push** | `git push` | `check-relay-fragments.sh` | Validates fragment naming (`ComponentName_fragmentKey`), colocation, no orphaned fragments |
+**Quality gate hooks** (planned in `hooks/01-quality-gates.md` — not yet built):
 
----
+| Hook | Event | Matcher | Script | Purpose |
+|------|-------|---------|--------|---------|
+| **typescript-validate** | `PostToolUse` | `Write\|Edit` on `.tsx?$` | `validate-typescript.sh` | Runs `tsc --noEmit` on modified file to catch type errors |
+| **check-relay-fragments** | `PostToolUse` | `Write` on `.tsx?$` | `check-relay-fragments.sh` | Validates fragment naming (`ComponentName_propName`), colocation |
+| **component-completeness** | `SubagentStop` | `component-builder` | `component-completeness.sh` | Verifies component has .tsx, .test.tsx, .stories.tsx, index.ts |
 
-## 4. Build Order (7 Phases)
+**Note**: The quality gates design evolved from git lifecycle hooks (pre-commit/pre-push) in the original plan to Claude Code tool-use hooks (PostToolUse/SubagentStop). This provides faster feedback — issues are caught immediately after file edits, not deferred to commit time.
 
-### Phase 1: Foundation Skills 1-4
-**Goal**: Establish core knowledge base for Picnic, Relay, React, Yogi.
+**Maintenance hook** (built as part of picnic-update skill):
 
-**Deliverables**:
-1. `skills/picnic-components/` (SKILL.md + 3 references)
-2. `skills/relay-conventions/` (SKILL.md + 3 references)
-3. `skills/react-patterns/` (SKILL.md + 3 references)
-4. `skills/yogi-patterns/` (SKILL.md + 3 references)
-
-**Validation**:
-- [ ] Each SKILL.md has frontmatter (name, description in third person, triggers)
-- [ ] Each reference doc has 3+ real-world examples from codebase
-- [ ] Skills are loadable via `claude skill load frontend-toolkit:picnic-components` (local testing)
-
-**Estimated Effort**: 2-3 days (requires prerequisite docs from `01-prerequisites.md`)
+| Hook | Event | Script | Purpose |
+|------|-------|--------|---------|
+| **picnic-drift-check** | `SessionStart` | `session-start-drift-check.sh` | Warns if Picnic skills are stale vs. source repo |
 
 ---
 
-### Phase 2: Foundation Skills 5-8
-**Goal**: Complete skill library with MFE, TypeScript, Testing, Storybook knowledge.
+## 4. Build Order (8 Phases)
+
+### Phase 1: Picnic Components + Data Router ✅ COMPLETE
+**Goal**: Establish the two highest-impact skills — Picnic design system and DataRouter patterns.
+
+**What was planned**: Simple `picnic-components` skill with 3 references (component-catalog.md, layout-system.md, theming.md), plus a data-router skill with 2 references.
+
+**What actually happened**:
+- Library analysis revealed ~70% of the original Picnic plan was wrong (assumed Tailwind, generic patterns). Actual stack: Stitches CSS-in-JS, compound components, Radix UI, Formik, `@attentive/picnic` package.
+- Picnic skill was decomposed from a monolith into a **router + 10 sub-skills + 4 references + validator** to manage token budget (~3KB router loads first, then 1 sub-skill on demand).
+- An **AST extraction pipeline** was built (4 scripts in Node.js) to parse Picnic source into `picnic-database.json` (57 components). This replaced the manual document-gathering approach from `01-prerequisites.md`.
+- **AI curation prompt templates** were created for experiential content (gotchas, decision guides, anti-patterns, canonical examples, common mistakes).
+- Data router skill was built as designed — SKILL.md + 2 references.
+
+**Deliverables** (all complete):
+- [x] `skills/picnic-components/SKILL.md` — Router with intent→skill dispatch table
+- [x] 3 foundation sub-skills: design-tokens, stitches-patterns, layout-primitives
+- [x] 5 problem sub-skills: data-table, form-builder, dialog-drawer, navigation, feedback-notifications
+- [x] 4 reference files: actions-ref, typography-ref, data-display-ref, media-ref
+- [x] 1 validator skill (125 rules, 8 categories)
+- [x] Extraction scripts: extract.mjs, detect-changes.mjs, assemble-context.mjs, format.mjs
+- [x] `picnic-database.json` — 57 components extracted from source
+- [x] 5 AI curation prompt templates
+- [x] `skills/data-router/SKILL.md` + 2 references (entrypoint-patterns.md, storybook-entrypoint.md)
+
+**Key lesson**: Skills for internal libraries need AST extraction, not manual documentation. The extraction pipeline pays for itself by enabling automated updates.
+
+---
+
+### Phase 1.5: Picnic Maintenance Pipeline ✅ COMPLETE
+**Goal**: Keep Picnic skills in sync with source code changes automatically.
+
+**This phase was not in the original plan.** It emerged from the realization that a 57-component design system changes frequently, and manual skill updates would not scale.
+
+**Deliverables** (all complete):
+- [x] `skills/picnic-update/SKILL.md` — 6-step pipeline (`/picnic-update` command)
+- [x] SessionStart hook (`session-start-drift-check.sh`) — warns if skills are stale
+- [x] `/picnic-rollback` — granular rollback of pipeline commits
+- [x] Flags: `--full`, `--no-ai`, `--dry-run`, `--detect-only`
+
+**Pipeline steps**: Preflight → Detect Changes → Extract → Format + Merge → AI Curation (optional) → Human Review → Finalize. Each step produces a git commit for granular rollback.
+
+---
+
+### Phase 2: Remaining Foundation Skills (2-7)
+**Goal**: Complete skill library with Relay, React, Yogi, MFE, TypeScript, Testing, Storybook knowledge.
 
 **Deliverables**:
-1. `skills/mfe-conventions/` (SKILL.md + 3 references)
-2. `skills/typescript-strict/` (SKILL.md + 3 references)
-3. `skills/testing-conventions/` (SKILL.md + 3 references)
-4. `skills/storybook-patterns/` (SKILL.md + 3 references)
+1. `skills/relay-conventions/` (SKILL.md + 3 references)
+2. `skills/react-patterns/` (SKILL.md + 3 references)
+3. `skills/yogi-patterns/` (SKILL.md + 3 references)
+4. `skills/mfe-conventions/` (SKILL.md + 3 references)
+5. `skills/typescript-strict/` (SKILL.md + 3 references)
+6. `skills/testing-conventions/` (SKILL.md + 3 references)
+7. `skills/storybook-patterns/` (SKILL.md + 3 references)
+
+**Updated approach** (informed by Phase 1 lessons):
+- For library-backed skills (yogi-patterns), consider building AST extraction like picnic-components
+- For convention skills (relay-conventions, react-patterns, typescript-strict), manual authoring with codebase examples is appropriate — no source library to extract from
+- For tool skills (testing-conventions, storybook-patterns), extract from config files (vitest.config, .storybook/) and existing test/story files
+- All skills should use the revised tech stack context (Vitest not Jest, Storybook 9.1.x not 7+, Stitches not Tailwind)
 
 **Validation**:
-- [ ] All 8 skills pass skill format validation (frontmatter syntax, reference links)
+- [ ] All 7 skills pass skill format validation (frontmatter syntax, reference links)
 - [ ] Cross-references between skills are accurate (e.g., relay-conventions → typescript-strict)
 - [ ] Trigger phrases tested (grep codebase for common terms, ensure skill loads)
-
-**Estimated Effort**: 2-3 days
+- [ ] Skills reference actual `@attentive/*` packages and patterns (not generic examples)
 
 ---
 
@@ -208,18 +313,17 @@ frontend-toolkit/
 **Goal**: Build planning/review agents that analyze code but don't edit files.
 
 **Deliverables**:
-1. `agents/component-architect.md` (loads picnic-components, react-patterns, typescript-strict)
+1. `agents/component-architect.md` (loads picnic-components, react-patterns, typescript-strict, data-router)
 2. `agents/relay-architect.md` (loads relay-conventions, typescript-strict)
-3. `agents/mfe-architect.md` (loads mfe-conventions, react-patterns, typescript-strict)
-4. `agents/frontend-reviewer.md` (loads all 9 skills)
+3. `agents/mfe-architect.md` (loads mfe-conventions, react-patterns, typescript-strict, data-router)
+4. `agents/frontend-reviewer.md` (loads all skills)
 
 **Validation**:
 - [ ] Each agent has role, goal, skills, tools, constraints, output format
 - [ ] Test prompts: "Plan a UserCard component using Picnic" (component-architect), "Review this PR for Relay conventions" (frontend-reviewer)
 - [ ] Agents use plan mode (`plan_mode_required: true` in agent definition)
 - [ ] Agents produce structured output (markdown plan with sections)
-
-**Estimated Effort**: 2 days
+- [ ] component-architect and mfe-architect reference DataRouter patterns for page scaffolding
 
 ---
 
@@ -227,39 +331,40 @@ frontend-toolkit/
 **Goal**: Build agents that write code (components, tests, stories, MFE scaffolding).
 
 **Deliverables**:
-1. `agents/component-builder.md` (loads picnic-components, react-patterns, typescript-strict)
-2. `agents/storybook-writer.md` (loads storybook-patterns, picnic-components, react-patterns)
+1. `agents/component-builder.md` (loads picnic-components, react-patterns, typescript-strict, data-router)
+2. `agents/storybook-writer.md` (loads storybook-patterns, picnic-components, react-patterns, data-router)
 3. `agents/test-writer.md` (loads testing-conventions, relay-conventions, react-patterns)
-4. `agents/mfe-scaffolder.md` (loads mfe-conventions, react-patterns, typescript-strict, relay-conventions)
+4. `agents/mfe-scaffolder.md` (loads mfe-conventions, react-patterns, typescript-strict, relay-conventions, data-router)
 
 **Validation**:
 - [ ] Each agent can create files from scratch (test in sandbox repo)
-- [ ] Test: component-builder generates valid `.tsx` with strict TypeScript, Picnic imports, proper exports
-- [ ] Test: storybook-writer generates CSF3 story with controls, Relay decorator
-- [ ] Test: test-writer generates passing Jest test with RTL + Relay mock
-- [ ] Test: mfe-scaffolder generates buildable Webpack config
-
-**Estimated Effort**: 3-4 days (includes iteration on generated code quality)
+- [ ] Test: component-builder generates valid `.tsx` with strict TypeScript, Stitches `css` prop, `@attentive/picnic` imports, proper exports
+- [ ] Test: storybook-writer generates CSF3 story with controls, Relay decorator, `createWrapperForEntryPoint` for EntryPoint pages
+- [ ] Test: test-writer generates passing Vitest test with RTL + Relay mock
+- [ ] Test: mfe-scaffolder generates buildable Webpack config with DataRouter EntryPoints
 
 ---
 
 ### Phase 5: Hooks & Quality Gates
-**Goal**: Automate validation checks at commit/push time.
+**Goal**: Automate validation checks as Claude Code PostToolUse and SubagentStop hooks.
 
 **Deliverables**:
-1. `hooks/hooks.json` (declares pre-commit, pre-push hooks)
-2. `hooks/scripts/validate-typescript.sh` (runs `tsc --noEmit`)
+1. `hooks/hooks.json` (declares PostToolUse and SubagentStop hooks)
+2. `hooks/scripts/validate-typescript.sh` (runs `tsc --noEmit` on modified files)
 3. `hooks/scripts/check-relay-fragments.sh` (parses .tsx files for fragment naming)
-4. `hooks/scripts/component-completeness.sh` (checks for test + story + export)
+4. `hooks/scripts/component-completeness.sh` (checks for test + story + export after component-builder finishes)
+
+**Design** (specified in `hooks/01-quality-gates.md`):
+- PostToolUse hooks trigger after Write/Edit on .ts/.tsx files — faster feedback than git hooks
+- SubagentStop hook triggers after component-builder agent completes
+- All hooks are non-blocking (warn agents, don't halt execution)
 
 **Validation**:
 - [ ] Each script exits with code 0 on success, non-zero on failure
-- [ ] Test: Commit with TS error → hook blocks commit
-- [ ] Test: Commit new component without test → hook blocks commit
-- [ ] Test: Push with misnamed fragment → hook blocks push
-- [ ] Scripts handle edge cases (no .tsx files, empty git diff, etc.)
-
-**Estimated Effort**: 1-2 days
+- [ ] Test: Write file with TS error → hook shows formatted type error
+- [ ] Test: Write component without test → component-completeness warns
+- [ ] Test: Write misnamed fragment → hook catches and explains convention
+- [ ] Scripts handle edge cases (no .tsx files, missing tsconfig.json, etc.)
 
 ---
 
@@ -274,11 +379,9 @@ frontend-toolkit/
 **Validation**:
 - [ ] Each command has phases with clear handoffs (agent A output → agent B input)
 - [ ] Test `/new-component UserAvatar` end-to-end (produces 4 files: component, test, story, index)
-- [ ] Test `/new-mfe analytics-dashboard` (produces MFE directory, buildable Webpack config)
+- [ ] Test `/new-mfe analytics-dashboard` (produces MFE directory, DataRouter EntryPoints, buildable Webpack config)
 - [ ] Test `/review-frontend` on real PR (produces aggregated feedback markdown)
 - [ ] Commands respect `max_turns` budget (architects: 5 turns, builders: 10 turns)
-
-**Estimated Effort**: 2-3 days
 
 ---
 
@@ -296,11 +399,11 @@ frontend-toolkit/
 - [ ] `/new-component TestComponent` runs without errors
 - [ ] `/new-mfe test-mfe` scaffolds buildable MFE
 - [ ] `/review-frontend` reviews sample PR and produces feedback
-- [ ] Hooks trigger on git commit/push
-- [ ] All 9 skills load on-demand (check Claude logs for skill activation)
+- [ ] PostToolUse hooks trigger on Write/Edit of .tsx files
+- [ ] SessionStart hook warns when Picnic skills are stale
+- [ ] All skills load on-demand (check Claude logs for skill activation)
+- [ ] `/picnic-update` successfully detects and applies source changes
 - [ ] Run on real codebase with 3 engineers for 1 week (collect feedback)
-
-**Estimated Effort**: 2-3 days + 1 week dogfooding
 
 ---
 
@@ -384,31 +487,54 @@ For now, **single plugin is the right choice** (premature optimization to split)
 ### 7.1 Prerequisite Phase (Before Building Plugin)
 **Action**: Generate or locate all reference documents listed in `01-prerequisites.md`.
 
-**Process**:
-1. Check if docs exist (Confluence, internal wiki, Storybook docs, README files)
-2. If missing, use `code-explorer` agent to analyze codebase:
-   - Picnic: `Grep "export const Button" glob:"*.tsx"` + aggregate into component catalog
-   - Relay: `Grep "@refetchable" glob:"*.ts"` + extract pagination patterns
-   - Yogi: `Grep "export function useYogi" glob:"hooks/*.ts"` + document hook signatures
-3. Draft `CLAUDE.md` for frontend repo (use template from `01-prerequisites.md`)
-4. Store all references in `docs/frontend-toolkit/references/` (outside plugin directory, for source control)
+**What actually happened**: The manual document-gathering approach from `01-prerequisites.md` was partially superseded. For Picnic (the highest-priority prerequisite), AST extraction scripts replaced manual documentation:
+1. Built `extract.mjs` to parse Picnic source into structured JSON (57 components with props, variants, sub-components)
+2. Built `format.mjs` to transform JSON into compact skill notation
+3. Built `detect-changes.mjs` for ongoing change detection
+4. Built `assemble-context.mjs` to gather source + tests + stories for AI curation
 
-**Validation**: All P0 documents exist, P1 documents drafted (80% complete), P2 documents optional.
+**Remaining prerequisites** (still needed for other skills):
+- Yogi connected components guide — may benefit from similar AST extraction
+- GraphQL schema reference — can be generated from schema introspection
+- MFE architecture guide — manual authoring from Webpack configs and existing architecture docs
+- React/TypeScript/Testing/Storybook patterns — manual authoring with codebase examples
+
+**Note**: The prerequisite templates in `01-prerequisites.md` contain outdated assumptions (Tailwind, `@company/picnic`, Jest, Storybook 7). These should be updated or marked as superseded before using them for remaining skills.
+
+**Validation**: Picnic P0 complete via extraction. Other P0 documents still need gathering/generation.
 
 ---
 
 ### 7.2 Iterative Skill Development (Phases 1-2)
 **Pattern**: Build skill → test in isolation → integrate with agents.
 
-**Per-Skill Process**:
-1. Write `SKILL.md` frontmatter (name, description, triggers)
-2. Write overview section (2-3 paragraphs: what, when, why)
-3. Create `references/` directory, write 2-3 reference docs (copy examples from prerequisite docs)
-4. Test: `claude skill load frontend-toolkit:picnic-components` → verify skill appears in context
-5. Test: Ask Claude "How do I use Picnic Button?" → verify skill references load
-6. Iterate: Add more examples if skill context insufficient
+**Lessons learned from Phase 1** (apply to remaining skills):
 
-**Validation Gate**: All 8 skills pass format validation + manual trigger test before proceeding to Phase 3.
+1. **Library-backed skills** (picnic-components, potentially yogi-patterns):
+   - AST extraction is worth the investment — produces accurate, maintainable skill content
+   - Decompose into sub-skills if the domain is large (>20 components or >5000 lines)
+   - Build a router SKILL.md that dispatches to sub-skills by keyword
+   - Create a maintenance pipeline (like picnic-update) if the source library changes frequently
+
+2. **Convention skills** (relay-conventions, react-patterns, typescript-strict):
+   - Manual authoring with codebase examples is appropriate
+   - Write plan doc first (like `01-picnic-components.md`) with gap analysis before building
+   - Validate examples compile against actual codebase (the original Picnic plan had ~70% wrong examples)
+
+3. **Tool/config skills** (testing-conventions, storybook-patterns, mfe-conventions):
+   - Extract patterns from config files (vitest.config, .storybook/, webpack.config.js)
+   - Find 3-5 exemplary files in the codebase and distill patterns
+
+**Per-Skill Process** (updated):
+1. Write plan doc: `skills/NN-skill-name.md` with purpose, gap analysis, SKILL.md spec, reference outlines
+2. Decide approach: AST extraction vs. manual authoring vs. config extraction
+3. Write `SKILL.md` frontmatter (name, description in third person, triggers)
+4. Write overview section (2-3 paragraphs: what, when, why)
+5. Create references with real examples from `@attentive/*` packages (not generic patterns)
+6. Test: verify skill loads and references appear in context
+7. Test: verify trigger phrases activate the skill correctly
+
+**Validation Gate**: All skills pass format validation + manual trigger test before proceeding to Phase 3.
 
 ---
 
@@ -455,20 +581,27 @@ For now, **single plugin is the right choice** (premature optimization to split)
 
 ## 8. Risk Mitigation
 
-### Risk 1: Prerequisite Docs Don't Exist
-**Mitigation**: Use `code-explorer` agent to generate initial docs from codebase analysis (see `01-prerequisites.md` Discovery Guide). Accept 80% accuracy, iterate based on engineer feedback.
+### Risk 1: Prerequisite Docs Don't Exist ✅ REALIZED & RESOLVED
+**What happened**: Picnic docs didn't exist in usable form. The `01-prerequisites.md` templates contained ~70% incorrect assumptions (Tailwind instead of Stitches, wrong package names, wrong component patterns).
+**Resolution**: Built AST extraction pipeline instead of manual documentation. Scripts parse source directly, producing accurate structured data. This approach is reusable for other library-backed skills (yogi-patterns).
 
-### Risk 2: Skills Loaded Too Often (Performance)
-**Mitigation**: Use specific trigger phrases (not generic terms like "component"). Test skill loading frequency in logs, refine triggers if >50% false positives.
+### Risk 2: Skills Loaded Too Often (Performance) ✅ REALIZED & RESOLVED
+**What happened**: A monolithic Picnic skill would have been ~8000 lines — far too large for a single skill load.
+**Resolution**: Decomposed into router + sub-skills. The router (~3KB) loads first and dispatches to exactly one sub-skill based on intent keywords. Progressive loading chain: `design-tokens → stitches-patterns → layout-primitives → problem skills`. At most 3 problem skills per request.
 
 ### Risk 3: Generated Code Doesn't Match Codebase Style
 **Mitigation**: Phase 4 validation includes human review of generated code. Add codebase-specific examples to skill references (not generic React patterns).
+**Phase 1 validation**: The Picnic skill plan's gap analysis caught this early — original examples used Tailwind/className patterns instead of Stitches/css prop. AST extraction ensures all examples come from actual source code.
 
 ### Risk 4: Agents Exceed Token Budgets
 **Mitigation**: Set `max_turns` per agent (architects: 5, builders: 10, reviewers: 15). Use plan mode to frontload thinking (10k tokens planning vs. 440k implementing).
 
 ### Risk 5: Low Adoption (Engineers Ignore Plugin)
 **Mitigation**: Start with "easy win" command (`/new-component` saves 30+ min per component). Demo at team meeting. Collect testimonials from early adopters.
+
+### Risk 6: Skill Content Goes Stale (NEW)
+**Discovered during**: Phase 1 — Picnic has 57 components that change with library releases.
+**Mitigation**: Built the `picnic-update` maintenance pipeline with 6-step process (detect → extract → format → AI curate → human review → finalize). SessionStart hook warns when skills are stale. Each pipeline step produces a git commit for granular rollback. This pattern should be considered for other library-backed skills that change frequently.
 
 ---
 
@@ -489,16 +622,19 @@ For now, **single plugin is the right choice** (premature optimization to split)
 
 ## 10. Next Steps
 
-1. **Read `01-prerequisites.md`** — Understand required reference documents before building skills
-2. **Gather/Generate Prerequisites** — Locate or create Picnic catalog, Relay conventions, etc.
-3. **Execute Phases 1-7** — Follow build order, validate at each phase boundary
-4. **Dogfood & Iterate** — Test with 3 engineers for 1 week, fix critical bugs
-5. **Rollout** — Install for all 50 engineers, monitor metrics, collect feedback
-6. **Maintain** — Monthly skill updates, quarterly plugin version bumps (align with library releases)
+1. ~~**Read `01-prerequisites.md`**~~ — ✅ Done. Templates need updating for correct tech stack.
+2. ~~**Gather/Generate Prerequisites (Picnic)**~~ — ✅ Done via AST extraction pipeline.
+3. ~~**Execute Phase 1 (Picnic + Data Router)**~~ — ✅ Done. Router + 10 sub-skills + 4 refs + validator + pipeline.
+4. **Update `01-prerequisites.md`** — Correct outdated assumptions (Stitches not Tailwind, `@attentive/picnic`, Vitest, Storybook 9.1.x). Mark Picnic section as superseded by extraction pipeline.
+5. **Execute Phase 2 (Remaining Skills)** — Build relay-conventions, react-patterns, yogi-patterns, mfe-conventions, typescript-strict, testing-conventions, storybook-patterns. Decide per-skill: AST extraction vs. manual authoring.
+6. **Execute Phases 3-7** — Agents, hooks, commands, integration. Follow build order, validate at each phase boundary.
+7. **Dogfood & Iterate** — Test with 3 engineers for 1 week, fix critical bugs
+8. **Rollout** — Install for all 50 engineers, monitor metrics, collect feedback
+9. **Maintain** — Use `/picnic-update` for Picnic skill maintenance. Consider similar pipelines for yogi-patterns if library changes frequently. Monthly skill updates for convention skills, quarterly plugin version bumps.
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2026-02-17
+**Document Version**: 2.0
+**Last Updated**: 2026-02-18
 **Owner**: Frontend Platform Team
-**Status**: Planning
+**Status**: In Progress — Phase 1 + 1.5 complete, Phase 2 next
