@@ -14,6 +14,16 @@
       },
       "source": "./reveal-presentations",
       "category": "productivity"
+    },
+    {
+      "name": "just",
+      "description": "Makes Claude aware of justfile recipes — auto-discovers at session start and prefers just <recipe> over raw commands",
+      "version": "1.0.0",
+      "author": {
+        "name": "Jaden"
+      },
+      "source": "./just",
+      "category": "productivity"
     }
   ]
 }
