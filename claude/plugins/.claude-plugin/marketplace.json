@@ -1,0 +1,19 @@
+{
+  "name": "jaden-local",
+  "description": "Jaden's local plugins for development workflows",
+  "owner": {
+    "name": "Jaden"
+  },
+  "plugins": [
+    {
+      "name": "reveal-presentations",
+      "description": "Generate elegant HTML presentations with Reveal.js using the Autonomee.ai design system",
+      "version": "1.0.0",
+      "author": {
+        "name": "Goda"
+      },
+      "source": "./reveal-presentations",
+      "category": "productivity"
+    }
+  ]
+}
