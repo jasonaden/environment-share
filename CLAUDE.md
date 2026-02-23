@@ -18,6 +18,19 @@ Personal environment configuration and dotfiles sharing repository for macOS.
 ./justfile/install.sh              # Global justfile + 'j' alias
 ```
 
+## Using Just
+
+After installation, use the `j` alias from any directory to run recipes:
+
+```bash
+j              # List all recipes
+j cc           # Start Claude Code (skip permissions)
+j ccc          # Continue last Claude session
+j ccw mybranch # Start Claude in an isolated worktree
+j ccm opus     # Start Claude with a specific model
+j ccplan       # Start Claude in plan mode
+```
+
 ## Repository Structure
 
 - `scripts/` — Master orchestrator (`install-all.sh`) and core tools installer (`install-core.sh`)
