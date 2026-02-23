@@ -9,12 +9,13 @@ Personal environment configuration and dotfiles sharing repository for macOS.
 ./scripts/install-all.sh
 
 # Or install individual components:
-./scripts/install-core.sh          # Homebrew, zsh, tmux, node, gh, claude CLI
+./scripts/install-core.sh          # Homebrew, zsh, tmux, node, gh, just, claude CLI
 ./git/install.sh                   # Git aliases and global config
 ./iterm/install.sh                 # iTerm2 preferences + shell integration
 ./tmux/install.sh                  # tmux config for iTerm2 -CC
 ./claude/install.sh                # Claude Code settings, permissions, teams
 ./claude/install-plugins.sh        # Claude Code plugins (requires `claude` CLI)
+./justfile/install.sh              # Global justfile + 'j' alias
 ```
 
 ## Repository Structure
@@ -23,6 +24,7 @@ Personal environment configuration and dotfiles sharing repository for macOS.
 - `git/` — Git aliases and global settings (merged into ~/.gitconfig)
 - `iterm/` — iTerm2 preferences and shell integration installer
 - `tmux/` — tmux configuration optimized for iTerm2 -CC integration
+- `justfile/` — Global justfile with Claude Code recipes and `j` alias
 - `claude/` — Claude Code setup:
   - `settings.json` — Permissions (unrestricted), agent teams (tmux mode), status line
   - `install.sh` — Installs settings, creates `~/.claude/teams/` and `tasks/` dirs, sets env vars
