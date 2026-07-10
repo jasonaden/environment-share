@@ -1,0 +1,4 @@
+interface:
+  display_name: "Delegate Codex Computer Use"
+  short_description: "Verify real application behavior with Codex"
+  default_prompt: "Use $delegate-codex-computer-use to verify this application flow."

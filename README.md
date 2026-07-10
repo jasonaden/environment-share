@@ -11,6 +11,7 @@ Personal development environment configuration and setup scripts for macOS.
 | `iterm/` | iTerm2 preferences and shell integration |
 | `tmux/` | tmux configuration |
 | `claude/` | Claude Code settings, permissions, and plugin setup |
+| `codex/` | Codex plugin marketplace and Fable–Codex orchestration skills |
 | `justfile/` | Global justfile with Claude Code recipes and `j` alias |
 | `scripts/` | Core tooling installers and master setup script |
 
@@ -33,6 +34,7 @@ Or install components individually:
 ./iterm/install.sh               # iTerm2 preferences
 ./claude/install.sh              # Claude Code settings and permissions
 ./claude/install-plugins.sh      # Claude Code plugins
+./codex/install-plugins.sh       # Codex orchestration plugins
 ./justfile/install.sh            # Global justfile + 'j' alias
 ./ccstatusline/install.sh        # Claude Code status line (can be run standalone)
 ```
@@ -62,4 +64,5 @@ j ccplan       # Start Claude in plan mode
 - The core installer will prompt for your password (Homebrew install, `chsh` for zsh)
 - Claude Code must be authenticated separately after installation (`claude login`)
 - After authenticating Claude, run `./claude/install-plugins.sh` to install plugins
+- Run `./codex/install-plugins.sh` to install the Fable–Codex orchestrator in Codex
 - Git aliases include `legit` workflow commands (branches, publish, sync, etc.) — legit is installed automatically

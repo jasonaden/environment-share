@@ -1,0 +1,8 @@
+{
+  "name": "fable-codex-orchestrator",
+  "version": "0.1.0",
+  "description": "Route, delegate, review, and verify work between a supervisory Fable agent and Codex.",
+  "author": {
+    "name": "Jaden"
+  }
+}

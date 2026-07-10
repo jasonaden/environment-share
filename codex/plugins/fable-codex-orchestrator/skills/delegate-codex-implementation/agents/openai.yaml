@@ -1,0 +1,4 @@
+interface:
+  display_name: "Delegate Codex Implementation"
+  short_description: "Delegate bounded implementation work to Codex"
+  default_prompt: "Use $delegate-codex-implementation to implement this bounded change with Codex."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Route Agent Work"
+  short_description: "Choose the right agent and verification path"
+  default_prompt: "Use $route-agent-work to route this task across Fable and Codex."

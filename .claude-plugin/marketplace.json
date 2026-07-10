@@ -24,6 +24,16 @@
       },
       "source": "./claude/plugins/just",
       "category": "productivity"
+    },
+    {
+      "name": "fable-codex-orchestrator",
+      "description": "Use Fable as supervisor while Codex implements, reviews, investigates, and verifies bounded work",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jaden"
+      },
+      "source": "./codex/plugins/fable-codex-orchestrator",
+      "category": "productivity"
     }
   ]
 }

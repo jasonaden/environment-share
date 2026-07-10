@@ -1,0 +1,22 @@
+{
+  "name": "fable-codex-orchestrator",
+  "version": "0.1.0",
+  "description": "Route, delegate, review, and verify work between a supervisory Fable agent and Codex.",
+  "author": {
+    "name": "Jaden"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Fable Codex Orchestrator",
+    "shortDescription": "Coordinate Fable supervision with Codex execution.",
+    "longDescription": "Provides routing, bounded implementation, independent review, computer-use verification, and checkpointed orchestration skills for a Fable-supervised Codex workflow.",
+    "developerName": "Jaden",
+    "category": "Productivity",
+    "capabilities": ["Planning", "Delegation", "Review", "Verification"],
+    "defaultPrompt": [
+      "Route this task between Fable and Codex.",
+      "Delegate this bounded implementation to Codex.",
+      "Orchestrate these work streams through review."
+    ]
+  }
+}
