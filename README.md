@@ -10,8 +10,10 @@ Personal development environment configuration and setup scripts for macOS.
 | `git/` | Git aliases (st, co, ci, lg, etc.) and global settings |
 | `iterm/` | iTerm2 preferences and shell integration |
 | `tmux/` | tmux configuration |
-| `claude/` | Claude Code settings, permissions, and plugin setup |
-| `justfile/` | Global justfile with Claude Code recipes and `j` alias |
+| `agents/` | Cross-agent skills shared by Claude Code and Codex |
+| `claude/` | Claude Code settings and agent-specific plugins |
+| `codex/` | Codex setup and agent-specific plugin catalog |
+| `just/` | Global justfile with agent launch recipes and `j` alias |
 | `scripts/` | Core tooling installers and master setup script |
 
 ## Quick Start
@@ -27,13 +29,16 @@ cd ~/Projects/environment-share
 Or install components individually:
 
 ```bash
-./scripts/install-core.sh        # Homebrew, zsh, tmux, node, yarn, gh, jq, just, claude
+./scripts/install-core.sh        # Homebrew, shell tools, Claude Code, and Codex CLI
 ./git/install.sh                 # Git aliases and global settings
 ./tmux/install.sh                # tmux config
 ./iterm/install.sh               # iTerm2 preferences
 ./claude/install.sh              # Claude Code settings and permissions
 ./claude/install-plugins.sh      # Claude Code plugins
-./justfile/install.sh            # Global justfile + 'j' alias
+./codex/install.sh               # Codex shared skills (preserves personal settings)
+./codex/install-plugins.sh       # Show the desired Codex plugin catalog
+./agents/install-skills.sh       # Link shared skills into both agents
+./just/install.sh                # Global justfile + 'j' alias
 ./ccstatusline/install.sh        # Claude Code status line (can be run standalone)
 ```
 
@@ -61,5 +66,8 @@ j ccplan       # Start Claude in plan mode
 - Existing configs are backed up before overwriting (to `*.backup`)
 - The core installer will prompt for your password (Homebrew install, `chsh` for zsh)
 - Claude Code must be authenticated separately after installation (`claude login`)
+- Codex must be authenticated separately after installation (`codex login`)
 - After authenticating Claude, run `./claude/install-plugins.sh` to install plugins
+- Add portable skills under `agents/skills/<name>/SKILL.md`; the shared installer links the same source into both agents.
+- Plugin manifests, hooks, commands, and marketplace metadata remain agent-specific. See `agents/README.md`.
 - Git aliases include `legit` workflow commands (branches, publish, sync, etc.) — legit is installed automatically

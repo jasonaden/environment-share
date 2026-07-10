@@ -82,4 +82,12 @@ else
     echo "    Claude Code is already installed ($(claude --version 2>/dev/null || echo 'unknown version'))."
 fi
 
+# Codex CLI
+if ! command -v codex &>/dev/null; then
+    echo "    Installing Codex CLI..."
+    npm install -g @openai/codex
+else
+    echo "    Codex CLI is already installed ($(codex --version 2>/dev/null || echo 'unknown version'))."
+fi
+
 echo "==> Core development tools installed successfully."

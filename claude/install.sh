@@ -49,10 +49,8 @@ else
     echo "    No .zshrc found — skipping shell env setup"
 fi
 
-# Install slash commands
-mkdir -p "$CLAUDE_DIR/commands"
-cp "$SCRIPT_DIR/commands/"*.md "$CLAUDE_DIR/commands/"
-echo "    Installed slash commands: /prep-for-clear, /after-clear"
+# Install the agent-neutral skills shared with Codex.
+"$(dirname "$SCRIPT_DIR")/agents/install-skills.sh" claude
 
 echo ""
 echo "==> Claude Code configuration installed successfully."
@@ -61,7 +59,7 @@ echo "    What's configured:"
 echo "    - Unrestricted tool permissions (Bash, Read, Edit, Write, etc.)"
 echo "    - Agent teams with tmux teammate mode"
 echo "    - Status line via ccstatusline"
-echo "    - Recommended plugins (superpowers, ui-ux-pro-max, etc.)"
+echo "    - Shared skills from agents/skills"
 echo ""
 echo "    Next steps:"
 echo "    1. Run 'claude login' to authenticate"
