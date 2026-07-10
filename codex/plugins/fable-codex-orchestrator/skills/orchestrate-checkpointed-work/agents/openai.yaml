@@ -1,0 +1,4 @@
+interface:
+  display_name: "Orchestrate Checkpointed Work"
+  short_description: "Supervise parallel work through explicit checkpoints"
+  default_prompt: "Use $orchestrate-checkpointed-work to coordinate these work streams."

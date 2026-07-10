@@ -3,6 +3,8 @@ set -euo pipefail
 
 echo "==> Installing Claude Code plugins..."
 
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+
 if ! command -v claude &>/dev/null; then
     echo "    ERROR: Claude Code CLI not found. Install it first:"
     echo "    npm install -g @anthropics/claude-code"
@@ -18,6 +20,7 @@ fi
 # Add third-party marketplaces
 MARKETPLACES=(
     "nextlevelbuilder/ui-ux-pro-max-skill"
+    "$REPO_ROOT"
 )
 
 for mp in "${MARKETPLACES[@]}"; do
@@ -31,6 +34,7 @@ PLUGINS=(
     "plugin-dev@claude-plugins-official"
     "typescript-lsp@claude-plugins-official"
     "ui-ux-pro-max@ui-ux-pro-max-skill"
+    "fable-codex-orchestrator@jaden-local"
 )
 
 for plugin in "${PLUGINS[@]}"; do

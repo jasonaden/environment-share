@@ -1,0 +1,4 @@
+interface:
+  display_name: "Delegate Codex Review"
+  short_description: "Request and verify an independent Codex review"
+  default_prompt: "Use $delegate-codex-review to get an independent Codex review."

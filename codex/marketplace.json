@@ -1,0 +1,20 @@
+{
+  "name": "environment-share",
+  "interface": {
+    "displayName": "Environment Share"
+  },
+  "plugins": [
+    {
+      "name": "fable-codex-orchestrator",
+      "source": {
+        "source": "local",
+        "path": "./plugins/fable-codex-orchestrator"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
