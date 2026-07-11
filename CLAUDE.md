@@ -15,7 +15,8 @@ Personal environment configuration and dotfiles sharing repository for macOS.
 ./tmux/install.sh                  # tmux config for iTerm2 -CC
 ./claude/install.sh                # Claude Code settings, permissions, teams
 ./claude/install-plugins.sh        # Claude Code plugins (requires `claude` CLI)
-./justfile/install.sh              # Global justfile + 'j' alias
+./pi/install.sh                    # Pi agent and curated workflow profiles
+./just/install.sh                  # Global justfile + 'j' alias
 ```
 
 ## Using Just
@@ -29,6 +30,10 @@ j ccc          # Continue last Claude session
 j ccw mybranch # Start Claude in an isolated worktree
 j ccm opus     # Start Claude with a specific model
 j ccplan       # Start Claude in plan mode
+j pi           # Start the normal Pi profile
+j pi-plan      # Start Pi in guarded planning mode
+j pi-review    # Start ephemeral Pi without Bash or mutation tools
+j pi-team      # Start Pi subagents and the guarded /ship workflow
 ```
 
 ## Repository Structure
@@ -37,7 +42,8 @@ j ccplan       # Start Claude in plan mode
 - `git/` — Git aliases and global settings (merged into ~/.gitconfig)
 - `iterm/` — iTerm2 preferences and shell integration installer
 - `tmux/` — tmux configuration optimized for iTerm2 -CC integration
-- `justfile/` — Global justfile with Claude Code recipes and `j` alias
+- `just/` — Global justfile with Claude Code and Pi recipes plus the `j` alias
+- `pi/` — Pi settings, installer, prompts, agents, optional extensions, and workflow documentation
 - `claude/` — Claude Code setup:
   - `settings.json` — Permissions (unrestricted), agent teams (tmux mode), status line
   - `install.sh` — Installs settings, creates `~/.claude/teams/` and `tasks/` dirs, sets env vars
@@ -48,6 +54,7 @@ j ccplan       # Start Claude in plan mode
 - macOS (Apple Silicon or Intel)
 - Homebrew (installed automatically by `install-core.sh` if missing)
 - For Claude: `npm install -g @anthropic-ai/claude-code`, then `claude login`
+- For Pi: Node.js 22.19 or newer, then run `./pi/install.sh` and authenticate with `/login`
 
 ## Conventions
 

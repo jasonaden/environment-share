@@ -56,3 +56,36 @@ ccplan *args:
 # CC: passthrough any claude command
 claude-raw *args:
     cd "{{invocation_directory()}}" && claude {{args}}
+
+# ── Pi Coding Agent ──────────────────────────────────────────────
+
+# Pi: normal interactive session with global safety/workflow extensions
+pi *args:
+    cd "{{invocation_directory()}}" && pi {{args}}
+
+# Pi: continue or select a previous session
+pi-continue *args:
+    cd "{{invocation_directory()}}" && pi --continue {{args}}
+
+pi-resume *args:
+    cd "{{invocation_directory()}}" && pi --resume {{args}}
+
+# Pi: read-only, no Bash, ephemeral review profile (Dan's level 5 pattern)
+pi-review *args:
+    cd "{{invocation_directory()}}" && pi --tools read,grep,find,ls --no-session {{args}}
+
+# Pi: read-only planning first, then explicit opt-in to execution (level 4 allowlist)
+pi-plan *args:
+    cd "{{invocation_directory()}}" && pi --plan {{args}}
+
+# Pi: declare and display a singular purpose for the session
+pi-focus *args:
+    cd "{{invocation_directory()}}" && pi -e "$HOME/.pi/agent/optional-extensions/purpose-gate.ts" {{args}}
+
+# Pi: isolated subagents plus the guarded /ship workflow, opt-in only
+pi-team *args:
+    cd "{{invocation_directory()}}" && pi -e "$HOME/.pi/agent/optional-extensions/subagent/index.ts" -e "$HOME/.pi/agent/optional-extensions/ship-workflow.ts" {{args}}
+
+# Pi: core-only diagnostic profile with no custom resources or project context
+pi-clean *args:
+    cd "{{invocation_directory()}}" && pi --no-extensions --no-skills --no-prompt-templates --no-themes --no-context-files --no-approve {{args}}
