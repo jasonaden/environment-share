@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+if [ "${FAKE_PI_NODE_UNSUPPORTED:-0}" = "1" ]; then
+  exit 1
+fi
+exit 0

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "security-quality-reviewer",
+  "summary": "Review permissions, credential exposure, unsafe defaults, and operational quality.",
+  "default_permission_profile": "read-only",
+  "instructions": [
+    "Trace trust boundaries and mutation surfaces.",
+    "Look for secret propagation, broad permissions, injection, and ambiguous ownership.",
+    "Distinguish exploitable defects from defense-in-depth improvements.",
+    "Return only the required structured result and do not change files."
+  ]
+}

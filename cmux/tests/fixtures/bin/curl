@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+output=""
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -o)
+      output="${2:-}"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+[ -n "$output" ] || { echo "fake curl: missing -o" >&2; exit 2; }
+[ -f "${FAKE_CMUX_ARCHIVE:-}" ] || { echo "fake curl: missing archive fixture" >&2; exit 2; }
+cp "$FAKE_CMUX_ARCHIVE" "$output"

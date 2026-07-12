@@ -1,0 +1,64 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E05-heterogeneous-broadcast",
+  "name": "Heterogeneous broadcast",
+  "description": "Broadcast one read-only request across provider adapters and synthesize all correlated results.",
+  "source_prompt_ids": ["08", "11"],
+  "variants": [
+    {
+      "id": "E05-T1-provider-stubs",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Exercise two-provider and four-provider topology matrices with deterministic adapter stubs.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch"],
+      "setup": [
+        "Create four deterministic provider stubs with distinct provider IDs and a common structured-response protocol.",
+        "Create a run-owned workspace group and start the completion listener before launching any stub."
+      ],
+      "exercise": [
+        "Run a two-provider side-by-side broadcast, then a four-provider 2x2 broadcast, using the same request ID and nonce in each matrix.",
+        "Collect exactly one result per launched provider and synthesize the declared agreement field."
+      ],
+      "assertions": [
+        { "id": "e05-stub-provider-identity", "kind": "topology", "expectation": "Each surface is mapped to the expected distinct provider ID and stable run ownership record." },
+        { "id": "e05-stub-broadcast-identical", "kind": "text", "expectation": "Every provider receives the same normalized request ID, nonce, and payload." },
+        { "id": "e05-stub-complete-fanin", "kind": "synthesis", "expectation": "The synthesis names every launched provider and includes exactly one correlated result from each." },
+        { "id": "e05-stub-cleanup", "kind": "cleanup", "expectation": "Both topology matrices leave no run-owned surfaces or processes." }
+      ],
+      "cleanup": [
+        "Stop all stubs using the run-scoped token and close resources recorded in the ledger.",
+        "Remove fixtures and confirm unrelated Cmux resources match the baseline."
+      ]
+    },
+    {
+      "id": "E05-T2-live-provider-matrix",
+      "tier": 2,
+      "execution_mode": "live-agent",
+      "description": "Run a read-only two-provider smoke test and, when all providers are installed, an optional four-provider matrix.",
+      "destructive": false,
+      "gates": ["allow_live_agents", "allow_cost"],
+      "external_effects": ["cmux-ephemeral", "process-launch", "model-api"],
+      "setup": [
+        "Discover installed providers, require at least two, and create a secret-free disposable repository with read-only permissions.",
+        "Allocate one run-owned surface per selected provider and activate correlated completion listeners before launch."
+      ],
+      "exercise": [
+        "Broadcast one bounded read-only repository question with a required JSON artifact contract to every selected provider.",
+        "Collect results only after correlated completion and synthesize agreement without scoring exact wording."
+      ],
+      "assertions": [
+        { "id": "e05-live-all-ready", "kind": "event", "expectation": "Every selected provider becomes ready before the broadcast deadline." },
+        { "id": "e05-live-all-correlated", "kind": "synthesis", "expectation": "The final synthesis cites one nonce-tagged structured artifact from every selected provider." },
+        { "id": "e05-live-readonly", "kind": "filesystem", "expectation": "No provider modifies the disposable repository." },
+        { "id": "e05-live-no-secret-env", "kind": "security", "expectation": "No broad .env file is injected and no credential value appears in evidence." },
+        { "id": "e05-live-cleanup", "kind": "cleanup", "expectation": "All live provider processes and run-owned Cmux resources are removed." }
+      ],
+      "cleanup": [
+        "Gracefully stop each selected provider and close only its owned surface on timeout.",
+        "Delete the disposable repository and compare the post-run tree with the baseline."
+      ]
+    }
+  ]
+}

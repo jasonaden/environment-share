@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/cmux-agent-orchestration-eval.schema.json",
+  "title": "Cmux Agent Orchestration Eval Family",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "id",
+    "name",
+    "description",
+    "source_prompt_ids",
+    "variants"
+  ],
+  "properties": {
+    "$schema": { "const": "../eval.schema.json" },
+    "id": { "type": "string", "pattern": "^E(0[1-9]|1[0-6])-[a-z0-9-]+$" },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "source_prompt_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^(0[1-9]|[12][0-9]|3[01])$" }
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/variant" }
+    }
+  },
+  "$defs": {
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "tier",
+        "execution_mode",
+        "description",
+        "destructive",
+        "gates",
+        "external_effects",
+        "setup",
+        "exercise",
+        "assertions",
+        "cleanup"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^E(0[1-9]|1[0-6])-T[0-4]-[a-z0-9-]+$" },
+        "tier": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "execution_mode": {
+          "enum": ["static", "deterministic", "live-agent", "integrated", "destructive"]
+        },
+        "description": { "type": "string", "minLength": 1 },
+        "destructive": { "type": "boolean" },
+        "gates": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "allow_live_agents",
+              "allow_cost",
+              "allow_visual",
+              "allow_notifications",
+              "allow_agent_cancellation",
+              "allow_writes",
+              "allow_restart",
+              "allow_real_auth",
+              "allow_remote",
+              "allow_external_network",
+              "allow_cloud_cost",
+              "allow_global_config",
+              "dedicated_cmux_profile",
+              "dedicated_macos_environment"
+            ]
+          }
+        },
+        "external_effects": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "none",
+              "fixture-filesystem",
+              "cmux-ephemeral",
+              "process-launch",
+              "model-api",
+              "local-browser",
+              "ui-focus",
+              "notification",
+              "repo-write",
+              "global-config",
+              "app-restart",
+              "real-auth",
+              "external-network",
+              "remote-host",
+              "cloud-resource"
+            ]
+          }
+        },
+        "setup": { "$ref": "#/$defs/nonEmptyStringArray" },
+        "exercise": { "$ref": "#/$defs/nonEmptyStringArray" },
+        "assertions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/assertion" }
+        },
+        "cleanup": { "$ref": "#/$defs/nonEmptyStringArray" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "destructive": { "const": true } } },
+          "then": { "properties": { "gates": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "assertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "expectation"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "kind": {
+          "enum": [
+            "configuration",
+            "topology",
+            "text",
+            "security",
+            "process",
+            "event",
+            "cleanup",
+            "visual",
+            "filesystem",
+            "browser",
+            "manual",
+            "synthesis"
+          ]
+        },
+        "expectation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "nonEmptyStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

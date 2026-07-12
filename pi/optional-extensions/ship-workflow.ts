@@ -3,33 +3,65 @@
  *
  * Phases:
  *   /ship <task>    -> scout + planner only; parent mutation tools are blocked
- *   /ship-approve   -> worker -> reviewer -> optional one correction -> final review
- *   /ship-close     -> clear the workflow guard after the final receipt
- *   /ship-cancel    -> abandon the workflow without implementation
+ *   /ship-approve   -> worker -> reviewer -> optional correction -> final review
+ *   /ship-close     -> clear the workflow only after a final reviewer verdict
+ *   /ship-cancel    -> abandon the workflow without further implementation
  */
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 
 type ShipPhase = "idle" | "planning" | "approved";
+export type ReviewerVerdict = "pass" | "findings";
+export type ShipStage =
+	| "awaiting-worker"
+	| "worker-running"
+	| "awaiting-review"
+	| "review-running"
+	| "correction-available"
+	| "correction-running"
+	| "awaiting-final-review"
+	| "final-review-running"
+	| "complete";
 
-interface ShipState {
+export interface ShipState {
 	phase: ShipPhase;
 	task?: string;
+	stage?: ShipStage;
 	workerCalls: number;
 	reviewerCalls: number;
+	pendingToolCallId?: string;
+	lastReviewVerdict?: ReviewerVerdict;
 }
 
 interface SubagentInvocation {
 	agent?: string;
+	task?: string;
 	tasks?: Array<{ agent?: string }>;
 	chain?: Array<{ agent?: string }>;
+	agentScope?: "user" | "project" | "both";
+	confirmProjectAgents?: boolean;
+}
+
+interface StageExpectation {
+	agent: "worker" | "reviewer";
+	runningStage: ShipStage;
 }
 
 const STATE_ENTRY = "ship-workflow-state";
+const REVIEW_VERDICT_FORMAT = "SHIP_REVIEW_VERDICT: PASS or SHIP_REVIEW_VERDICT: FINDINGS";
 const ALLOWED_SHIP_AGENTS = new Set(["scout", "planner", "worker", "reviewer"]);
 const PARENT_MUTATION_TOOLS = new Set(["bash", "edit", "write"]);
 
-function idleState(): ShipState {
+export function idleState(): ShipState {
 	return { phase: "idle", workerCalls: 0, reviewerCalls: 0 };
+}
+
+export function parseReviewerVerdict(text: string): ReviewerVerdict | null {
+	const matches = Array.from(text.matchAll(/^\s*SHIP_REVIEW_VERDICT:\s*(PASS|FINDINGS)\s*$/gim));
+	if (matches.length !== 1) return null;
+	const finalLine = text.trimEnd().split(/\r?\n/).at(-1)?.trim();
+	const finalMatch = finalLine?.match(/^SHIP_REVIEW_VERDICT:\s*(PASS|FINDINGS)$/i);
+	if (!finalMatch) return null;
+	return finalMatch[1].toLowerCase() as ReviewerVerdict;
 }
 
 function requestedAgents(input: SubagentInvocation): string[] {
@@ -40,6 +72,95 @@ function requestedAgents(input: SubagentInvocation): string[] {
 	return agents;
 }
 
+function isSingleAgentInvocation(input: SubagentInvocation): boolean {
+	return Boolean(input.agent && input.task && !input.tasks?.length && !input.chain?.length);
+}
+
+function expectationForStage(stage: ShipStage | undefined): StageExpectation | null {
+	switch (stage) {
+		case "awaiting-worker":
+			return { agent: "worker", runningStage: "worker-running" };
+		case "awaiting-review":
+			return { agent: "reviewer", runningStage: "review-running" };
+		case "correction-available":
+			return { agent: "worker", runningStage: "correction-running" };
+		case "awaiting-final-review":
+			return { agent: "reviewer", runningStage: "final-review-running" };
+		default:
+			return null;
+	}
+}
+
+function retryStage(stage: ShipStage | undefined): ShipStage {
+	switch (stage) {
+		case "worker-running":
+			return "awaiting-worker";
+		case "review-running":
+			return "awaiting-review";
+		case "correction-running":
+			return "correction-available";
+		case "final-review-running":
+			return "awaiting-final-review";
+		default:
+			return stage ?? "awaiting-worker";
+	}
+}
+
+function normalizeState(candidate: ShipState | undefined): ShipState {
+	if (!candidate || candidate.phase === "idle") return idleState();
+	if (candidate.phase === "planning") {
+		return {
+			phase: "planning",
+			task: candidate.task,
+			workerCalls: 0,
+			reviewerCalls: 0,
+		};
+	}
+
+	const stage = candidate.stage
+		? retryStage(candidate.stage)
+		: candidate.workerCalls > 0 || candidate.reviewerCalls > 0
+			? "complete"
+			: "awaiting-worker";
+	return {
+		phase: "approved",
+		task: candidate.task,
+		stage,
+		workerCalls: candidate.workerCalls ?? 0,
+		reviewerCalls: candidate.reviewerCalls ?? 0,
+		lastReviewVerdict: candidate.lastReviewVerdict,
+	};
+}
+
+function resultText(content: Array<{ type: string; text?: string }>): string {
+	return content
+		.filter((part): part is { type: "text"; text: string } => part.type === "text" && typeof part.text === "string")
+		.map((part) => part.text)
+		.join("\n");
+}
+
+function stageInstruction(stage: ShipStage | undefined): string {
+	switch (stage) {
+		case "awaiting-worker":
+			return "Call the worker once with the approved plan and require targeted verification.";
+		case "worker-running":
+		case "correction-running":
+		case "review-running":
+		case "final-review-running":
+			return "A subagent call is already running. Wait for its result before taking the next workflow step.";
+		case "awaiting-review":
+			return `Call the reviewer once. Its final line must be exactly ${REVIEW_VERDICT_FORMAT}.`;
+		case "correction-available":
+			return "The reviewer reported findings. Call one final worker with only the actionable feedback.";
+		case "awaiting-final-review":
+			return `Call the final reviewer. Its final line must be exactly ${REVIEW_VERDICT_FORMAT}. No further worker is allowed.`;
+		case "complete":
+			return "The final reviewer verdict is recorded. Synthesize the receipt and tell the user to run /ship-close.";
+		default:
+			return "Follow the guarded worker and reviewer sequence.";
+	}
+}
+
 export default function shipWorkflow(pi: ExtensionAPI): void {
 	let state: ShipState = idleState();
 
@@ -47,30 +168,34 @@ export default function shipWorkflow(pi: ExtensionAPI): void {
 		pi.appendEntry<ShipState>(STATE_ENTRY, state);
 	}
 
-	function restore(ctx: ExtensionContext): void {
-		const entry = ctx.sessionManager
-			.getEntries()
-			.filter((candidate: { type: string; customType?: string }) =>
-				candidate.type === "custom" && candidate.customType === STATE_ENTRY,
-			)
-			.pop() as { data?: ShipState } | undefined;
-		state = entry?.data ?? idleState();
-		updateStatus(ctx);
-	}
-
 	function updateStatus(ctx: ExtensionContext): void {
 		if (state.phase === "idle") {
 			ctx.ui.setStatus("ship-workflow", undefined);
 			return;
 		}
-		const color = state.phase === "planning" ? "warning" : "success";
-		const detail = state.phase === "approved" ? ` · workers ${state.workerCalls}/2` : "";
-		ctx.ui.setStatus("ship-workflow", ctx.ui.theme.fg(color, `ship: ${state.phase}${detail}`));
+		const color = state.phase === "planning" ? "warning" : state.stage === "complete" ? "success" : "accent";
+		const stage = state.phase === "approved" ? ` · ${state.stage}` : "";
+		ctx.ui.setStatus(
+			"ship-workflow",
+			ctx.ui.theme.fg(color, `ship: ${state.phase}${stage} · workers ${state.workerCalls}/2 · reviews ${state.reviewerCalls}`),
+		);
 	}
 
 	function setState(next: ShipState, ctx: ExtensionContext): void {
 		state = next;
 		persist();
+		updateStatus(ctx);
+	}
+
+	function restore(ctx: ExtensionContext): void {
+		const entry = ctx.sessionManager
+			.getEntries()
+			.filter(
+				(candidate: { type: string; customType?: string }) =>
+					candidate.type === "custom" && candidate.customType === STATE_ENTRY,
+			)
+			.pop() as { data?: ShipState } | undefined;
+		state = normalizeState(entry?.data);
 		updateStatus(ctx);
 	}
 
@@ -100,6 +225,7 @@ Use the subagent tool with a two-step chain:
 1. scout: map the repository evidence relevant to the task.
 2. planner: turn the scout output into an executable plan using {previous}.
 
+The workflow forces user-level agents. Do not request project-local agents.
 Do not call worker. Do not modify files or run Bash in the parent session.
 
 Return a SHIP PLAN containing scope, exact files, ordered steps, risks, and verification commands. Then stop and tell the user to run /ship-approve or /ship-cancel.`);
@@ -120,19 +246,33 @@ Return a SHIP PLAN containing scope, exact files, ordered steps, risks, and veri
 			);
 			if (!approved) return;
 
-			setState({ ...state, phase: "approved", workerCalls: 0, reviewerCalls: 0 }, ctx);
+			setState(
+				{
+					phase: "approved",
+					task: state.task,
+					stage: "awaiting-worker",
+					workerCalls: 0,
+					reviewerCalls: 0,
+				},
+				ctx,
+			);
 			pi.sendUserMessage(`[SHIP WORKFLOW — IMPLEMENTATION APPROVED]
 
 Task: ${state.task}
 
-Use the approved SHIP PLAN from the preceding conversation. Execute these steps with separate subagent calls so review findings can be evaluated before correction:
+Use the approved SHIP PLAN from the preceding conversation. The guard enforces this exact successful-result sequence:
 
-1. Call worker once. Include the full approved plan and task in its prompt. Require implementation plus targeted verification.
-2. Call reviewer. Include the worker result; require independent repository inspection and only actionable findings.
-3. If and only if the reviewer reports actionable findings, call worker one final time with the exact feedback. This is the only correction pass.
-4. After a correction, call reviewer again for a final verification receipt. If no correction was needed, the first review is final.
+1. Worker implements and verifies.
+2. Reviewer returns actionable findings or a pass verdict.
+3. Only a FINDINGS verdict unlocks one corrective worker.
+4. A correction must be followed by one final reviewer. No third worker is allowed.
 
-The parent must orchestrate and synthesize, not edit files or run Bash directly. End with outcome, changed files, checks, reviewer verdict, and remaining risk. Tell the user to run /ship-close after accepting the result.`);
+Every reviewer must end with exactly one verdict line:
+SHIP_REVIEW_VERDICT: PASS
+or
+SHIP_REVIEW_VERDICT: FINDINGS
+
+The parent must orchestrate and synthesize, not edit files or run Bash directly.`);
 		},
 	});
 
@@ -144,25 +284,30 @@ The parent must orchestrate and synthesize, not edit files or run Bash directly.
 				return;
 			}
 			ctx.ui.notify(
-				`Ship phase: ${state.phase}\nTask: ${state.task}\nWorker calls: ${state.workerCalls}/2\nReviewer calls: ${state.reviewerCalls}`,
+				`Ship phase: ${state.phase}\nStage: ${state.stage ?? "planning"}\nTask: ${state.task}\nSuccessful workers: ${state.workerCalls}/2\nSuccessful reviewers: ${state.reviewerCalls}\nLast verdict: ${state.lastReviewVerdict ?? "none"}`,
 				"info",
 			);
 		},
 	});
 
-	const clearWorkflow = (message: string) => async (_args: string, ctx: ExtensionContext) => {
-		setState(idleState(), ctx);
-		ctx.ui.notify(message, "info");
-	};
-
 	pi.registerCommand("ship-close", {
 		description: "Close a completed ship workflow and remove its guards",
-		handler: clearWorkflow("Ship workflow closed."),
+		handler: async (_args, ctx) => {
+			if (state.phase !== "approved" || state.stage !== "complete" || !state.lastReviewVerdict) {
+				ctx.ui.notify("The workflow has no final reviewer verdict. Finish it or use /ship-cancel.", "warning");
+				return;
+			}
+			setState(idleState(), ctx);
+			ctx.ui.notify("Ship workflow closed.", "info");
+		},
 	});
 
 	pi.registerCommand("ship-cancel", {
 		description: "Cancel the active ship workflow without further work",
-		handler: clearWorkflow("Ship workflow cancelled."),
+		handler: async (_args, ctx) => {
+			setState(idleState(), ctx);
+			ctx.ui.notify("Ship workflow cancelled.", "info");
+		},
 	});
 
 	pi.on("tool_call", async (event, ctx) => {
@@ -171,12 +316,16 @@ The parent must orchestrate and synthesize, not edit files or run Bash directly.
 		if (PARENT_MUTATION_TOOLS.has(event.toolName)) {
 			return {
 				block: true,
-				reason: `Ship workflow guard: parent ${event.toolName} is disabled. Delegate implementation and verification through the configured subagents.`,
+				reason: `Ship workflow guard: parent ${event.toolName} is disabled. Delegate through the configured user-level subagents.`,
 			};
 		}
 
 		if (event.toolName !== "subagent") return;
-		const agents = requestedAgents(event.input as SubagentInvocation);
+		const input = event.input as SubagentInvocation;
+		input.agentScope = "user";
+		input.confirmProjectAgents = true;
+
+		const agents = requestedAgents(input);
 		const unknown = agents.filter((agent) => !ALLOWED_SHIP_AGENTS.has(agent));
 		if (unknown.length > 0) {
 			return { block: true, reason: `Ship workflow guard: unsupported agent(s): ${unknown.join(", ")}.` };
@@ -193,41 +342,96 @@ The parent must orchestrate and synthesize, not edit files or run Bash directly.
 			return;
 		}
 
-		if (agents.length !== 1) {
+		if (!isSingleAgentInvocation(input) || agents.length !== 1) {
 			return {
 				block: true,
-				reason: "Ship workflow guard: implementation and review must use separate single-agent calls so review findings can be evaluated before any correction.",
+				reason: "Ship workflow guard: implementation and review require separate single-agent calls.",
 			};
 		}
 
-		let workerCalls = state.workerCalls;
-		let reviewerCalls = state.reviewerCalls;
-		for (const agent of agents) {
-			if (agent === "reviewer") reviewerCalls += 1;
-			if (agent !== "worker") continue;
-			if (workerCalls >= 2) {
-				return { block: true, reason: "Ship workflow guard: the two-worker limit has been reached." };
-			}
-			if (workerCalls === 1 && reviewerCalls === 0) {
-				return {
-					block: true,
-					reason: "Ship workflow guard: a reviewer must report actionable findings before the correction worker runs.",
-				};
-			}
-			workerCalls += 1;
+		const expectation = expectationForStage(state.stage);
+		if (!expectation) {
+			const reason = state.stage === "complete"
+				? "Ship workflow guard: final review is complete; synthesize the result and run /ship-close."
+				: "Ship workflow guard: another subagent call is still running. Wait for its result.";
+			return { block: true, reason };
 		}
 
-		if (workerCalls !== state.workerCalls || reviewerCalls !== state.reviewerCalls) {
-			setState({ ...state, workerCalls, reviewerCalls }, ctx);
+		if (input.agent !== expectation.agent) {
+			return {
+				block: true,
+				reason: `Ship workflow guard: expected ${expectation.agent} at stage ${state.stage}; requested ${input.agent}.`,
+			};
 		}
+
+		setState(
+			{
+				...state,
+				stage: expectation.runningStage,
+				pendingToolCallId: event.toolCallId,
+			},
+			ctx,
+		);
+	});
+
+	pi.on("tool_result", async (event, ctx) => {
+		if (state.phase !== "approved" || event.toolName !== "subagent") return;
+		if (!state.pendingToolCallId || event.toolCallId !== state.pendingToolCallId) return;
+
+		const runningStage = state.stage;
+		const fallbackStage = retryStage(runningStage);
+		if (event.isError) {
+			setState({ ...state, stage: fallbackStage, pendingToolCallId: undefined }, ctx);
+			return;
+		}
+
+		if (runningStage === "worker-running" || runningStage === "correction-running") {
+			setState(
+				{
+					...state,
+					stage: runningStage === "worker-running" ? "awaiting-review" : "awaiting-final-review",
+					workerCalls: state.workerCalls + 1,
+					pendingToolCallId: undefined,
+				},
+				ctx,
+			);
+			return;
+		}
+
+		if (runningStage !== "review-running" && runningStage !== "final-review-running") return;
+		const verdict = parseReviewerVerdict(resultText(event.content));
+		if (!verdict) {
+			setState({ ...state, stage: fallbackStage, pendingToolCallId: undefined }, ctx);
+			return {
+				isError: true,
+				content: [
+					...event.content,
+					{
+						type: "text" as const,
+						text: `Ship workflow guard: reviewer result must contain exactly one standalone verdict line: ${REVIEW_VERDICT_FORMAT}. Retry the reviewer.`,
+					},
+				],
+			};
+		}
+
+		const isFinalReview = runningStage === "final-review-running";
+		setState(
+			{
+				...state,
+				stage: isFinalReview || verdict === "pass" ? "complete" : "correction-available",
+				reviewerCalls: state.reviewerCalls + 1,
+				pendingToolCallId: undefined,
+				lastReviewVerdict: verdict,
+			},
+			ctx,
+		);
 	});
 
 	pi.on("before_agent_start", async (event) => {
 		if (state.phase === "idle") return;
-		const guard =
-			state.phase === "planning"
-				? "SHIP is in planning. Only scout and planner subagents are allowed. Stop for /ship-approve before implementation."
-				: "SHIP implementation is approved. Orchestrate worker and reviewer subagents; at most two worker calls are allowed, and the second requires a preceding review.";
+		const guard = state.phase === "planning"
+			? "SHIP is in planning. Only user-level scout and planner subagents are allowed. Stop for /ship-approve before implementation."
+			: `SHIP implementation is approved. ${stageInstruction(state.stage)}`;
 		return { systemPrompt: `${event.systemPrompt}\n\n${guard}\nActive task: ${state.task}` };
 	});
 

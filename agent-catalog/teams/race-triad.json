@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "race-triad",
+  "name": "Race triad",
+  "description": "Three harnesses attempt the same read-only task; the first acceptable result is verified before use.",
+  "coordination": "hub-and-spoke",
+  "workers": [
+    {
+      "id": "codex-racer",
+      "harness": "codex",
+      "role": "independent-researcher",
+      "assignment": "Solve the objective independently and return the required evidence."
+    },
+    {
+      "id": "claude-racer",
+      "harness": "claude",
+      "role": "independent-researcher",
+      "assignment": "Solve the objective independently and return the required evidence."
+    },
+    {
+      "id": "pi-racer",
+      "harness": "pi",
+      "role": "independent-researcher",
+      "assignment": "Solve the objective independently and return the required evidence."
+    }
+  ],
+  "synthesis": "Accept no winner until the lead verifies its evidence and acceptance criteria; retain useful dissent."
+}

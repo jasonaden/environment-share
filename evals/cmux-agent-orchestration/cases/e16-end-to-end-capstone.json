@@ -1,0 +1,65 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E16-end-to-end-capstone",
+  "name": "End-to-end capstone",
+  "description": "Compose the validated primitives into read-only and write-capable orchestration capstones without introducing a new primitive.",
+  "source_prompt_ids": ["25"],
+  "variants": [
+    {
+      "id": "E16-T3-readonly-capstone",
+      "tier": 3,
+      "execution_mode": "integrated",
+      "description": "Run a visible multi-agent research factory that plans, fans out, verifies a local browser fixture, synthesizes, notifies, and tears down without writes.",
+      "destructive": false,
+      "gates": ["allow_live_agents", "allow_cost", "allow_visual", "allow_notifications"],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch", "model-api", "local-browser", "ui-focus", "notification"],
+      "setup": [
+        "Create a secret-free disposable repository and local browser fixture, choose a small read-only research request, and capture the baseline Cmux tree.",
+        "Create one run-owned group, start event listeners, record provider roles, and define structured plan, shard, verification, synthesis, and teardown artifacts."
+      ],
+      "exercise": [
+        "Have the root orchestrator produce a plan, fan independent read-only shards to agents, update status from correlated events, and collect every artifact.",
+        "Run deterministic tests and local browser checks, synthesize evidence, emit one non-sensitive completion notification, and tear down the fleet."
+      ],
+      "assertions": [
+        { "id": "e16-readonly-plan", "kind": "synthesis", "expectation": "The plan defines independent roles, ownership, verifier commands, deadlines, and artifact paths before dispatch." },
+        { "id": "e16-readonly-complete-fanin", "kind": "synthesis", "expectation": "Every planned shard has exactly one terminal artifact or explicit failure record in the final synthesis." },
+        { "id": "e16-readonly-verification", "kind": "browser", "expectation": "Local tests and browser checks produce machine-readable evidence and no console errors." },
+        { "id": "e16-readonly-no-writes", "kind": "filesystem", "expectation": "The disposable repository remains unchanged despite multi-agent execution." },
+        { "id": "e16-readonly-cleanup", "kind": "cleanup", "expectation": "One notification and result report remain while all agents, listeners, surfaces, workspaces, and groups are reclaimed." }
+      ],
+      "cleanup": [
+        "Stop providers and listeners, close resources in dependency order using the ownership ledger, and clear run-owned notifications if requested.",
+        "Delete fixtures after retaining a redacted evidence summary and prove the unrelated baseline is unchanged."
+      ]
+    },
+    {
+      "id": "E16-T4-write-capstone",
+      "tier": 4,
+      "execution_mode": "destructive",
+      "description": "Implement one bounded fixture feature through isolated writer worktrees, integrate explicitly, verify, collect a diff, notify, and tear down.",
+      "destructive": true,
+      "gates": ["allow_live_agents", "allow_cost", "allow_visual", "allow_notifications", "allow_agent_cancellation", "allow_writes"],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch", "model-api", "local-browser", "ui-focus", "notification", "repo-write"],
+      "setup": [
+        "Create a disposable parent repository with a small seeded feature request, tests, local browser fixture, and no remotes or secrets.",
+        "Create one worktree per writer, define non-overlapping ownership, choose an explicit integrator, start listeners, and record the full ownership ledger."
+      ],
+      "exercise": [
+        "Plan the change, fan out only independent owned files, require per-writer tests and diffs, and stop or reassign workers only under the cancellation policy.",
+        "Have the integrator apply reviewed diffs to an integration worktree, run the complete test and browser suite, collect one final patch, notify, and tear down."
+      ],
+      "assertions": [
+        { "id": "e16-write-isolation", "kind": "filesystem", "expectation": "Every writer modifies only its owned worktree and declared files; no two writers edit the same path concurrently." },
+        { "id": "e16-write-integration-explicit", "kind": "synthesis", "expectation": "The integration record names every accepted or rejected writer diff and the reason for its disposition." },
+        { "id": "e16-write-verifiers", "kind": "browser", "expectation": "The integration worktree passes the full test suite, expected UI behavior, and clean console/error checks." },
+        { "id": "e16-write-final-diff", "kind": "filesystem", "expectation": "One reviewable final patch contains only the requested fixture feature and no generated secrets or unrelated changes." },
+        { "id": "e16-write-scoped-teardown", "kind": "cleanup", "expectation": "All worktrees, agents, listeners, browser/server processes, surfaces, workspaces, and groups are removed without touching unrelated resources." }
+      ],
+      "cleanup": [
+        "Stop all agents and local servers, close owned Cmux resources, and remove writer worktrees only after final evidence is collected.",
+        "Delete the disposable parent repository, clear run-owned notifications if requested, and compare the full post-run tree with the baseline."
+      ]
+    }
+  ]
+}

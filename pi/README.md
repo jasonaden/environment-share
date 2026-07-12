@@ -11,11 +11,17 @@ This directory installs a curated Pi environment for someone who also uses Claud
 
 The installer:
 
-- installs the current `@earendil-works/pi-coding-agent` package without lifecycle scripts;
-- writes configuration under `~/.pi/agent` while preserving changed targets as `*.backup`;
-- installs current upstream permission, protected-path, handoff, and plan-mode extensions;
+- installs the pinned `@earendil-works/pi-coding-agent@0.80.6` package without lifecycle scripts;
+- prefers `PI_NODE_BIN_DIR` (default `~/.local/share/pi-node/current/bin`), then a supported PATH or standard Homebrew Node toolchain; every accepted source toolchain must provide both Node and npm from the same directory, and the selected pair is persisted beside Pi under `PI_NODE_BIN_DIR` for later child installers;
+- supports Node major 22 with minor 19 or later; Node 23+ is outside the reviewed automation range;
+- recursively merges only settings declared in `pi/settings.json`, preserving Pi- and user-owned fields and additional skill paths;
+- refuses both valid and dangling `settings.json` symlinks instead of severing them; update the referent explicitly before retrying;
+- creates timestamped `*.backup.<UTC timestamp>` copies before changing existing settings, prompts, agents, or extensions;
+- installs the matching pinned upstream permission, protected-path, handoff, and plan-mode extensions;
 - installs the optional purpose, subagent, and guarded ship workflows;
-- does not modify credentials, trust decisions, or saved sessions.
+- does not read or modify credentials, saved sessions, or saved per-project trust records.
+
+Set `PI_CODING_AGENT_DIR` to install configuration into a custom Pi root. That changes the settings, prompts, agents, extensions, and Cmux-hook destination; it does not by itself change where the Pi executable is installed. Set `PI_NODE_BIN_DIR` for a custom stable Pi/Node/npm bin directory. If that directory does not yet contain a supported toolchain, the installer selects a reviewed PATH/Homebrew Node 22 source, links Node/npm into the stable directory without replacing conflicts, and installs Pi into its parent prefix.
 
 Start Pi and run `/login` once. The default is `openai-codex/gpt-5.5` with medium thinking. Review current model IDs with `/model` because provider catalogs change.
 
@@ -25,12 +31,14 @@ Start Pi and run `/login` once. The default is `openai-codex/gpt-5.5` with mediu
 |---|---|---|
 | `j pi` | Normal interactive work | Standard Pi tools with dangerous-command and protected-path guards |
 | `j pi-plan` | Explore, produce a plan, then explicitly opt into execution | Write/edit disabled and Bash allowlisted during planning |
-| `j pi-review` | Ephemeral code or change review | `read`, `grep`, `find`, and `ls` only; no Bash or writes |
+| `j pi-review` | Ephemeral code or change review | Guarded `read`, single-file `grep`, and `ls`; no Bash, writes, discovered extensions, skills, prompt templates, themes, or context files |
 | `j pi-focus` | Long task with a visible singular purpose | Normal profile plus purpose gate |
 | `j pi-team` | Isolated agents and the guarded `/ship` workflow | Parent orchestrates; subprocess agents do delegated work |
 | `j pi-clean` | Diagnose Pi without custom resources | Core Pi only, project resources ignored |
 
 None of these profiles is an operating-system sandbox. Read tools retain the launching user's read access, and normal Pi runs with the user's permissions. Use a container or VM for untrusted repositories, unattended production work, or sensitive credentials.
+
+`j pi-review` intentionally ignores both project-local and user-level customization. Pass needed context explicitly in the review prompt instead of loading repository instructions or extensions.
 
 ## Guarded `/ship` workflow
 
@@ -57,6 +65,7 @@ scout -> planner
 During this phase the extension enforces:
 
 - only `scout` and `planner` subagents may run;
+- all subagent discovery is forced to the user-level `~/.pi/agent/agents` directory;
 - parent `bash`, `edit`, and `write` calls are blocked;
 - a worker cannot run until explicit approval;
 - the result must identify scope, exact files, ordered steps, risks, and verification.
@@ -78,7 +87,19 @@ After approval, the parent orchestrates separate calls:
 worker -> reviewer -> optional corrective worker -> final reviewer
 ```
 
-The guard permits at most two worker calls total. The second worker is blocked unless a reviewer has run first, which bounds the correction loop. The parent session remains unable to mutate files directly; implementation belongs to the isolated worker.
+The guard advances only after successful subagent tool results and enforces the sequence itself. A reviewer must end with exactly one standalone verdict:
+
+```text
+SHIP_REVIEW_VERDICT: PASS
+```
+
+or:
+
+```text
+SHIP_REVIEW_VERDICT: FINDINGS
+```
+
+`PASS` completes the workflow. An initial `FINDINGS` verdict unlocks exactly one corrective worker, which must be followed by a final reviewer. A final `FINDINGS` verdict records the remaining risk and completes the bounded workflow without unlocking a third worker. Failed workers and reviewers retry their current stage; missing or ambiguous verdicts are rejected. The parent session remains unable to mutate files directly while `/ship` is active.
 
 The final response should contain the outcome, changed files, checks, reviewer verdict, and remaining risk. Close the state after accepting the result:
 
@@ -104,14 +125,14 @@ Normal sessions load:
 - `/handoff <goal>` — create a focused new session with relevant context;
 - `/plan` — toggle the installed plan-mode extension.
 
-The team profile discovers user-level agents from `~/.pi/agent/agents`:
+The team profile defaults to user-level agents from `~/.pi/agent/agents`, and the guarded `/ship` workflow forces that scope:
 
 - `scout` — focused read-only reconnaissance;
 - `planner` — evidence-grounded implementation planning;
 - `reviewer` — independent read-only review;
 - `worker` — bounded implementation and verification.
 
-Project-local `.pi/agents` are not enabled by this setup. This avoids executing repository-controlled agent prompts by default.
+The standalone upstream subagent tool can still request project-local `.pi/agents` explicitly, subject to its confirmation behavior. `/ship` overwrites such requests with `agentScope: "user"`, so repository-controlled agents cannot replace its guarded worker or reviewers.
 
 ## Security model
 
@@ -126,10 +147,20 @@ The permission gate is deliberately not described as comprehensive protection. B
 
 ## Updating
 
-Re-run:
+The package version is deliberately pinned near the top of `pi/install.sh`. To update:
+
+1. Change `PI_CODING_AGENT_VERSION` intentionally.
+2. Review the permission, protected-path, handoff, plan-mode, and subagent examples bundled with that version.
+3. Run the checks without invoking a model or touching live Pi configuration:
+
+```bash
+bash ./pi/tests/run.sh
+```
+
+4. Re-run the installer:
 
 ```bash
 ./pi/install.sh
 ```
 
-This updates Pi and refreshes the copied upstream example extensions to the installed version. Locally changed destination files are backed up before replacement.
+This installs the pinned version and refreshes the reviewed upstream examples. Repository-owned settings are merged; other changed destination files are replaced only after a timestamped backup is created.

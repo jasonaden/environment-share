@@ -1,0 +1,61 @@
+{
+  "$schema": "./trigger-case.schema.json",
+  "cases": [
+    {
+      "id": "trigger-three-provider-review",
+      "prompt": "Open a Cmux workspace group and have Codex, Claude, and Pi independently review this repository, then collect their structured findings.",
+      "expectation": "should_trigger",
+      "route": "custom-mixed-fleet",
+      "rationale": "The request explicitly needs a heterogeneous Cmux fleet and fan-in."
+    },
+    {
+      "id": "trigger-codex-pi-research",
+      "prompt": "Use Cmux to ask Codex and Pi the same read-only architecture question and compare their evidence.",
+      "expectation": "should_trigger",
+      "route": "custom-mixed-fleet",
+      "rationale": "Two different harnesses need coordinated read-only execution."
+    },
+    {
+      "id": "trigger-mixed-role-triad",
+      "prompt": "Run the review triad across Claude, Pi, and Codex in Cmux with architecture, security, and test roles.",
+      "expectation": "should_trigger",
+      "route": "custom-mixed-fleet",
+      "rationale": "The cataloged heterogeneous role profile is an exact match."
+    },
+    {
+      "id": "trigger-refuse-write-fleet",
+      "prompt": "Launch Codex, Claude, and Pi in one Cmux group and let all three edit the same checkout until tests pass.",
+      "expectation": "should_trigger",
+      "route": "custom-mixed-fleet-refusal",
+      "rationale": "The skill should engage to explain that shared write-capable fleets are outside v1 and refuse launch."
+    },
+    {
+      "id": "trigger-native-codex-only",
+      "prompt": "Have three Codex subagents review this change in parallel.",
+      "expectation": "should_not_trigger",
+      "route": "native-codex-teams",
+      "rationale": "A homogeneous Codex request belongs to the native Codex team feature."
+    },
+    {
+      "id": "trigger-native-claude-only",
+      "prompt": "Use a Claude Code agent team to research three parts of this feature.",
+      "expectation": "should_not_trigger",
+      "route": "native-claude-teams",
+      "rationale": "A homogeneous Claude request belongs to Claude's native team feature."
+    },
+    {
+      "id": "trigger-direct-cmux-terminal",
+      "prompt": "Open one new Cmux terminal in this repository and name the workspace docs.",
+      "expectation": "should_not_trigger",
+      "route": "direct-cmux",
+      "rationale": "A single deterministic Cmux action does not need agent orchestration."
+    },
+    {
+      "id": "trigger-direct-pi-review",
+      "prompt": "Ask Pi to review this one file without creating any other agents.",
+      "expectation": "should_not_trigger",
+      "route": "direct-provider",
+      "rationale": "A single-provider call does not require a heterogeneous fleet."
+    }
+  ]
+}

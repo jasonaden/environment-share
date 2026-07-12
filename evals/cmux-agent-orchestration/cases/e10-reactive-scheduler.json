@@ -1,0 +1,65 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E10-reactive-scheduler",
+  "name": "Reactive scheduler",
+  "description": "Test correlated event dispatch, race selection, cancellation, stalled-work detection, reassignment, and teardown.",
+  "source_prompt_ids": ["14", "15", "16"],
+  "variants": [
+    {
+      "id": "E10-T1-synthetic-events",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Drive a ten-task queue through three deterministic workers with replayable events and controlled delay/failure patterns.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch"],
+      "setup": [
+        "Create a run-scoped event cursor and queue ledger before launching three deterministic workers.",
+        "Configure workers to emit correlated completions, one duplicate event, one delayed task, and one recoverable failure."
+      ],
+      "exercise": [
+        "Dispatch only after the listener is active, consume completion events, ignore duplicates, and hand the next queued task to the freed worker.",
+        "Race three workers for one task, accept the first valid artifact, cancel synthetic losers, detect a stalled task by deadline plus no-progress evidence, reassign it, and drain the queue."
+      ],
+      "assertions": [
+        { "id": "e10-synthetic-listener-first", "kind": "event", "expectation": "The event listener and cursor exist before the first task dispatch." },
+        { "id": "e10-synthetic-exactly-once", "kind": "event", "expectation": "Every queue task reaches terminal state exactly once despite a replayed duplicate event." },
+        { "id": "e10-synthetic-race-validity", "kind": "event", "expectation": "The winner is the first valid correlated artifact, not merely the first unrelated or malformed event." },
+        { "id": "e10-synthetic-stall-policy", "kind": "process", "expectation": "Reassignment uses deadline and progress evidence; CPU usage is recorded only as telemetry." },
+        { "id": "e10-synthetic-cleanup", "kind": "cleanup", "expectation": "The queue, cursor, workers, surfaces, and workspace are fully reclaimed." }
+      ],
+      "cleanup": [
+        "Signal all synthetic workers, close only owned surfaces, and stop the event consumer at the run terminal state.",
+        "Delete the queue and cursor fixtures after recording their final hashes."
+      ]
+    },
+    {
+      "id": "E10-T2-live-race-and-cancel",
+      "tier": 2,
+      "execution_mode": "live-agent",
+      "description": "Run a bounded read-only race and cancellation flow with real agents and run-scoped notifications.",
+      "destructive": true,
+      "gates": ["allow_live_agents", "allow_cost", "allow_notifications", "allow_agent_cancellation"],
+      "external_effects": ["cmux-ephemeral", "process-launch", "model-api", "notification"],
+      "setup": [
+        "Create a secret-free disposable repo, three run-owned agent surfaces, and a listener filtered to the exact run workspace and surface IDs.",
+        "Define a read-only task, valid artifact schema, bounded deadline, and graceful cancellation deadline."
+      ],
+      "exercise": [
+        "Dispatch the same correlated task to all agents, accept the first valid result event, and notify only with the run ID and non-sensitive status.",
+        "Request graceful stop from losing agents and close only their owned surfaces if the deadline expires."
+      ],
+      "assertions": [
+        { "id": "e10-live-event-scope", "kind": "event", "expectation": "Unrelated notification and agent events are ignored and never cause focus or cancellation." },
+        { "id": "e10-live-winner-valid", "kind": "synthesis", "expectation": "The selected winner has a valid run nonce, request ID, schema, and evidence; arrival time alone is insufficient." },
+        { "id": "e10-live-losers-scoped", "kind": "process", "expectation": "Only the two recorded losing surfaces are stopped and the winner remains readable until collection completes." },
+        { "id": "e10-live-readonly", "kind": "filesystem", "expectation": "The repository is unchanged by all racers." },
+        { "id": "e10-live-cleanup", "kind": "cleanup", "expectation": "All agent processes, events, notifications, and owned Cmux resources reach terminal cleanup state." }
+      ],
+      "cleanup": [
+        "Collect the winner, stop every remaining provider, and close only resources in the ownership ledger.",
+        "Clear run-owned notifications where supported, remove the disposable repo, and compare the baseline tree."
+      ]
+    }
+  ]
+}

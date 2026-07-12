@@ -1,0 +1,63 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E07-native-resume",
+  "name": "Native resume",
+  "description": "Separate provider-native session capture from disruptive full-application restoration.",
+  "source_prompt_ids": ["10", "24"],
+  "variants": [
+    {
+      "id": "E07-T2-session-capture",
+      "tier": 2,
+      "execution_mode": "live-agent",
+      "description": "Install hooks in an isolated profile, start one native provider surface, and verify captured resume metadata without restarting Cmux.",
+      "destructive": true,
+      "gates": ["allow_live_agents", "allow_cost", "allow_global_config", "dedicated_cmux_profile"],
+      "external_effects": ["cmux-ephemeral", "process-launch", "model-api", "global-config"],
+      "setup": [
+        "Start from a dedicated Cmux profile whose hook and config files can be discarded after the run.",
+        "Record the profile baseline, install provider hooks, and create one provider-aware agent surface."
+      ],
+      "exercise": [
+        "Give the live agent a nonce-tagged read-only turn and inspect captured native session metadata before any restart.",
+        "Verify manual resume information resolves to the exact owned surface and provider session."
+      ],
+      "assertions": [
+        { "id": "e07-capture-hooks-isolated", "kind": "configuration", "expectation": "Hook changes exist only inside the dedicated profile and the user's normal profile remains unchanged." },
+        { "id": "e07-capture-session-id", "kind": "process", "expectation": "Resume metadata contains a non-empty provider-native session ID correlated to the owned surface." },
+        { "id": "e07-capture-readonly", "kind": "filesystem", "expectation": "The agent's read-only turn causes no repository mutation." },
+        { "id": "e07-capture-cleanup", "kind": "cleanup", "expectation": "The live session, surface, hooks, and isolated profile are disposable and removed." }
+      ],
+      "cleanup": [
+        "Gracefully stop the provider, close the owned surface, and archive only non-sensitive test evidence.",
+        "Discard the dedicated profile and verify normal user hook/config paths are unchanged."
+      ]
+    },
+    {
+      "id": "E07-T4-full-restart-resume",
+      "tier": 4,
+      "execution_mode": "destructive",
+      "description": "Quit and relaunch an isolated Cmux application session and verify topology plus provider-native continuation.",
+      "destructive": true,
+      "gates": ["allow_live_agents", "allow_cost", "allow_restart", "allow_global_config", "dedicated_cmux_profile", "dedicated_macos_environment"],
+      "external_effects": ["process-launch", "model-api", "global-config", "app-restart"],
+      "setup": [
+        "Use a disposable macOS login or VM and a dedicated Cmux profile with automatic resume configured only for the test.",
+        "Install hooks, create multiple native provider surfaces, capture their stable IDs and session IDs, and save the pre-restart tree."
+      ],
+      "exercise": [
+        "Start nonce-tagged read-only turns, quit the isolated Cmux app, relaunch it, and invoke restoration if automatic restore is not part of the variant.",
+        "Wait for every expected surface to reappear and query provider resume metadata before sending a correlated continuation request."
+      ],
+      "assertions": [
+        { "id": "e07-restart-topology", "kind": "topology", "expectation": "The restored layout has exactly the expected run-owned workspaces and surfaces, with no duplicates." },
+        { "id": "e07-restart-session-continuity", "kind": "process", "expectation": "Each restored surface maps to its pre-restart provider session ID and answers a continuation containing the original nonce." },
+        { "id": "e07-restart-no-user-impact", "kind": "security", "expectation": "No normal user Cmux profile, process, workspace, or session is visible to or changed by the run." },
+        { "id": "e07-restart-cleanup", "kind": "cleanup", "expectation": "The disposable app state and profile can be removed completely after restoration is verified." }
+      ],
+      "cleanup": [
+        "Stop all restored provider sessions and close every run-owned workspace in the isolated environment.",
+        "Delete the dedicated profile and destroy or reset the disposable macOS environment."
+      ]
+    }
+  ]
+}

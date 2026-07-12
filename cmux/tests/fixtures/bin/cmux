@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+case "${1:-}" in
+  version|--version)
+    echo "cmux ${FAKE_CMUX_VERSION:-0.64.17} (${FAKE_CMUX_BUILD:-97}) [${FAKE_CMUX_COMMIT:-9ed29d81a}]"
+    ;;
+  hooks)
+    if [ "${FAKE_CMUX_HELP_FAIL:-0}" = "1" ]; then
+      exit 1
+    fi
+    agents="codex, pi"
+    if [ "${FAKE_CMUX_HIDE_PI:-0}" = "1" ]; then
+      agents="codex"
+    fi
+    if [ "${2:-}" = "pi" ] && [ "${3:-}" = "install" ] && [ "${4:-}" = "--yes" ]; then
+      hook_root="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
+      mkdir -p "$hook_root/extensions"
+      printf '// fake Cmux Pi hook\n' >"$hook_root/extensions/cmux-session.ts"
+      echo "Pi hook installed"
+    else
+      printf '%s\n' \
+        'Usage: cmux hooks <agent> install [--yes|-y]' \
+        "Agents: $agents"
+    fi
+    ;;
+  *)
+    exit 2
+    ;;
+esac

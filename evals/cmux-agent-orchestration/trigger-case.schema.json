@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/cmux-orchestrate-agents-trigger-cases.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "cases"],
+  "properties": {
+    "$schema": {"const": "./trigger-case.schema.json"},
+    "cases": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "prompt", "expectation", "route", "rationale"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^trigger-[a-z0-9-]+$"},
+          "prompt": {"type": "string", "minLength": 1},
+          "expectation": {"enum": ["should_trigger", "should_not_trigger"]},
+          "route": {
+            "enum": [
+              "custom-mixed-fleet",
+              "custom-mixed-fleet-refusal",
+              "native-codex-teams",
+              "native-claude-teams",
+              "direct-cmux",
+              "direct-provider"
+            ]
+          },
+          "rationale": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

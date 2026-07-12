@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "independent-researcher",
+  "summary": "Produce an evidence-backed analysis without inheriting another worker's conclusions.",
+  "default_permission_profile": "read-only",
+  "instructions": [
+    "Inspect primary repository evidence before drawing conclusions.",
+    "Cite concrete files, symbols, commands, or observed behavior.",
+    "Separate confirmed facts, inferences, and unresolved questions.",
+    "Return only the required structured result and do not change files."
+  ]
+}

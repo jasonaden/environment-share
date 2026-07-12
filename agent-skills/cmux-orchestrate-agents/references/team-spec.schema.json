@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/cmux-agent-team-v1.schema.json",
+  "title": "Cmux heterogeneous read-only team",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "name", "mode", "topology", "repository", "git_strategy", "workers", "timeouts"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,31}$"},
+    "mode": {"const": "heterogeneous"},
+    "topology": {"const": "workspace-group"},
+    "repository": {"type": "string", "minLength": 1},
+    "git_strategy": {"const": "shared-read-only"},
+    "workers": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "harness", "role", "assignment", "permission_profile"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,31}$"},
+          "harness": {"enum": ["codex", "claude", "pi"]},
+          "role": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+          "assignment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000,
+            "pattern": "^(?=[\\s\\S]*\\S)[^\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F-\\u009F]*$"
+          },
+          "permission_profile": {"const": "read-only"},
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^(?!-)(?!\\s)(?![\\s\\S]*\\s$)[^\\u0000-\\u001F\\u007F-\\u009F]+$"
+          }
+        }
+      }
+    },
+    "timeouts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ready_seconds", "task_seconds", "stop_seconds"],
+      "properties": {
+        "ready_seconds": {"type": "integer", "minimum": 5, "maximum": 300},
+        "task_seconds": {"type": "integer", "minimum": 30, "maximum": 7200},
+        "stop_seconds": {"type": "integer", "minimum": 1, "maximum": 60}
+      }
+    }
+  }
+}

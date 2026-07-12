@@ -1,0 +1,64 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E09-fleet-observability-and-identity",
+  "name": "Fleet observability and identity",
+  "description": "Validate status, progress, logs, groups, workspace identity, and pane identity as one observability system.",
+  "source_prompt_ids": ["13", "22", "26", "31"],
+  "variants": [
+    {
+      "id": "E09-T1-state-apis",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Exercise metadata and grouping APIs on deterministic run-owned workspaces without relying on screenshots.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["cmux-ephemeral", "process-launch"],
+      "setup": [
+        "Create a run-owned workspace group and deterministic role roster with unique reviewer, fixer, tester, and builder identities.",
+        "Record stable workspace and surface IDs and prepare an expected metadata state table."
+      ],
+      "exercise": [
+        "Apply role names, descriptions, colors, icons, status transitions, progress, and logs; create and collapse scale groups using empty workspaces.",
+        "Create one four-pane workspace and apply distinct tab names plus nonce-tagged ANSI role banners without modifying shell profile files."
+      ],
+      "assertions": [
+        { "id": "e09-state-status-transitions", "kind": "topology", "expectation": "Each role workspace exposes the expected working-to-done or working-to-error status, progress, and log sequence through APIs." },
+        { "id": "e09-state-group-membership", "kind": "topology", "expectation": "Every scale workspace belongs to the intended named group, collapse state is queryable, and anchor ownership is recorded." },
+        { "id": "e09-state-workspace-identity", "kind": "topology", "expectation": "Names, descriptions, colors, and icons match the expected table for every owned workspace." },
+        { "id": "e09-state-pane-identity", "kind": "text", "expectation": "The four role surfaces have unique tab names and nonce-tagged banners while no persistent shell config changes." },
+        { "id": "e09-state-cleanup", "kind": "cleanup", "expectation": "Groups are dismantled in anchor-safe order and all run-owned workspaces are removed." }
+      ],
+      "cleanup": [
+        "Close group members before anchors, then close the role and four-pane workspaces by stable ID.",
+        "Confirm no shell profile or unrelated Cmux metadata changed."
+      ]
+    },
+    {
+      "id": "E09-T3-visual-observability",
+      "tier": 3,
+      "execution_mode": "integrated",
+      "description": "Visually confirm the native sidebar, progress, groups, role labels, and pane banners after API state passes.",
+      "destructive": false,
+      "gates": ["allow_visual"],
+      "external_effects": ["cmux-ephemeral", "process-launch", "ui-focus"],
+      "setup": [
+        "Run the deterministic state fixture in a dedicated visible Cmux window using a bounded number of representative workspaces.",
+        "Prepare a visual checklist derived from the already-asserted state table."
+      ],
+      "exercise": [
+        "Inspect expanded and collapsed groups, status colors, progress labels, workspace icons, pane tab names, banners, and targeted flash behavior.",
+        "Capture minimal visual evidence only after machine-readable state assertions succeed."
+      ],
+      "assertions": [
+        { "id": "e09-visual-sidebar", "kind": "visual", "expectation": "Workspace groups, colors, icons, status pills, and progress bars render consistently with the state table." },
+        { "id": "e09-visual-panes", "kind": "visual", "expectation": "Reviewer, fixer, tester, and builder panes are distinguishable by tab title and banner without per-pane theme claims." },
+        { "id": "e09-visual-flash", "kind": "manual", "expectation": "Targeted flash highlights only the selected owned workspace or surface." },
+        { "id": "e09-visual-cleanup", "kind": "cleanup", "expectation": "Closing the fixture restores the sidebar and window to their baseline state." }
+      ],
+      "cleanup": [
+        "Remove visual evidence that contains unrelated user UI or redact it before retention.",
+        "Close all run-owned workspaces and the dedicated window if it was created by the run."
+      ]
+    }
+  ]
+}
