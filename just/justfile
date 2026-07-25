@@ -61,6 +61,28 @@ ccplan *args:
 claude-raw *args:
     cd "{{invocation_directory()}}" && claude {{args}}
 
+# ── Codex ────────────────────────────────────────────
+
+# Codex: start in the current directory
+cx *args:
+    cd "{{invocation_directory()}}" && codex {{args}}
+
+# Codex: resume a session (interactive picker)
+cxr *args:
+    cd "{{invocation_directory()}}" && codex resume {{args}}
+
+# Codex: continue the most recent session
+cxc *args:
+    cd "{{invocation_directory()}}" && codex resume --last {{args}}
+
+# Codex: run a non-interactive task
+cxe *args:
+    cd "{{invocation_directory()}}" && codex exec {{args}}
+
+# Codex: passthrough any command
+codex-raw *args:
+    cd "{{invocation_directory()}}" && codex {{args}}
+
 # ── Pi Coding Agent ──────────────────────────────────────────────
 
 # Pi: normal interactive session with global safety/workflow extensions

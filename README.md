@@ -14,6 +14,7 @@ Personal development environment configuration and setup scripts for macOS.
 | `pi/` | Pi coding agent settings, prompts, agents, extensions, and installer |
 | `cmux/` | Cmux integration installer, pinned upstream-skill lock, launcher, and isolated installer tests |
 | `agent-skills/` | Canonical cross-harness skills installed for Codex, Claude, and Pi discovery |
+| `codex/` | Codex setup and agent-specific plugin catalog |
 | `agent-catalog/` | Validated reusable worker roles and heterogeneous team profiles |
 | `evals/` | Versioned capability and safety eval ladders derived from reviewed sources |
 | `just/` | Global justfile with Claude Code and Pi recipes plus the `j` alias |
@@ -33,12 +34,15 @@ cd ~/Projects/environment-share
 Or install components individually:
 
 ```bash
-./scripts/install-core.sh        # Homebrew, zsh, tmux, reviewed Node 22.19+ (22.x only) + npm, yarn, gh, jq, just, claude, cmux
+./scripts/install-core.sh        # Homebrew, shell tools, Claude Code, Codex, Pi prerequisites, and Cmux
 ./git/install.sh                 # Git aliases and global settings
 ./tmux/install.sh                # tmux config
 ./iterm/install.sh               # iTerm2 preferences
 ./claude/install.sh              # Merge repository-owned Claude settings
 ./claude/install-plugins.sh      # Claude Code plugins
+./codex/install.sh               # Codex shared skills (preserves personal settings)
+./codex/install-plugins.sh       # Show the desired Codex plugin catalog
+./agent-skills/install.sh        # Install portable skills for Claude Code and Codex
 ./pi/install.sh                  # Pi agent + curated safe/optional profiles
 ./cmux/install.sh                # Pinned Cmux skills, orchestration catalog, and Pi hook
 ./cmux/install.sh --dry-run      # Preview local Cmux changes; upstream comparisons stay network-free
@@ -57,6 +61,8 @@ j ccc          # Continue last Claude session
 j ccw mybranch # Start Claude in an isolated worktree
 j ccm opus     # Start Claude with a specific model
 j ccplan       # Start Claude in plan mode
+j cx           # Start Codex
+j cxr          # Resume a Codex session
 j pi           # Start Pi with the normal curated profile
 j pi-review    # Read-only Pi review with no Bash and no saved session
 j pi-plan      # Read-only planning followed by explicit execution opt-in
@@ -108,7 +114,10 @@ Fleet manifests resolve their repository to the canonical Git worktree root. Tha
 - Claude settings are merged: unrelated user preferences and permission rules are preserved
 - The core installer will prompt for your password (Homebrew install, `chsh` for zsh)
 - Claude Code must be authenticated separately after installation (`claude login`)
+- Codex must be authenticated separately after installation (`codex login`)
 - Pi must be authenticated separately: start `pi`, run `/login`, and choose a provider
 - `PI_CODING_AGENT_DIR` changes Pi's configuration and hook root; `PI_NODE_BIN_DIR` changes the stable Pi/Node/npm bin directory. A reviewed fallback Node 22 source is persisted there so later child installers do not depend on an inherited PATH. The default shared-skill directory remains `~/.claude/skills` unless `PI_SHARED_SKILLS_DIR` is set explicitly.
 - After authenticating Claude, run `./claude/install-plugins.sh` to install plugins
+- Add portable skills under `agent-skills/<name>/SKILL.md`; the shared installer links the same source into Claude Code and Codex.
+- Plugin manifests, hooks, commands, and marketplace metadata remain agent-specific. See `agent-skills/README.md`.
 - Git aliases include `legit` workflow commands (branches, publish, sync, etc.) — legit is installed automatically

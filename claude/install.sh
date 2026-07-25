@@ -253,12 +253,6 @@ else
   echo "    Merged repository-owned Claude settings."
 fi
 
-mkdir -p "$CLAUDE_DIR/commands"
-for source in "$SCRIPT_DIR"/commands/*.md; do
-  install_managed_file "$source" "$CLAUDE_DIR/commands/$(basename "$source")"
-done
-echo "    Installed slash commands: /prep-for-clear, /after-clear"
-
 echo ""
 echo "==> Claude Code configuration installed successfully."
 echo "    - Existing user settings and permission rules are preserved."

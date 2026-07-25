@@ -4,6 +4,7 @@ set -euo pipefail
 readonly NODE_MIN_VERSION="22.19.0"
 readonly NODE_BREW_FORMULA="node@22"
 readonly CMUX_REVIEWED_IDENTITY="cmux 0.64.17 (97) [9ed29d81a]"
+readonly CODEX_REVIEWED_VERSION="0.144.0-alpha.4"
 readonly CLAUDE_REVIEWED_VERSION="2.1.197"
 readonly RG_REVIEWED_VERSION="15.1.0"
 readonly FD_REVIEWED_VERSION="10.4.2"
@@ -203,6 +204,20 @@ fi
 CLAUDE_VERSION_OUTPUT="$(claude --version 2>/dev/null || true)"
 if [[ "$CLAUDE_VERSION_OUTPUT" != "$CLAUDE_REVIEWED_VERSION (Claude Code)" ]]; then
     echo "Claude Code must match reviewed baseline $CLAUDE_REVIEWED_VERSION; found: $CLAUDE_VERSION_OUTPUT" >&2
+    exit 1
+fi
+
+# Codex CLI
+if ! command -v codex &>/dev/null; then
+    echo "    Installing Codex CLI ${CODEX_REVIEWED_VERSION}..."
+    "$NPM_BIN" install -g --ignore-scripts --no-fund --no-audit "@openai/codex@${CODEX_REVIEWED_VERSION}"
+else
+    echo "    Codex CLI is already installed ($(codex --version 2>/dev/null || echo 'unknown version'))."
+fi
+
+CODEX_VERSION_OUTPUT="$(codex --version 2>/dev/null || true)"
+if [[ "$CODEX_VERSION_OUTPUT" != "codex-cli $CODEX_REVIEWED_VERSION" ]]; then
+    echo "Codex CLI must match reviewed baseline $CODEX_REVIEWED_VERSION; found: $CODEX_VERSION_OUTPUT" >&2
     exit 1
 fi
 

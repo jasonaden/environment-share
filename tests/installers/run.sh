@@ -22,16 +22,13 @@ bash -n \
 
 [ -x "$NODE_BIN" ] || { echo "Installer tests require reviewed Node." >&2; exit 1; }
 
-printf 'claude-outside\n' >"$TMP_ROOT/claude-outside"
-mkdir -p "$TMP_ROOT/claude/commands"
-ln -s "$TMP_ROOT/claude-outside" "$TMP_ROOT/claude/commands/after-clear.md"
-if CLAUDE_CONFIG_DIR="$TMP_ROOT/claude" \
-  "$REPO_DIR/claude/install.sh" >"$TMP_ROOT/claude-symlink.out" 2>&1; then
-  echo "Claude installer unexpectedly followed a managed command symlink." >&2
+mkdir -p "$TMP_ROOT/claude"
+CLAUDE_CONFIG_DIR="$TMP_ROOT/claude" \
+  "$REPO_DIR/claude/install.sh" >"$TMP_ROOT/claude-install.out"
+[ ! -e "$TMP_ROOT/claude/commands" ] || {
+  echo "Claude installer unexpectedly installed obsolete slash commands." >&2
   exit 1
-fi
-grep -Fq 'Refusing to replace a managed Claude symlink' "$TMP_ROOT/claude-symlink.out"
-grep -Fxq 'claude-outside' "$TMP_ROOT/claude-outside"
+}
 
 quoted_home="$TMP_ROOT/home'quoted"
 mkdir -p "$quoted_home/claude"

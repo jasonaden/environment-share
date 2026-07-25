@@ -15,7 +15,7 @@ Follow the vendor-neutral repository rules in `AGENTS.md`. Keep this file limite
 - `claude/settings.json` owns only the shared status line and compaction/session hooks.
 - `claude/install.sh` merges those owned keys, preserves unrelated user settings, writes timestamped backups, and migrates only the exact legacy unrestricted-permissions shape previously installed by this repository.
 - `claude/install-plugins.sh` remains a separate explicit network/plugin action.
-- The canonical cross-harness skill lives at `agent-skills/cmux-orchestrate-agents`; use it only for deliberate mixed Codex/Claude/Pi fleets.
+- Portable cross-harness skills live under `agent-skills/`; the orchestration skill is only for deliberate mixed Codex/Claude/Pi fleets.
 
 ## Verification
 
