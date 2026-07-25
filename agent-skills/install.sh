@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS_DIR="$SCRIPT_DIR/skills"
+SKILLS_DIR="$SCRIPT_DIR"
 
 install_for_agent() {
     local agent="$1"

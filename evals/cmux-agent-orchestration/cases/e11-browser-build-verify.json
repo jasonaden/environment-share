@@ -1,0 +1,65 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E11-browser-build-verify",
+  "name": "Browser build and verify",
+  "description": "Test terminal/browser topology, DOM interaction, runtime diagnostics, and a bounded evidence-driven repair loop.",
+  "source_prompt_ids": ["17", "18", "19"],
+  "variants": [
+    {
+      "id": "E11-T1-local-browser-fixture",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Use a local two-page fixture to validate browser snapshot, interaction, wait, diagnostics, and screenshot evidence.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch", "local-browser"],
+      "setup": [
+        "Create a deterministic local site with a link, known DOM markers, a controlled console error toggle, and an allocated port.",
+        "Start the local server and create a run-owned terminal plus browser topology."
+      ],
+      "exercise": [
+        "Navigate to the fixture, capture an interactive snapshot, activate the nonce-tagged link, wait for the target URL and DOM marker, and save a screenshot.",
+        "Enable the known console error, verify it appears in diagnostics, disable it, reload, and verify clean diagnostics."
+      ],
+      "assertions": [
+        { "id": "e11-local-topology", "kind": "topology", "expectation": "The workspace contains the expected owned terminal and local-browser surfaces." },
+        { "id": "e11-local-dom-action", "kind": "browser", "expectation": "The snapshot exposes the nonce-tagged element and activation reaches the exact expected local URL and marker." },
+        { "id": "e11-local-diagnostics", "kind": "browser", "expectation": "The known error is observed before repair and both console and error lists are clean afterward." },
+        { "id": "e11-local-screenshot", "kind": "filesystem", "expectation": "A non-empty screenshot artifact is associated with the final nonce-tagged page state." },
+        { "id": "e11-local-cleanup", "kind": "cleanup", "expectation": "The server, surfaces, screenshot, and fixture files are removed." }
+      ],
+      "cleanup": [
+        "Stop the local server, close the browser and terminal surfaces, and close the owned workspace.",
+        "Delete the fixture and screenshot after recording hashes required by the result."
+      ]
+    },
+    {
+      "id": "E11-T3-live-agent-repair",
+      "tier": 3,
+      "execution_mode": "integrated",
+      "description": "Let a real agent repair one seeded UI defect in an isolated worktree using machine-readable browser feedback.",
+      "destructive": true,
+      "gates": ["allow_live_agents", "allow_cost", "allow_writes"],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch", "model-api", "local-browser", "repo-write"],
+      "setup": [
+        "Create a disposable worktree containing a local app with exactly one seeded runtime defect, a known verifier, and an allocated port.",
+        "Launch one write-enabled agent only inside that worktree and create an owned browser surface after the listener is active."
+      ],
+      "exercise": [
+        "Run the app, collect the known browser error, send the structured diagnostic to the agent, and allow at most three repair rounds.",
+        "After each round run tests plus browser diagnostics; stop only when both pass and capture final screenshot and diff evidence."
+      ],
+      "assertions": [
+        { "id": "e11-live-seeded-error", "kind": "browser", "expectation": "The pre-repair run observes the exact seeded runtime defect." },
+        { "id": "e11-live-bounded-repair", "kind": "process", "expectation": "The repair loop performs no more than three rounds and every round is driven by captured diagnostics." },
+        { "id": "e11-live-verifiers-green", "kind": "browser", "expectation": "Tests pass, console and error lists are clean, and the expected DOM behavior works before success." },
+        { "id": "e11-live-write-scope", "kind": "filesystem", "expectation": "All modifications are confined to the owned worktree and the final diff addresses the seeded defect." },
+        { "id": "e11-live-repair-cleanup", "kind": "cleanup", "expectation": "The agent, server, browser, worktree, and run-owned Cmux resources are removed after evidence collection." }
+      ],
+      "cleanup": [
+        "Stop the app and agent, close owned surfaces, and retain only the redacted diff and verifier summary.",
+        "Delete the disposable worktree and prove the parent repository is unchanged."
+      ]
+    }
+  ]
+}

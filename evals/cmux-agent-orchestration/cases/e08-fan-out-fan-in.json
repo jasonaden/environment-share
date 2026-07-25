@@ -1,0 +1,63 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E08-fan-out-fan-in",
+  "name": "Fan-out and fan-in",
+  "description": "Partition work into unique shards, collect exactly one result per shard, and synthesize complete coverage.",
+  "source_prompt_ids": ["12"],
+  "variants": [
+    {
+      "id": "E08-T1-deterministic-shards",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Use four deterministic workers over a generated four-directory fixture.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch"],
+      "setup": [
+        "Generate four nonce-tagged directories with disjoint known contents and prepare one deterministic worker per shard.",
+        "Create a run-owned topology and activate the completion collector before dispatch."
+      ],
+      "exercise": [
+        "Assign each worker one and only one directory with a distinct shard ID and require a structured five-item summary.",
+        "Collect all four artifacts and produce a map whose entries preserve shard identity and evidence paths."
+      ],
+      "assertions": [
+        { "id": "e08-stub-unique-assignment", "kind": "text", "expectation": "Each shard ID is dispatched exactly once to its intended worker and no worker receives another shard." },
+        { "id": "e08-stub-artifact-schema", "kind": "filesystem", "expectation": "Each worker produces one valid artifact containing its shard ID, nonce, five items, and evidence references." },
+        { "id": "e08-stub-complete-map", "kind": "synthesis", "expectation": "The combined map contains all four shard IDs exactly once and no unsupported directory claims." },
+        { "id": "e08-stub-cleanup", "kind": "cleanup", "expectation": "Workers, surfaces, artifacts, and fixture directories are removed after assertions." }
+      ],
+      "cleanup": [
+        "Stop workers and close all resources from the ownership ledger.",
+        "Delete the generated repository and artifacts after retaining only the eval result summary."
+      ]
+    },
+    {
+      "id": "E08-T2-live-readonly-shards",
+      "tier": 2,
+      "execution_mode": "live-agent",
+      "description": "Run the same four-shard contract with selected real providers in a read-only disposable repository.",
+      "destructive": false,
+      "gates": ["allow_live_agents", "allow_cost"],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch", "model-api"],
+      "setup": [
+        "Create a secret-free generated repository with four known top-level directories and deny writes to all provider adapters.",
+        "Start a correlated collector and create one owned surface per selected provider or provider instance."
+      ],
+      "exercise": [
+        "Send each live agent one distinct directory assignment with a structured output contract and bounded deadline.",
+        "Collect every correlated result and synthesize only claims backed by file evidence."
+      ],
+      "assertions": [
+        { "id": "e08-live-shards-complete", "kind": "synthesis", "expectation": "All four directory shards are represented exactly once in the final map." },
+        { "id": "e08-live-evidence-valid", "kind": "synthesis", "expectation": "Every file evidence reference exists inside the agent's assigned directory." },
+        { "id": "e08-live-readonly", "kind": "filesystem", "expectation": "The generated repository is unchanged after all agent turns." },
+        { "id": "e08-live-cleanup", "kind": "cleanup", "expectation": "All provider sessions and run-owned Cmux resources are removed." }
+      ],
+      "cleanup": [
+        "Stop each provider after its artifact is collected and close all owned surfaces.",
+        "Delete the generated repository and compare the post-run tree with the baseline."
+      ]
+    }
+  ]
+}

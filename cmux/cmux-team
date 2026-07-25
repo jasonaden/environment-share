@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
+RUNNER=""
+
+for candidate in \
+  "$REPO_DIR/agent-skills/cmux-orchestrate-agents/scripts/cmux_team.py" \
+  "${CODEX_HOME:-$HOME/.codex}/skills/cmux-orchestrate-agents/scripts/cmux_team.py" \
+  "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/cmux-orchestrate-agents/scripts/cmux_team.py"; do
+  if [ -f "$candidate" ]; then
+    RUNNER="$candidate"
+    break
+  fi
+done
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "cmux-team: python3 is required" >&2
+  exit 1
+fi
+
+if [ -z "$RUNNER" ]; then
+  echo "cmux-team: runner not found in the source checkout or installed skill trees" >&2
+  exit 1
+fi
+
+exec python3 "$RUNNER" "$@"

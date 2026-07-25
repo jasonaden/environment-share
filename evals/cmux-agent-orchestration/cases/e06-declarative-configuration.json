@@ -1,0 +1,63 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E06-declarative-configuration",
+  "name": "Declarative configuration",
+  "description": "Validate project-local layouts, actions, Dock controls, and configuration precedence without modifying the user's global profile.",
+  "source_prompt_ids": ["09", "28", "29", "30"],
+  "variants": [
+    {
+      "id": "E06-T0-config-fixtures",
+      "tier": 0,
+      "execution_mode": "static",
+      "description": "Parse and schema-check representative project-local layout, action, Dock, and override fixtures.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["none"],
+      "setup": [
+        "Materialize config samples in an isolated fixture tree without placing them in a live repository or user config directory.",
+        "Parameterize commands, ports, and action IDs with fixture-safe values."
+      ],
+      "exercise": [
+        "Validate the layout tree, action references, command names, Dock control IDs, and project-over-global precedence rules.",
+        "Reject invalid split ratios, missing action targets, duplicate IDs, and global-only settings in the project fixture."
+      ],
+      "assertions": [
+        { "id": "e06-static-layout-valid", "kind": "configuration", "expectation": "The two-pane layout has valid split nodes, exactly two children per split, and valid terminal/browser leaves." },
+        { "id": "e06-static-actions-resolve", "kind": "configuration", "expectation": "Every palette, tab-bar, menu, and Dock reference resolves to a declared or known built-in action." },
+        { "id": "e06-static-precedence", "kind": "configuration", "expectation": "Project actions and commands override matching global IDs while global-only preferences are rejected from the project layer." },
+        { "id": "e06-static-no-live-state", "kind": "cleanup", "expectation": "Validation performs no Cmux, process, network, or user-config mutation." }
+      ],
+      "cleanup": [
+        "Discard the in-memory or temporary config fixture.",
+        "Confirm no file outside the fixture root changed."
+      ]
+    },
+    {
+      "id": "E06-T3-project-ui-fixture",
+      "tier": 3,
+      "execution_mode": "integrated",
+      "description": "Load project-local configuration in a disposable repo and visually verify layout and UI wiring without activating agent actions.",
+      "destructive": false,
+      "gates": ["allow_visual"],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "local-browser", "ui-focus"],
+      "setup": [
+        "Create a disposable repo with .cmux/cmux.json and .cmux/dock.json fixtures that use harmless shell and local-browser commands.",
+        "Capture the baseline UI configuration and Cmux tree before opening the repo."
+      ],
+      "exercise": [
+        "Open the repo, launch the named two-pane fixture layout, and inspect palette, tab-bar, menu, and Dock entries without selecting the agent action.",
+        "Confirm project-scoped overrides disappear when focus leaves the fixture repository."
+      ],
+      "assertions": [
+        { "id": "e06-ui-layout", "kind": "topology", "expectation": "The named command creates exactly one terminal and one local-browser surface in the declared orientation." },
+        { "id": "e06-ui-wiring", "kind": "visual", "expectation": "The expected harmless fixture action appears in the palette, tab bar or menu, and Dock at their declared locations." },
+        { "id": "e06-ui-project-scope", "kind": "configuration", "expectation": "Project overrides are active only for the fixture repo and do not alter global configuration." },
+        { "id": "e06-ui-cleanup", "kind": "cleanup", "expectation": "The fixture workspace and repo are removed and global UI state matches the baseline." }
+      ],
+      "cleanup": [
+        "Close the run-owned layout without activating any agent or long-running Dock control.",
+        "Delete the disposable repo and verify the global configuration files are unchanged."
+      ]
+    }
+  ]
+}

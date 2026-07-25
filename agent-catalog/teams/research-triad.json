@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "research-triad",
+  "name": "Research triad",
+  "description": "Three independent read-only analyses followed by evidence-backed synthesis.",
+  "coordination": "hub-and-spoke",
+  "workers": [
+    {
+      "id": "codex-research",
+      "harness": "codex",
+      "role": "independent-researcher",
+      "assignment": "Analyze the objective independently, emphasizing implementation evidence."
+    },
+    {
+      "id": "claude-research",
+      "harness": "claude",
+      "role": "independent-researcher",
+      "assignment": "Analyze the objective independently, emphasizing architecture and tradeoffs."
+    },
+    {
+      "id": "pi-research",
+      "harness": "pi",
+      "role": "independent-researcher",
+      "assignment": "Analyze the objective independently and challenge likely shared assumptions."
+    }
+  ],
+  "synthesis": "Compare agreements, disagreements, unique evidence, and unresolved uncertainty."
+}

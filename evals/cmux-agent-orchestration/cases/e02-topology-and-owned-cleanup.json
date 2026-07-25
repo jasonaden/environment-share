@@ -1,0 +1,36 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E02-topology-and-owned-cleanup",
+  "name": "Topology and owned cleanup",
+  "description": "Create, inspect, label, signal, and tear down a multi-pane topology without touching unrelated resources.",
+  "source_prompt_ids": ["03", "04", "05"],
+  "variants": [
+    {
+      "id": "E02-T1-four-pane-fixture",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Build a 2x2 fixture from captured refs, run bounded shell workers, introspect it, and remove it by ownership ledger.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch"],
+      "setup": [
+        "Capture the full baseline tree and create a unique run-owned workspace in a temporary directory.",
+        "Prepare deterministic bounded workers that identify their pane role and exit on a run-scoped rendezvous token."
+      ],
+      "exercise": [
+        "Split only from captured surface refs until the workspace has four surfaces arranged as a 2x2 topology.",
+        "Run one fixture worker per surface, inspect the run-owned subtree and resource metadata, rename and flash the workspace, then close child surfaces and the workspace by recorded refs."
+      ],
+      "assertions": [
+        { "id": "e02-four-surfaces", "kind": "topology", "expectation": "The run-owned workspace reports exactly four distinct surfaces and all four refs were captured at creation." },
+        { "id": "e02-role-processes", "kind": "process", "expectation": "Each run-owned surface exposes the expected nonce-tagged role process; no assertion depends on unrelated process data." },
+        { "id": "e02-lifecycle-order", "kind": "topology", "expectation": "The workspace rename is observable before child surfaces and then the workspace disappear in the requested order." },
+        { "id": "e02-scoped-teardown", "kind": "cleanup", "expectation": "No run-owned process or surface remains and the baseline tree outside the run ownership set is byte-for-byte equivalent." }
+      ],
+      "cleanup": [
+        "Signal any surviving fixture worker, then close only remaining resources in the ownership ledger.",
+        "Remove the temporary directory and fail the eval if any unrelated topology changed."
+      ]
+    }
+  ]
+}

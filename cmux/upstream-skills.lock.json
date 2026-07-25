@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "https://github.com/manaflow-ai/cmux",
+    "version": "v0.64.17",
+    "commit": "9ed29d81a39de3ba44e0654bbcf6bf67ca86d1fb"
+  },
+  "skills": [
+    "cmux",
+    "cmux-workspace",
+    "cmux-diagnostics",
+    "cmux-browser",
+    "cmux-markdown"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E13-multi-window-routing",
+  "name": "Multi-window routing",
+  "description": "Verify deterministic addressing, task routing, movement, and aggregation across native Cmux windows.",
+  "source_prompt_ids": ["21"],
+  "variants": [
+    {
+      "id": "E13-T3-dedicated-command-center",
+      "tier": 3,
+      "execution_mode": "integrated",
+      "description": "Create frontend, backend, and ops windows with deterministic workers in a dedicated visible session.",
+      "destructive": false,
+      "gates": ["allow_visual"],
+      "external_effects": ["cmux-ephemeral", "process-launch", "ui-focus"],
+      "setup": [
+        "Capture the baseline window tree and prepare three deterministic task fixtures labeled frontend, backend, and ops.",
+        "Create a run ownership ledger before opening any native window."
+      ],
+      "exercise": [
+        "Create three run-owned windows, place the matching workspace and worker in each, and dispatch tasks using explicit window and surface refs.",
+        "Move one owned workspace between two owned windows, prove its stable identity survives, restore it, and aggregate all three results."
+      ],
+      "assertions": [
+        { "id": "e13-window-topology", "kind": "topology", "expectation": "Exactly three owned windows exist and each contains the expected labeled workspace and surface." },
+        { "id": "e13-window-routing", "kind": "text", "expectation": "Each deterministic worker receives only the task matching its window role and returns a correlated artifact." },
+        { "id": "e13-window-move", "kind": "topology", "expectation": "Moving the owned workspace changes its parent window while preserving its stable workspace identity." },
+        { "id": "e13-window-synthesis", "kind": "synthesis", "expectation": "The aggregate contains one evidence-backed result from frontend, backend, and ops." },
+        { "id": "e13-window-cleanup", "kind": "cleanup", "expectation": "All windows created by the run close and every pre-existing window remains unchanged." }
+      ],
+      "cleanup": [
+        "Stop deterministic workers and close owned workspaces before closing their owned native windows.",
+        "Compare the remaining window tree with the exact baseline and remove fixture artifacts."
+      ]
+    }
+  ]
+}

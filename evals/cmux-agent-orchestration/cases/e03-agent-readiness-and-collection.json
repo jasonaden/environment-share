@@ -1,0 +1,63 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E03-agent-readiness-and-collection",
+  "name": "Agent readiness and collection",
+  "description": "Define the launch, readiness, prompt, completion, collection, and stop contract for one provider adapter.",
+  "source_prompt_ids": ["06"],
+  "variants": [
+    {
+      "id": "E03-T1-deterministic-worker",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Use a local worker process that implements the same readiness and structured completion protocol as an agent adapter.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch"],
+      "setup": [
+        "Create a run-owned workspace and a deterministic worker fixture that emits READY with the run nonce.",
+        "Start the completion listener before launching the worker."
+      ],
+      "exercise": [
+        "Launch the worker through the provider-adapter interface, wait for its nonce-tagged readiness signal, and submit a structured request.",
+        "Wait for the completion event and collect the worker's JSON result from the owned surface."
+      ],
+      "assertions": [
+        { "id": "e03-stub-ready", "kind": "event", "expectation": "No task is dispatched before the exact run-scoped READY signal is observed." },
+        { "id": "e03-stub-result", "kind": "text", "expectation": "The result contains the expected schema, run nonce, request ID, and deterministic payload." },
+        { "id": "e03-stub-no-sleep", "kind": "process", "expectation": "Readiness and completion use bounded signals rather than fixed sleep-based success criteria." },
+        { "id": "e03-stub-cleanup", "kind": "cleanup", "expectation": "The worker and its Cmux resources are gone without changing unrelated resources." }
+      ],
+      "cleanup": [
+        "Gracefully stop the fixture worker or close its run-owned surface on timeout.",
+        "Close the run workspace, remove artifacts, and compare against the baseline tree."
+      ]
+    },
+    {
+      "id": "E03-T2-live-provider-smoke",
+      "tier": 2,
+      "execution_mode": "live-agent",
+      "description": "Run the same protocol through one selected real provider using a read-only prompt.",
+      "destructive": false,
+      "gates": ["allow_live_agents", "allow_cost"],
+      "external_effects": ["cmux-ephemeral", "process-launch", "model-api"],
+      "setup": [
+        "Select one installed provider, confirm read-only permissions, and create a disposable repository with no secrets.",
+        "Create a run-owned surface and start the provider-specific readiness and completion listeners."
+      ],
+      "exercise": [
+        "Launch the provider adapter, wait for readiness, and ask it to return a nonce-tagged structured observation without editing files.",
+        "Collect the structured artifact and the bounded terminal evidence after completion."
+      ],
+      "assertions": [
+        { "id": "e03-live-ready", "kind": "event", "expectation": "The provider reaches readiness before dispatch and within its adapter-specific deadline." },
+        { "id": "e03-live-readonly", "kind": "filesystem", "expectation": "The disposable repository has no content or metadata changes after the agent turn." },
+        { "id": "e03-live-correlated", "kind": "text", "expectation": "The collected artifact contains the run nonce and request ID; exact prose is not scored." },
+        { "id": "e03-live-cleanup", "kind": "cleanup", "expectation": "The live provider process and every run-owned Cmux resource are removed." }
+      ],
+      "cleanup": [
+        "Request a graceful provider exit, then close the owned surface if it misses the bounded stop deadline.",
+        "Remove the disposable repository and prove the unrelated Cmux baseline is unchanged."
+      ]
+    }
+  ]
+}

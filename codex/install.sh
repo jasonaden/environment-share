@@ -7,7 +7,7 @@ CODEX_DIR="${CODEX_HOME:-$HOME/.codex}"
 
 echo "==> Installing Codex configuration..."
 mkdir -p "$CODEX_DIR"
-"$REPO_DIR/agents/install-skills.sh" codex
+"$REPO_DIR/agent-skills/install.sh" codex
 
 echo "==> Codex configuration installed."
 echo "    Project guidance is provided by AGENTS.md."

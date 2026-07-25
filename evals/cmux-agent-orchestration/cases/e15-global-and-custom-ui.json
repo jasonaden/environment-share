@@ -1,0 +1,63 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E15-global-and-custom-ui",
+  "name": "Global and custom UI",
+  "description": "Validate global appearance and custom-sidebar definitions statically, then render them only in an isolated profile.",
+  "source_prompt_ids": ["27", "30"],
+  "variants": [
+    {
+      "id": "E15-T0-global-ui-fixtures",
+      "tier": 0,
+      "execution_mode": "static",
+      "description": "Parse Ghostty/Cmux appearance changes and a custom-sidebar source fixture without loading either into the app.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["none"],
+      "setup": [
+        "Load isolated before/after config fixtures for theme, font, opacity, and custom-sidebar settings.",
+        "Load a sidebar source fixture bound only to mock workspaces, clock, and pull-request records."
+      ],
+      "exercise": [
+        "Validate allowed appearance keys, bounded numeric values, theme names, beta enablement, sidebar syntax, data bindings, and command targets.",
+        "Reject filesystem, shell, network, or action targets outside the declared sidebar contract."
+      ],
+      "assertions": [
+        { "id": "e15-static-appearance-diff", "kind": "configuration", "expectation": "The fixture changes only the declared theme, font, opacity, and sidebar keys." },
+        { "id": "e15-static-sidebar-valid", "kind": "configuration", "expectation": "The sidebar source uses supported bindings and selects workspaces only through an explicit stable ID." },
+        { "id": "e15-static-no-code-execution", "kind": "security", "expectation": "Validation does not interpret the sidebar, reload config, execute actions, or access live PR data." },
+        { "id": "e15-static-cleanup", "kind": "cleanup", "expectation": "No user config path or live application state changes." }
+      ],
+      "cleanup": [
+        "Discard the in-memory fixture data.",
+        "Verify the normal Cmux and Ghostty config file hashes remain unchanged."
+      ]
+    },
+    {
+      "id": "E15-T4-isolated-global-ui",
+      "tier": 4,
+      "execution_mode": "destructive",
+      "description": "Apply appearance and custom-sidebar fixtures to a disposable profile, visually verify live reload, and restore the profile.",
+      "destructive": true,
+      "gates": ["allow_visual", "allow_global_config", "dedicated_cmux_profile"],
+      "external_effects": ["ui-focus", "global-config"],
+      "setup": [
+        "Create a dedicated Cmux/Ghostty profile and seed it with known baseline theme, font, opacity, and native sidebar settings.",
+        "Install the custom-sidebar fixture and mock PR data only inside that profile."
+      ],
+      "exercise": [
+        "Apply the declared appearance changes, reload configuration without restarting, validate and select the custom sidebar, and activate one mock workspace row.",
+        "Restore the baseline configuration and native sidebar before ending the run."
+      ],
+      "assertions": [
+        { "id": "e15-live-reload", "kind": "visual", "expectation": "Theme, font, and opacity change in the dedicated profile without application restart." },
+        { "id": "e15-live-sidebar", "kind": "visual", "expectation": "The custom sidebar renders mock workspaces, clock, and PR status and selects only the clicked owned workspace." },
+        { "id": "e15-live-normal-profile-safe", "kind": "security", "expectation": "Normal user config hashes and running normal-profile surfaces remain unchanged." },
+        { "id": "e15-live-profile-restored", "kind": "cleanup", "expectation": "The dedicated profile returns to its baseline or is deleted completely." }
+      ],
+      "cleanup": [
+        "Restore the native sidebar and baseline appearance in the dedicated profile, then close its surfaces.",
+        "Delete the dedicated profile and mock data after confirming the normal profile was untouched."
+      ]
+    }
+  ]
+}

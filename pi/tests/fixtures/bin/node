@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ "${1:-}" = "--version" ]; then
+  echo "v22.23.1"
+  exit 0
+fi
+
+if [ "${1:-}" = "-e" ]; then
+  last="${@: -1}"
+  if [[ "$last" == */package.json ]]; then
+    printf '0.80.6'
+  fi
+  exit 0
+fi
+
+if [[ "${1:-}" == */merge-settings.mjs ]]; then
+  mkdir -p "$(dirname "$3")"
+  cp "$2" "$3"
+  exit 0
+fi
+
+exit 0

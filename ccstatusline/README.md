@@ -14,7 +14,7 @@ cwd: /Users/you/Projects/my-project
 
 ## Install
 
-Requires Node.js (for `npx`) or Bun (for `bunx`).
+Requires Node.js (for `npx`) or Bun (for `bunx`). The installer pins the reviewed `ccstatusline` 2.2.22 release; update that pin intentionally in `install.sh` and `claude/settings.json`.
 
 ```bash
 ./install.sh
@@ -29,4 +29,4 @@ Restart Claude Code to see the status line.
 
 ## Customize
 
-Run `npx ccstatusline@latest` in your terminal to open the interactive config editor.
+Run `npx ccstatusline@2.2.22` in your terminal to open the pinned interactive config editor.

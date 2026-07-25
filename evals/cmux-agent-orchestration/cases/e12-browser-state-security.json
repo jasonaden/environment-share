@@ -1,0 +1,63 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E12-browser-state-security",
+  "name": "Browser state security",
+  "description": "Validate browser state save/load while treating serialized state as a credential.",
+  "source_prompt_ids": ["20"],
+  "variants": [
+    {
+      "id": "E12-T1-fake-auth-state",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Capture and replay an expiring fake session against a local authentication fixture.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch", "local-browser"],
+      "setup": [
+        "Start a local auth fixture that issues a nonce-scoped, short-lived cookie and storage record with no real account value.",
+        "Create a permission-restricted temporary directory for the serialized browser state."
+      ],
+      "exercise": [
+        "Authenticate to the local fixture, save state, close the first browser, load state into a fresh browser, and navigate to the protected route.",
+        "After the positive replay, expire the fixture session and prove stale state is rejected."
+      ],
+      "assertions": [
+        { "id": "e12-fake-state-permissions", "kind": "security", "expectation": "The state file is created only inside the restricted run directory and is never printed or embedded in reports." },
+        { "id": "e12-fake-replay", "kind": "browser", "expectation": "A fresh browser reaches the protected nonce-tagged route without a second login after loading valid state." },
+        { "id": "e12-fake-expiry", "kind": "security", "expectation": "Expired state is rejected and does not silently grant access." },
+        { "id": "e12-fake-cleanup", "kind": "cleanup", "expectation": "All browsers, state files, cookies, storage, and fixture processes are removed." }
+      ],
+      "cleanup": [
+        "Clear browser storage, close owned surfaces, and stop the local auth server.",
+        "Securely remove the run-owned state fixture using the platform's normal deletion semantics and discard its session server state."
+      ]
+    },
+    {
+      "id": "E12-T4-real-auth-state",
+      "tier": 4,
+      "execution_mode": "destructive",
+      "description": "Manually verify state replay for an explicitly authorized real account in a dedicated profile.",
+      "destructive": true,
+      "gates": ["allow_visual", "allow_real_auth", "allow_external_network", "dedicated_cmux_profile"],
+      "external_effects": ["cmux-ephemeral", "local-browser", "ui-focus", "real-auth", "external-network"],
+      "setup": [
+        "Use a dedicated Cmux/browser profile and a least-privilege test account approved for session replay.",
+        "Choose a permission-restricted state path with a documented retention deadline and disable evidence capture of credential contents."
+      ],
+      "exercise": [
+        "Have the authorized human complete login, save state, close the source browser, load state into one fresh owned browser, and open a read-only account page.",
+        "Do not perform writes, purchases, messages, permission changes, or any other account mutation."
+      ],
+      "assertions": [
+        { "id": "e12-real-human-consent", "kind": "manual", "expectation": "The account, target service, allowed page, and state-retention window were explicitly authorized before capture." },
+        { "id": "e12-real-readonly-replay", "kind": "browser", "expectation": "The fresh browser reaches only the approved read-only page without reauthentication." },
+        { "id": "e12-real-no-state-disclosure", "kind": "security", "expectation": "No cookie, token, local-storage value, or state-file content appears in logs, screenshots, diffs, or reports." },
+        { "id": "e12-real-state-destroyed", "kind": "cleanup", "expectation": "The state file, profile, and server-side test session are deleted or revoked at the agreed deadline." }
+      ],
+      "cleanup": [
+        "Close all owned browser surfaces and delete the serialized state from the dedicated profile.",
+        "Revoke the test session where supported, discard the profile, and retain only a non-sensitive pass/fail record."
+      ]
+    }
+  ]
+}

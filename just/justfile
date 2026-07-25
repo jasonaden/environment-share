@@ -27,7 +27,7 @@ ccwd name="" *args:
 
 # CC: start with worktree + tmux pane
 ccwt name="" *args:
-    cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --worktree {{ if name != "" { name } else { "" } }} --tmux {{args}}
+    cd "{{invocation_directory()}}" && claude --permission-mode acceptEdits --worktree {{ if name != "" { name } else { "" } }} --tmux {{args}}
 
 # CC: continue last session
 ccc *args:
@@ -39,6 +39,10 @@ ccr session="" *args:
 
 # CC: one-shot print mode (pipe friendly)
 ccp *args:
+    cd "{{invocation_directory()}}" && claude --permission-mode plan --print {{args}}
+
+# CC: one-shot print mode with dangerous permission bypass (explicit opt-in)
+ccpd *args:
     cd "{{invocation_directory()}}" && claude --dangerously-skip-permissions --print {{args}}
 
 # CC: start with specific model
@@ -78,3 +82,36 @@ cxe *args:
 # Codex: passthrough any command
 codex-raw *args:
     cd "{{invocation_directory()}}" && codex {{args}}
+
+# ── Pi Coding Agent ──────────────────────────────────────────────
+
+# Pi: normal interactive session with global safety/workflow extensions
+pi *args:
+    cd "{{invocation_directory()}}" && pi {{args}}
+
+# Pi: continue or select a previous session
+pi-continue *args:
+    cd "{{invocation_directory()}}" && pi --continue {{args}}
+
+pi-resume *args:
+    cd "{{invocation_directory()}}" && pi --resume {{args}}
+
+# Pi: read-only, no Bash, ephemeral review profile (Dan's level 5 pattern)
+pi-review *args:
+    cd "{{invocation_directory()}}" && CMUX_AGENT_REPOSITORY="{{invocation_directory()}}" pi --tools read,grep,ls --no-session --no-approve --no-extensions --extension "${PI_SHARED_SKILLS_DIR:-$HOME/.claude/skills}/cmux-orchestrate-agents/scripts/pi-repository-guard.ts" --no-skills --no-prompt-templates --no-themes --no-context-files {{args}}
+
+# Pi: read-only planning first, then explicit opt-in to execution (level 4 allowlist)
+pi-plan *args:
+    cd "{{invocation_directory()}}" && pi --plan {{args}}
+
+# Pi: declare and display a singular purpose for the session
+pi-focus *args:
+    cd "{{invocation_directory()}}" && pi -e "$HOME/.pi/agent/optional-extensions/purpose-gate.ts" {{args}}
+
+# Pi: isolated subagents plus the guarded /ship workflow, opt-in only
+pi-team *args:
+    cd "{{invocation_directory()}}" && pi -e "$HOME/.pi/agent/optional-extensions/subagent/index.ts" -e "$HOME/.pi/agent/optional-extensions/ship-workflow.ts" {{args}}
+
+# Pi: core-only diagnostic profile with no custom resources or project context
+pi-clean *args:
+    cd "{{invocation_directory()}}" && pi --no-extensions --no-skills --no-prompt-templates --no-themes --no-context-files --no-approve {{args}}

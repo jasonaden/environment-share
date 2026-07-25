@@ -1,0 +1,4 @@
+interface:
+  display_name: "Orchestrate Cmux Agents"
+  short_description: "Coordinate Codex, Claude, and Pi in Cmux"
+  default_prompt: "Use $cmux-orchestrate-agents to launch a safe, observable multi-agent team for this task."

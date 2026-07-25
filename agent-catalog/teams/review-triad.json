@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "review-triad",
+  "name": "Review triad",
+  "description": "Architecture, security-quality, and verification reviews across three harnesses.",
+  "coordination": "hub-and-spoke",
+  "workers": [
+    {
+      "id": "architecture",
+      "harness": "claude",
+      "role": "architecture-reviewer",
+      "assignment": "Review architecture, state ownership, coupling, and recovery behavior."
+    },
+    {
+      "id": "security-quality",
+      "harness": "pi",
+      "role": "security-quality-reviewer",
+      "assignment": "Review permissions, trust boundaries, credentials, and unsafe defaults."
+    },
+    {
+      "id": "verification",
+      "harness": "codex",
+      "role": "test-verification-reviewer",
+      "assignment": "Review tests, completion semantics, and deterministic verification gaps."
+    }
+  ],
+  "synthesis": "Deduplicate findings, preserve domain disagreement, and rank risks by evidence and impact."
+}

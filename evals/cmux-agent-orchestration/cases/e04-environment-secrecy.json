@@ -1,0 +1,63 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E04-environment-secrecy",
+  "name": "Environment secrecy",
+  "description": "Prove scoped environment inheritance and redaction without using or exposing a production credential.",
+  "source_prompt_ids": ["07"],
+  "variants": [
+    {
+      "id": "E04-T1-canary-worker",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Inject a unique canary into one workspace and verify presence, inheritance, masking, and non-disclosure with a local worker.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch"],
+      "setup": [
+        "Generate a random canary value used nowhere else and write it to a permission-restricted run-owned environment fixture.",
+        "Prepare capture files for every terminal read, log, artifact, and final report so they can be scanned for the raw canary."
+      ],
+      "exercise": [
+        "Create one workspace from the environment fixture and inspect it only through the masking interface.",
+        "Launch a deterministic child that reports the variable name and a one-way digest, never its value."
+      ],
+      "assertions": [
+        { "id": "e04-mask-visible", "kind": "security", "expectation": "The masked environment view shows the canary variable name and a redacted value." },
+        { "id": "e04-child-inherits", "kind": "security", "expectation": "The child digest matches the runner's expected digest, proving inheritance without disclosure." },
+        { "id": "e04-raw-canary-absent", "kind": "security", "expectation": "The raw canary is absent from screen captures, events, logs, artifacts, reports, and validator output." },
+        { "id": "e04-canary-cleanup", "kind": "cleanup", "expectation": "The environment fixture and owned workspace are removed after the scan." }
+      ],
+      "cleanup": [
+        "Close the owned workspace before deleting the restricted environment fixture.",
+        "Scan all retained evidence for the raw canary, then delete the canary from runner memory where supported."
+      ]
+    },
+    {
+      "id": "E04-T2-live-provider-canary",
+      "tier": 2,
+      "execution_mode": "live-agent",
+      "description": "Confirm one real provider can operate with a canary-scoped workspace environment while preserving non-disclosure.",
+      "destructive": false,
+      "gates": ["allow_live_agents", "allow_cost"],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch", "model-api"],
+      "setup": [
+        "Create a disposable repository and a canary-only environment file that contains no working credential or user secret.",
+        "Configure the provider through its existing authenticated session rather than overriding it with a placeholder API key."
+      ],
+      "exercise": [
+        "Launch the provider in the canary-scoped workspace and request a structured response naming the variable and returning only its digest.",
+        "Collect bounded evidence and scan every output channel for the raw canary."
+      ],
+      "assertions": [
+        { "id": "e04-live-digest", "kind": "security", "expectation": "The provider reports the correct digest and never reproduces the raw canary." },
+        { "id": "e04-live-auth-preserved", "kind": "security", "expectation": "The provider's existing authentication remains functional and is not replaced by the canary fixture." },
+        { "id": "e04-live-no-write", "kind": "filesystem", "expectation": "The disposable repository is unchanged." },
+        { "id": "e04-live-secret-cleanup", "kind": "cleanup", "expectation": "All canary-bearing fixtures and run-owned Cmux resources are removed." }
+      ],
+      "cleanup": [
+        "Stop the live provider and close its workspace by stable ID.",
+        "Scan evidence, remove the canary fixture and disposable repo, and compare the Cmux baseline."
+      ]
+    }
+  ]
+}

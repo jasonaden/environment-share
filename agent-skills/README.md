@@ -4,10 +4,10 @@ This directory is the source of truth for reusable, cross-agent workflows.
 
 ## Skills
 
-Put each portable skill in `skills/<name>/` with a `SKILL.md` at its root. Run:
+Put each portable skill in `<name>/` with a `SKILL.md` at its root. Run:
 
 ```bash
-./agents/install-skills.sh
+./agent-skills/install.sh
 ```
 
 The installer creates symlinks in both `~/.claude/skills/` and
@@ -17,8 +17,8 @@ updates both agents immediately; restart the agent to refresh discovery.
 To install for only one agent:
 
 ```bash
-./agents/install-skills.sh claude
-./agents/install-skills.sh codex
+./agent-skills/install.sh claude
+./agent-skills/install.sh codex
 ```
 
 Existing non-symlink skill directories are timestamped and preserved before a
@@ -32,7 +32,7 @@ belong to the host agent.
 
 Use this split:
 
-- Put reusable instructions, references, scripts, and assets in `agents/skills/`.
+- Put reusable instructions, references, scripts, and assets in `agent-skills/`.
 - Keep Claude-specific plugin installation in `claude/install-plugins.sh`.
 - Keep Codex-specific plugin installation in `codex/install-plugins.sh`.
 - If a plugin exposes a useful skill, place the skill here and make each

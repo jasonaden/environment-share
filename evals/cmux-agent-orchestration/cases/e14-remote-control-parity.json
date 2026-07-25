@@ -1,0 +1,90 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E14-remote-control-parity",
+  "name": "Remote control parity",
+  "description": "Separate static remote command-contract validation from explicitly authorized SSH and cloud execution.",
+  "source_prompt_ids": ["23"],
+  "variants": [
+    {
+      "id": "E14-T0-remote-command-contract",
+      "tier": 0,
+      "execution_mode": "static",
+      "description": "Validate the SSH and cloud adapter manifests, required capabilities, and ownership semantics without connecting anywhere.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["none"],
+      "setup": [
+        "Load fixture adapter manifests containing non-routable example hosts and fake cloud identifiers.",
+        "Define expected local-equivalent lifecycle operations and required explicit authorization fields."
+      ],
+      "exercise": [
+        "Validate that SSH and cloud variants map create, send, read, stop, and teardown operations to an owned remote surface contract.",
+        "Reject manifests with inline credentials, wildcard hosts, missing cleanup, or unbounded resource creation."
+      ],
+      "assertions": [
+        { "id": "e14-static-no-connection", "kind": "security", "expectation": "Static validation performs no DNS, SSH, cloud API, socket, or Cmux operation." },
+        { "id": "e14-static-explicit-target", "kind": "configuration", "expectation": "Every remote manifest names an exact authorized target and contains no credential value." },
+        { "id": "e14-static-lifecycle-parity", "kind": "configuration", "expectation": "Both adapters define correlated create, send, read, graceful stop, forced stop, and cleanup operations." },
+        { "id": "e14-static-cleanup-required", "kind": "configuration", "expectation": "Cloud manifests require an owned-resource deletion plan and SSH manifests require run-artifact removal." }
+      ],
+      "cleanup": [
+        "Discard parsed fixture manifests.",
+        "Confirm the validator opened no network connection and created no external resource."
+      ]
+    },
+    {
+      "id": "E14-T4-authorized-ssh",
+      "tier": 4,
+      "execution_mode": "destructive",
+      "description": "Run a deterministic read-only worker on one explicitly authorized SSH host and verify local/remote control parity.",
+      "destructive": true,
+      "gates": ["allow_remote", "allow_external_network"],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch", "external-network", "remote-host"],
+      "setup": [
+        "Record explicit authorization for the exact SSH host, account, repository path, commands, time window, and cleanup scope.",
+        "Create a unique remote temporary directory and local ownership record without copying secrets into the eval manifest."
+      ],
+      "exercise": [
+        "Open one SSH-backed run surface, start a deterministic read-only worker, send a nonce-tagged task, and collect its result through the same surface interface used locally.",
+        "Exercise graceful stop and reconnect behavior without changing the authorized repository."
+      ],
+      "assertions": [
+        { "id": "e14-ssh-authorized-target", "kind": "security", "expectation": "The actual host, user, path, and commands exactly match the approved target record." },
+        { "id": "e14-ssh-parity", "kind": "text", "expectation": "The same normalized send/read contract returns the nonce-tagged remote result." },
+        { "id": "e14-ssh-readonly", "kind": "filesystem", "expectation": "The authorized repository and all paths outside the unique remote temporary directory are unchanged." },
+        { "id": "e14-ssh-cleanup", "kind": "cleanup", "expectation": "The SSH surface, remote process, and remote temporary directory are removed." }
+      ],
+      "cleanup": [
+        "Stop the remote fixture worker, close the owned SSH surface, and delete only the run-created remote temporary directory.",
+        "Verify the local Cmux baseline and remote authorized repository are unchanged."
+      ]
+    },
+    {
+      "id": "E14-T4-authorized-cloud",
+      "tier": 4,
+      "execution_mode": "destructive",
+      "description": "Provision one bounded cloud sandbox, run a deterministic worker, and prove teardown removes the billed resource.",
+      "destructive": true,
+      "gates": ["allow_remote", "allow_external_network", "allow_cloud_cost"],
+      "external_effects": ["cmux-ephemeral", "process-launch", "external-network", "remote-host", "cloud-resource"],
+      "setup": [
+        "Record the approved provider, project, region, image, spending ceiling, TTL, and repository or artifact scope.",
+        "Generate a unique resource label and install a cleanup deadline independent of the test runner."
+      ],
+      "exercise": [
+        "Provision one sandbox, attach an owned surface, run a deterministic nonce task, and collect the result through the standard surface interface.",
+        "Terminate the worker and delete the sandbox through its recorded provider ID."
+      ],
+      "assertions": [
+        { "id": "e14-cloud-budget", "kind": "security", "expectation": "Provisioning remains within the approved provider, project, region, type, TTL, and spending ceiling." },
+        { "id": "e14-cloud-parity", "kind": "text", "expectation": "The cloud-backed worker satisfies the same correlated send/read result contract as the local fixture." },
+        { "id": "e14-cloud-resource-owned", "kind": "topology", "expectation": "Exactly one cloud resource with the run label is created and its provider ID is recorded before use." },
+        { "id": "e14-cloud-deleted", "kind": "cleanup", "expectation": "Provider inventory confirms the run-owned cloud resource no longer exists and no recurring resource remains." }
+      ],
+      "cleanup": [
+        "Delete the cloud sandbox by recorded provider ID even if task execution fails.",
+        "Close the local surface and verify provider inventory and billing-visible resources contain no run label."
+      ]
+    }
+  ]
+}

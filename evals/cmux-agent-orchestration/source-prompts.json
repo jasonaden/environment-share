@@ -1,0 +1,271 @@
+{
+  "source": {
+    "repository": "https://github.com/disler/learning-cmux-with-agents",
+    "commit": "6eaacabbee4c71120f7cd161c9539530f84068a8",
+    "prompt_directory": "prompts",
+    "declared_cmux_version": "0.64.17",
+    "notes": "The upstream repository describes these as natural-language prompts with answer keys and manual done-when checklists, not as an executable eval runner."
+  },
+  "risk_levels": {
+    "low": "Isolated and easily reversible.",
+    "medium": "Local process, topology, UI, or nondeterminism risk.",
+    "high": "Secrets, model cost, destructive lifecycle operations, or broad multi-agent impact.",
+    "critical": "Global configuration, application restart, real authentication, remote/cloud mutation, or broad autonomous writes."
+  },
+  "suitability_levels": {
+    "A": "Deterministic and safe to run unattended in an ephemeral fixture.",
+    "B": "Automatable with a dedicated Cmux fixture, deterministic workers, strict refs, timeouts, and cleanup.",
+    "C": "Gated real-agent or visual integration test with cost or nondeterminism.",
+    "D": "Manual or dedicated environment because the scenario changes global state, restarts Cmux, uses real auth, or reaches external systems."
+  },
+  "prompts": [
+    {
+      "id": "01",
+      "path": "prompts/01-hello-workspace.md",
+      "title": "Hello, Workspace",
+      "purpose": "Create a workspace, send and submit a command, and read the terminal result back.",
+      "risk": { "level": "low", "summary": "May expose basic kernel information and leave an ephemeral workspace if cleanup fails." },
+      "suitability": { "level": "A", "summary": "Use a temporary directory, nonce-tagged workspace, and bounded readback." }
+    },
+    {
+      "id": "02",
+      "path": "prompts/02-read-it-back.md",
+      "title": "Read It Back",
+      "purpose": "Validate bounded scrollback retrieval and extraction of output that left the viewport.",
+      "risk": { "level": "low", "summary": "Creates temporary files; naive counts may include directory entries or stale fixture files." },
+      "suitability": { "level": "A", "summary": "Use an empty run-owned directory and exact nonce-prefixed filenames." }
+    },
+    {
+      "id": "03",
+      "path": "prompts/03-split-into-a-grid.md",
+      "title": "Split Into a Grid",
+      "purpose": "Build and address a live 2x2 terminal topology from captured surface references.",
+      "risk": { "level": "medium", "summary": "Starts long-running htop, watch, and tail processes and depends on local tools." },
+      "suitability": { "level": "B", "summary": "Replace optional tools with deterministic fixture processes and guarantee scoped teardown." }
+    },
+    {
+      "id": "04",
+      "path": "prompts/04-map-the-world.md",
+      "title": "Map the World",
+      "purpose": "Inspect the Cmux window, workspace, pane, surface, process, CPU, and memory hierarchy.",
+      "risk": { "level": "medium", "summary": "Can enumerate unrelated user sessions and process metadata; resource thresholds are nondeterministic." },
+      "suitability": { "level": "B", "summary": "Assert only run-owned resources while proving introspection is read-only." }
+    },
+    {
+      "id": "05",
+      "path": "prompts/05-tidy-up.md",
+      "title": "Tidy Up",
+      "purpose": "Rename, signal, close surfaces, and close an owned workspace.",
+      "risk": { "level": "high", "summary": "Closing a surface or workspace is destructive; name-based discovery can collide with user resources." },
+      "suitability": { "level": "B", "summary": "Use only stable IDs and refs recorded in an ownership ledger." }
+    },
+    {
+      "id": "06",
+      "path": "prompts/06-launch-one-agent.md",
+      "title": "Launch One Agent",
+      "purpose": "Launch a Claude agent, detect readiness, submit a prompt, and collect its response.",
+      "risk": { "level": "medium", "summary": "Consumes model capacity and depends on network, authentication, asynchronous startup, and free-form output." },
+      "suitability": { "level": "C", "summary": "Keep a deterministic fake-worker Tier 1 variant and gate the real-provider variant." }
+    },
+    {
+      "id": "07",
+      "path": "prompts/07-keys-and-credentials.md",
+      "title": "Keys & Credentials",
+      "purpose": "Verify workspace-scoped environment inheritance and masked inspection for an agent.",
+      "risk": { "level": "high", "summary": "A real environment file can leak secrets, override working login state, and incur live API usage." },
+      "suitability": { "level": "C", "summary": "Use unique canary variables only and assert the raw value never appears anywhere." }
+    },
+    {
+      "id": "08",
+      "path": "prompts/08-two-agents-one-question.md",
+      "title": "Two Agents, One Question",
+      "purpose": "Broadcast one read-only question to Claude and Pi, collect both answers, and compare them.",
+      "risk": { "level": "medium", "summary": "Starts two live models and relies on asynchronous, nondeterministic prose." },
+      "suitability": { "level": "C", "summary": "Use structured nonce responses for pass/fail and reserve prose comparison for qualitative review." }
+    },
+    {
+      "id": "09",
+      "path": "prompts/09-declarative-boot.md",
+      "title": "Declarative Boot",
+      "purpose": "Validate a reusable two-pane layout and launch the same layout declaratively.",
+      "risk": { "level": "high", "summary": "The persistent form edits global cmux.json and can automatically start an agent." },
+      "suitability": { "level": "B", "summary": "Validate project-local or one-shot fixtures; keep global palette behavior visual and gated." }
+    },
+    {
+      "id": "10",
+      "path": "prompts/10-native-sessions-and-resume.md",
+      "title": "Native Sessions & Resume",
+      "purpose": "Create a provider-aware agent surface, install capture hooks, and verify resumable session metadata.",
+      "risk": { "level": "critical", "summary": "Installs persistent hooks and changes session-resume behavior." },
+      "suitability": { "level": "D", "summary": "Use a dedicated Cmux profile; separate capture from full restart testing." }
+    },
+    {
+      "id": "11",
+      "path": "prompts/11-the-2x2-fleet.md",
+      "title": "The 2×2 Fleet",
+      "purpose": "Launch Claude, Codex, Gemini, and Pi, broadcast one read-only task, and synthesize agreement.",
+      "risk": { "level": "high", "summary": "Starts four agents, broadly injects .env, discloses repository content, and incurs significant cost." },
+      "suitability": { "level": "C", "summary": "Make the four-provider matrix optional, read-only, secret-free, and explicitly cost-gated." }
+    },
+    {
+      "id": "12",
+      "path": "prompts/12-fan-out-fan-in.md",
+      "title": "Fan-Out / Fan-In",
+      "purpose": "Assign distinct repository slices to four workers and merge every result into one map.",
+      "risk": { "level": "high", "summary": "Runs four agents, assumes fixed directories, and injects credentials that the task does not need." },
+      "suitability": { "level": "C", "summary": "Use a generated fixture tree, no environment secrets, and structured per-shard artifacts." }
+    },
+    {
+      "id": "13",
+      "path": "prompts/13-live-status-board.md",
+      "title": "Live Status Board",
+      "purpose": "Represent fleet state through status pills, progress, logs, and sidebar workspaces.",
+      "risk": { "level": "high", "summary": "Four live refactors can collide; UI state is persistent and visual assertions are subjective." },
+      "suitability": { "level": "B", "summary": "Automate state APIs with deterministic workers and make rendered appearance an optional visual variant." }
+    },
+    {
+      "id": "14",
+      "path": "prompts/14-reactive-loop.md",
+      "title": "Reactive Loop (Don't Poll)",
+      "purpose": "Consume a cursor-backed event stream and dispatch queued work as workers become available.",
+      "risk": { "level": "high", "summary": "A listener can hang, replay or duplicate events, share a stale cursor, or consume unrelated events." },
+      "suitability": { "level": "B", "summary": "Use run-scoped cursor files, correlated events, deterministic workers, and hard deadlines." }
+    },
+    {
+      "id": "15",
+      "path": "prompts/15-race-and-notify.md",
+      "title": "Race & Notify",
+      "purpose": "Select the first acceptable result from a race, notify, and cancel losing workers.",
+      "risk": { "level": "high", "summary": "Broad notification filters and jump-to-unread can select unrelated work; cancellation destroys in-flight sessions." },
+      "suitability": { "level": "B", "summary": "Test the scheduler with synthetic workers; gate notifications and live-agent cancellation separately." }
+    },
+    {
+      "id": "16",
+      "path": "prompts/16-scale-and-teardown.md",
+      "title": "Scale & Teardown",
+      "purpose": "Prune stalled workers, reassign unfinished tasks, and reclaim all fleet resources.",
+      "risk": { "level": "high", "summary": "Runs six agents and destructively cancels work; CPU usage alone is not a valid stalled-worker signal." },
+      "suitability": { "level": "B", "summary": "Use task deadlines and progress evidence with synthetic workers; reserve live cancellation for a gated run." }
+    },
+    {
+      "id": "17",
+      "path": "prompts/17-agent-and-live-preview.md",
+      "title": "Agent + Live Preview",
+      "purpose": "Place a coding agent beside an embedded browser and reflect local application changes.",
+      "risk": { "level": "high", "summary": "Writes code, starts a server, risks port collisions, and has model/browser timing variance." },
+      "suitability": { "level": "C", "summary": "Use a disposable worktree, allocated port, bounded readiness checks, and no unnecessary .env." }
+    },
+    {
+      "id": "18",
+      "path": "prompts/18-agent-drives-the-browser.md",
+      "title": "Agent Drives the Browser",
+      "purpose": "Snapshot a DOM, activate an element, wait for navigation, inspect state, and capture proof.",
+      "risk": { "level": "medium", "summary": "The exact prompt depends on an external website and network and leaves a screenshot artifact." },
+      "suitability": { "level": "B", "summary": "Mirror the interaction in a pinned local fixture and keep the external example optional." }
+    },
+    {
+      "id": "19",
+      "path": "prompts/19-self-verifying-agent.md",
+      "title": "Self-Verifying Agent",
+      "purpose": "Drive a bounded build, browser-error inspection, repair, and re-verification loop.",
+      "risk": { "level": "high", "summary": "Mutates and executes generated code and may fail to converge." },
+      "suitability": { "level": "C", "summary": "Seed one known defect, isolate writes, cap repair rounds, and require machine evidence." }
+    },
+    {
+      "id": "20",
+      "path": "prompts/20-capture-and-replay-auth.md",
+      "title": "Capture & Replay Auth",
+      "purpose": "Serialize browser cookies and storage and restore them into a fresh surface.",
+      "risk": { "level": "critical", "summary": "The saved state is a credential and may expire or enable account side effects." },
+      "suitability": { "level": "D", "summary": "Automate only with fake local auth; require explicit real-auth authorization for the original scenario." }
+    },
+    {
+      "id": "21",
+      "path": "prompts/21-multi-window-command-center.md",
+      "title": "Multi-Window Command Center",
+      "purpose": "Create multiple native windows, route work by window, and aggregate results.",
+      "risk": { "level": "high", "summary": "Creates and focuses native windows, disrupts the user, and may start multiple fleets." },
+      "suitability": { "level": "C", "summary": "Run as a visual integration test in a dedicated Cmux session." }
+    },
+    {
+      "id": "22",
+      "path": "prompts/22-organized-sidebar-at-scale.md",
+      "title": "Organized Sidebar at Scale",
+      "purpose": "Create and collapse named, colored workspace groups for a large fleet.",
+      "risk": { "level": "high", "summary": "Creates twenty resources and closing a group anchor can dissolve group structure." },
+      "suitability": { "level": "B", "summary": "Use empty run-owned workspaces for API checks and an optional visual scale run." }
+    },
+    {
+      "id": "23",
+      "path": "prompts/23-remote-and-cloud-fleets.md",
+      "title": "Remote & Cloud Fleets",
+      "purpose": "Verify that the same send/read lifecycle applies to SSH and cloud-backed surfaces.",
+      "risk": { "level": "critical", "summary": "Uses remote credentials, provisions paid resources, moves code, and mutates external systems." },
+      "suitability": { "level": "D", "summary": "Keep a static command-contract check by default and gate SSH and cloud variants independently." }
+    },
+    {
+      "id": "24",
+      "path": "prompts/24-crash-proof-resume-the-fleet.md",
+      "title": "Crash-Proof: Resume the Fleet",
+      "purpose": "Restart Cmux and verify layout restoration plus provider-native session continuation.",
+      "risk": { "level": "critical", "summary": "Quits the application, affects real sessions, installs hooks, and changes persistent resume behavior." },
+      "suitability": { "level": "D", "summary": "Run only in a dedicated macOS environment and isolated Cmux profile." }
+    },
+    {
+      "id": "25",
+      "path": "prompts/25-the-software-factory.md",
+      "title": "The Software Factory (Capstone)",
+      "purpose": "Compose planning, multi-window delegation, tests, browser verification, diff collection, notification, and teardown.",
+      "risk": { "level": "critical", "summary": "Broad autonomous writes, multi-agent conflicts, high cost, UI effects, and destructive cleanup." },
+      "suitability": { "level": "D", "summary": "Use a read-only integrated capstone first; gate the write-capable worktree-isolated version." }
+    },
+    {
+      "id": "26",
+      "path": "prompts/26-color-code-and-label.md",
+      "title": "Color-Code & Label the Fleet",
+      "purpose": "Set per-workspace names, descriptions, colors, icons, and role status.",
+      "risk": { "level": "medium", "summary": "Mutates persistent sidebar metadata and may create many workspaces." },
+      "suitability": { "level": "B", "summary": "Automate state assertions on run-owned workspaces and gate visual inspection." }
+    },
+    {
+      "id": "27",
+      "path": "prompts/27-theme-and-feel.md",
+      "title": "Theme & Feel",
+      "purpose": "Change global Ghostty and Cmux theme, font, and opacity with live reload.",
+      "risk": { "level": "critical", "summary": "Changes the appearance of every surface and persists user-level configuration." },
+      "suitability": { "level": "D", "summary": "Validate fixtures statically and run live only with a dedicated config profile." }
+    },
+    {
+      "id": "28",
+      "path": "prompts/28-custom-actions-and-buttons.md",
+      "title": "Custom Actions & Buttons",
+      "purpose": "Wire a reusable Codex action into the command palette, tab bar, and new-workspace menu.",
+      "risk": { "level": "high", "summary": "Can corrupt or replace persistent UI configuration and may launch a real agent." },
+      "suitability": { "level": "B", "summary": "Use project-local config validation; make rendered UI checks visual and do not activate the agent action." }
+    },
+    {
+      "id": "29",
+      "path": "prompts/29-layouts-and-dock-controls.md",
+      "title": "Reusable Layouts & Dock Controls",
+      "purpose": "Define a reusable dev layout and project Dock controls for common tools.",
+      "risk": { "level": "high", "summary": "Can start dev servers, test watchers, and interactive tools with port and dependency conflicts." },
+      "suitability": { "level": "B", "summary": "Validate project fixtures and deterministic topology; gate Dock rendering and process activation." }
+    },
+    {
+      "id": "30",
+      "path": "prompts/30-project-config-and-custom-sidebar.md",
+      "title": "Make It Yours: Project Config + Custom Sidebar",
+      "purpose": "Layer project configuration and install a hot-reloading custom sidebar backed by workspace, clock, and PR data.",
+      "risk": { "level": "critical", "summary": "Writes user-level Swift sidebar code, enables a beta feature, reads live PR data, and runs actions on click." },
+      "suitability": { "level": "D", "summary": "Validate the project half statically; run the sidebar only in an isolated profile." }
+    },
+    {
+      "id": "31",
+      "path": "prompts/31-identify-individual-panes.md",
+      "title": "Identify Individual Panes",
+      "purpose": "Differentiate four panes through tab names, ANSI banners, prompts, and targeted flash.",
+      "risk": { "level": "medium", "summary": "Leaves multiple panes and transient shell customizations and is primarily a visual claim." },
+      "suitability": { "level": "B", "summary": "Automate tab/topology state and gate the final rendered appearance." }
+    }
+  ]
+}

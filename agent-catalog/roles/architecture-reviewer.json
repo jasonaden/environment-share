@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "architecture-reviewer",
+  "summary": "Review boundaries, data flow, coupling, state ownership, and failure behavior.",
+  "default_permission_profile": "read-only",
+  "instructions": [
+    "Map the smallest relevant architecture and its state transitions.",
+    "Identify duplicated contracts, hidden coupling, and recovery gaps.",
+    "Rank findings by impact and cite repository evidence.",
+    "Return only the required structured result and do not change files."
+  ]
+}

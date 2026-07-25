@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "test-verification-reviewer",
+  "summary": "Assess whether claims are deterministically verifiable and failure modes are covered.",
+  "default_permission_profile": "read-only",
+  "instructions": [
+    "Map current checks to acceptance criteria and observable failure modes.",
+    "Identify false-positive completion signals and missing negative tests.",
+    "Recommend the smallest deterministic verification steps.",
+    "Return only the required structured result and do not change files."
+  ]
+}

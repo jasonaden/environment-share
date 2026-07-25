@@ -1,0 +1,36 @@
+{
+  "$schema": "../eval.schema.json",
+  "id": "E01-terminal-round-trip",
+  "name": "Terminal round-trip",
+  "description": "Prove deterministic send, submit, viewport readback, and bounded scrollback retrieval.",
+  "source_prompt_ids": ["01", "02"],
+  "variants": [
+    {
+      "id": "E01-T1-ephemeral-shell",
+      "tier": 1,
+      "execution_mode": "deterministic",
+      "description": "Run nonce-tagged commands in one ephemeral shell and recover both visible and scrolled output.",
+      "destructive": false,
+      "gates": [],
+      "external_effects": ["fixture-filesystem", "cmux-ephemeral", "process-launch"],
+      "setup": [
+        "Generate a unique run ID and nonce and create an empty temporary directory owned by the run.",
+        "Capture the baseline Cmux tree and initialize an ownership ledger."
+      ],
+      "exercise": [
+        "Create one run-owned workspace, capture its workspace and initial surface refs, and send a command that prints the nonce.",
+        "Create exactly 60 nonce-prefixed files, emit one line per file plus a terminal sentinel, and retrieve a bounded scrollback window."
+      ],
+      "assertions": [
+        { "id": "e01-workspace-owned", "kind": "topology", "expectation": "The created workspace and surface IDs are present in the ownership ledger and in the live tree." },
+        { "id": "e01-visible-nonce", "kind": "text", "expectation": "Viewport readback contains the exact run nonce after send and submit." },
+        { "id": "e01-scrollback-complete", "kind": "text", "expectation": "Bounded scrollback contains all 60 unique nonce-prefixed filenames and the terminal sentinel." },
+        { "id": "e01-clean-baseline", "kind": "cleanup", "expectation": "After cleanup the run-owned workspace is absent and every unrelated baseline resource is unchanged." }
+      ],
+      "cleanup": [
+        "Close only the recorded run-owned workspace by stable ID.",
+        "Delete the temporary directory and compare the post-run Cmux tree with the baseline."
+      ]
+    }
+  ]
+}
