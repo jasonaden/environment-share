@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "snippets": [
+    {
+      "id": "delegated-task-lifecycle",
+      "name": "Delegated task lifecycle",
+      "description": "Build features in a subagent, run bounded review and remediation loops, verify the result, and finish with a recording and open pull request.",
+      "details": "Requires an environment that provides subagents, /code-review, /security-review, /verify, Playwright for GUI verification, and Slack messaging for recordings.",
+      "content_file": "snippets/delegated-task-lifecycle.md"
+    }
+  ]
+}

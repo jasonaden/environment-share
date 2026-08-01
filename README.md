@@ -14,6 +14,7 @@ Personal development environment configuration and setup scripts for macOS.
 | `pi/` | Pi coding agent settings, prompts, agents, extensions, and installer |
 | `cmux/` | Cmux integration installer, pinned upstream-skill lock, launcher, and isolated installer tests |
 | `agent-skills/` | Canonical cross-harness skills installed for Codex, Claude, and Pi discovery |
+| `agent-snippets/` | Optional marked instruction snippets with an interactive install/uninstall CLI |
 | `codex/` | Codex setup and agent-specific plugin catalog |
 | `agent-catalog/` | Validated reusable worker roles and heterogeneous team profiles |
 | `evals/` | Versioned capability and safety eval ladders derived from reviewed sources |
@@ -43,6 +44,7 @@ Or install components individually:
 ./codex/install.sh               # Codex shared skills (preserves personal settings)
 ./codex/install-plugins.sh       # Show the desired Codex plugin catalog
 ./agent-skills/install.sh        # Install portable skills for Claude Code and Codex
+./agent-snippets/install.sh      # Install the optional instruction-snippet CLI
 ./pi/install.sh                  # Pi agent + curated safe/optional profiles
 ./cmux/install.sh                # Pinned Cmux skills, orchestration catalog, and Pi hook
 ./cmux/install.sh --dry-run      # Preview local Cmux changes; upstream comparisons stay network-free
@@ -119,5 +121,6 @@ Fleet manifests resolve their repository to the canonical Git worktree root. Tha
 - `PI_CODING_AGENT_DIR` changes Pi's configuration and hook root; `PI_NODE_BIN_DIR` changes the stable Pi/Node/npm bin directory. A reviewed fallback Node 22 source is persisted there so later child installers do not depend on an inherited PATH. The default shared-skill directory remains `~/.claude/skills` unless `PI_SHARED_SKILLS_DIR` is set explicitly.
 - After authenticating Claude, run `./claude/install-plugins.sh` to install plugins
 - Add portable skills under `agent-skills/<name>/SKILL.md`; the shared installer links the same source into Claude Code and Codex.
+- Run `agent-snippets` to review optional instruction blocks and install or uninstall them in Claude, Codex, Pi, project, or custom Markdown instruction files.
 - Plugin manifests, hooks, commands, and marketplace metadata remain agent-specific. See `agent-skills/README.md`.
 - Git aliases include `legit` workflow commands (branches, publish, sync, etc.) — legit is installed automatically

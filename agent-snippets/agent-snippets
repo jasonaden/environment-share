@@ -1,0 +1,406 @@
+#!/usr/bin/env python3
+"""Install and remove marked instruction snippets in agent Markdown files."""
+
+from __future__ import annotations
+
+import argparse
+from dataclasses import dataclass
+from datetime import datetime, timezone
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import stat
+import sys
+import tempfile
+from typing import Iterable
+
+
+ID_PATTERN = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
+BEGIN_PATTERN = re.compile(
+    r"^<!-- environment-share:snippet ([a-z][a-z0-9-]{0,63}) BEGIN(?: — .*)? -->\n?$"
+)
+END_PATTERN = re.compile(
+    r"^<!-- environment-share:snippet ([a-z][a-z0-9-]{0,63}) END -->\n?$"
+)
+
+
+class SnippetError(RuntimeError):
+    """A safe, user-facing failure."""
+
+
+@dataclass(frozen=True)
+class Snippet:
+    identifier: str
+    name: str
+    description: str
+    details: str
+    content: str
+
+    @property
+    def begin_marker(self) -> str:
+        return (
+            f"<!-- environment-share:snippet {self.identifier} BEGIN — "
+            f"{self.description} -->"
+        )
+
+    @property
+    def end_marker(self) -> str:
+        return f"<!-- environment-share:snippet {self.identifier} END -->"
+
+    @property
+    def block(self) -> str:
+        return f"{self.begin_marker}\n{self.content.rstrip()}\n{self.end_marker}\n"
+
+
+def catalog_root() -> Path:
+    override = os.environ.get("AGENT_SNIPPETS_CATALOG_DIR")
+    if override:
+        return Path(override).expanduser()
+    beside_executable = Path(__file__).resolve().parent
+    if (beside_executable / "catalog.json").is_file():
+        return beside_executable
+    data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
+    return data_home / "environment-share/agent-snippets"
+
+
+def load_catalog() -> dict[str, Snippet]:
+    root = catalog_root()
+    path = root / "catalog.json"
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise SnippetError(f"snippet catalog not found: {path}") from exc
+    except (OSError, json.JSONDecodeError) as exc:
+        raise SnippetError(f"cannot read snippet catalog: {path} ({exc})") from exc
+
+    if not isinstance(value, dict) or value.get("schema_version") != 1:
+        raise SnippetError("snippet catalog must be an object with schema_version 1")
+    if set(value) != {"schema_version", "snippets"} or not isinstance(value["snippets"], list):
+        raise SnippetError("snippet catalog has unsupported or missing keys")
+
+    result: dict[str, Snippet] = {}
+    required = {"id", "name", "description", "details", "content_file"}
+    for index, item in enumerate(value["snippets"]):
+        label = f"catalog snippets[{index}]"
+        if not isinstance(item, dict) or set(item) != required:
+            raise SnippetError(f"{label} has unsupported or missing keys")
+        if not all(isinstance(item[key], str) and item[key].strip() for key in required):
+            raise SnippetError(f"{label} values must be non-empty strings")
+        identifier = item["id"]
+        if not ID_PATTERN.fullmatch(identifier):
+            raise SnippetError(f"{label} has invalid id: {identifier}")
+        if identifier in result:
+            raise SnippetError(f"duplicate snippet id: {identifier}")
+        for key in ("name", "description", "details"):
+            if "\n" in item[key] or "\r" in item[key]:
+                raise SnippetError(f"{label}.{key} must be a single line")
+        if "-->" in item["description"]:
+            raise SnippetError(f"{label}.description cannot close an HTML comment")
+        relative = Path(item["content_file"])
+        if relative.is_absolute() or ".." in relative.parts:
+            raise SnippetError(f"{label} content_file must stay inside the catalog")
+        content_path = root / relative
+        try:
+            content = content_path.read_text(encoding="utf-8")
+        except OSError as exc:
+            raise SnippetError(f"cannot read snippet content: {content_path} ({exc})") from exc
+        if not content.strip():
+            raise SnippetError(f"snippet content is empty: {identifier}")
+        if "<!-- environment-share:snippet " in content:
+            raise SnippetError(f"snippet content uses the reserved marker prefix: {identifier}")
+        result[identifier] = Snippet(
+            identifier=identifier,
+            name=item["name"].strip(),
+            description=item["description"].strip(),
+            details=item["details"].strip(),
+            content=content,
+        )
+    if not result:
+        raise SnippetError("snippet catalog is empty")
+    return result
+
+
+def target_for_agent(agent: str, project: bool) -> Path:
+    if project:
+        return Path.cwd() / ("CLAUDE.md" if agent == "claude" else "AGENTS.md")
+    if agent == "claude":
+        return Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude")) / "CLAUDE.md"
+    if agent == "codex":
+        return Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "AGENTS.md"
+    return Path(os.environ.get("PI_CODING_AGENT_DIR", Path.home() / ".pi/agent")) / "AGENTS.md"
+
+
+def resolve_target(args: argparse.Namespace) -> Path:
+    if args.target:
+        return Path(args.target).expanduser().absolute()
+    return target_for_agent(args.agent, args.project).absolute()
+
+
+def read_target(path: Path) -> str:
+    if path.is_symlink():
+        raise SnippetError(f"refusing to modify symlinked instruction file: {path}")
+    if path.exists() and not path.is_file():
+        raise SnippetError(f"instruction target is not a regular file: {path}")
+    try:
+        return path.read_text(encoding="utf-8") if path.exists() else ""
+    except (OSError, UnicodeError) as exc:
+        raise SnippetError(f"cannot read instruction file: {path} ({exc})") from exc
+
+
+def managed_ranges(text: str) -> dict[str, tuple[int, int]]:
+    lines = text.splitlines(keepends=True)
+    ranges: dict[str, tuple[int, int]] = {}
+    active: tuple[str, int] | None = None
+    offset = 0
+    for line in lines:
+        begin = BEGIN_PATTERN.fullmatch(line)
+        end = END_PATTERN.fullmatch(line)
+        if begin:
+            identifier = begin.group(1)
+            if active is not None:
+                raise SnippetError(f"nested managed snippet marker: {identifier}")
+            if identifier in ranges:
+                raise SnippetError(f"duplicate managed snippet marker: {identifier}")
+            active = (identifier, offset)
+        elif end:
+            identifier = end.group(1)
+            if active is None:
+                raise SnippetError(f"end marker without a begin marker: {identifier}")
+            if active[0] != identifier:
+                raise SnippetError(
+                    f"mismatched managed snippet markers: {active[0]} and {identifier}"
+                )
+            ranges[identifier] = (active[1], offset + len(line))
+            active = None
+        offset += len(line)
+    if active is not None:
+        raise SnippetError(f"begin marker without an end marker: {active[0]}")
+    return ranges
+
+
+def backup_path(path: Path) -> Path:
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    base = Path(f"{path}.backup.{stamp}")
+    candidate = base
+    suffix = 0
+    while candidate.exists() or candidate.is_symlink():
+        suffix += 1
+        candidate = Path(f"{base}.{suffix}")
+    return candidate
+
+
+def atomic_write(path: Path, content: str) -> Path | None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    previous_mode: int | None = None
+    backup: Path | None = None
+    if path.exists():
+        previous_mode = stat.S_IMODE(path.stat(follow_symlinks=False).st_mode)
+        backup = backup_path(path)
+        shutil.copy2(path, backup, follow_symlinks=False)
+    descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.tmp.", dir=path.parent)
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as handle:
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary, previous_mode if previous_mode is not None else 0o644)
+        os.replace(temporary, path)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
+    return backup
+
+
+def select_snippets(catalog: dict[str, Snippet], identifiers: Iterable[str]) -> list[Snippet]:
+    selected: list[Snippet] = []
+    for identifier in identifiers:
+        if identifier not in catalog:
+            raise SnippetError(f"unknown snippet: {identifier}")
+        selected.append(catalog[identifier])
+    return selected
+
+
+def install(path: Path, snippets: list[Snippet], dry_run: bool = False) -> bool:
+    original = read_target(path)
+    ranges = managed_ranges(original)
+    pending = [snippet for snippet in snippets if snippet.identifier not in ranges]
+    skipped = [snippet.identifier for snippet in snippets if snippet.identifier in ranges]
+    if skipped:
+        print(f"Already installed (left unchanged): {', '.join(skipped)}")
+    if not pending:
+        return False
+    updated = original.rstrip("\n")
+    if updated:
+        updated += "\n\n"
+    updated += "\n\n".join(snippet.block.rstrip("\n") for snippet in pending) + "\n"
+    if dry_run:
+        print(f"Would install {', '.join(item.identifier for item in pending)} into {path}")
+        return True
+    backup = atomic_write(path, updated)
+    print(f"Installed {', '.join(item.identifier for item in pending)} into {path}")
+    if backup:
+        print(f"Backup: {backup}")
+    return True
+
+
+def uninstall(path: Path, snippets: list[Snippet], dry_run: bool = False) -> bool:
+    original = read_target(path)
+    ranges = managed_ranges(original)
+    identifiers = [snippet.identifier for snippet in snippets]
+    present = [identifier for identifier in identifiers if identifier in ranges]
+    absent = [identifier for identifier in identifiers if identifier not in ranges]
+    if absent:
+        print(f"Not installed: {', '.join(absent)}")
+    if not present:
+        return False
+    updated = original
+    for identifier in sorted(present, key=lambda item: ranges[item][0], reverse=True):
+        start, end = ranges[identifier]
+        if start >= 2 and updated[start - 2:start] == "\n\n":
+            start -= 1
+        updated = updated[:start] + updated[end:]
+    if dry_run:
+        print(f"Would uninstall {', '.join(present)} from {path}")
+        return True
+    backup = atomic_write(path, updated)
+    print(f"Uninstalled {', '.join(present)} from {path}")
+    if backup:
+        print(f"Backup: {backup}")
+    return True
+
+
+def print_catalog(catalog: dict[str, Snippet], details: bool) -> None:
+    for snippet in catalog.values():
+        print(f"{snippet.identifier}\n  {snippet.name}\n  {snippet.description}")
+        if details:
+            print(f"  Notes: {snippet.details}\n\n{snippet.content.rstrip()}")
+        print()
+
+
+def choose_target() -> Path:
+    print("Choose an instruction file:")
+    choices = [
+        ("Claude user instructions", target_for_agent("claude", False)),
+        ("Codex user instructions", target_for_agent("codex", False)),
+        ("Pi user instructions", target_for_agent("pi", False)),
+        ("Claude instructions in this project", target_for_agent("claude", True)),
+        ("Agent instructions in this project", target_for_agent("codex", True)),
+    ]
+    for index, (label, path) in enumerate(choices, 1):
+        print(f"  {index}. {label} ({path})")
+    print("  6. Another Markdown file")
+    answer = input("Target [1-6]: ").strip()
+    if answer in {str(index) for index in range(1, 6)}:
+        return choices[int(answer) - 1][1].absolute()
+    if answer == "6":
+        custom = input("Path: ").strip()
+        if not custom:
+            raise SnippetError("a target path is required")
+        return Path(custom).expanduser().absolute()
+    raise SnippetError("selection cancelled: expected a number from 1 to 6")
+
+
+def interactive(catalog: dict[str, Snippet]) -> None:
+    path = choose_target()
+    current = managed_ranges(read_target(path))
+    install_selected: list[Snippet] = []
+    uninstall_selected: list[Snippet] = []
+    print(f"\nReviewing snippets for {path}\n")
+    for snippet in catalog.values():
+        state = "installed" if snippet.identifier in current else "not installed"
+        print(f"{snippet.name} [{state}]\n{snippet.description}\nNotes: {snippet.details}")
+        while True:
+            answer = input("Show content, install/uninstall, skip, or quit? [d/i/u/s/q]: ").strip().lower()
+            if answer == "d":
+                print(f"\n{snippet.content.rstrip()}\n")
+                continue
+            if answer == "i":
+                install_selected.append(snippet)
+            elif answer == "u":
+                uninstall_selected.append(snippet)
+            elif answer == "q":
+                return
+            elif answer != "s":
+                print("Enter d, i, u, s, or q.")
+                continue
+            break
+        print()
+    if not install_selected and not uninstall_selected:
+        print("No changes selected.")
+        return
+    summary = []
+    if install_selected:
+        summary.append("install " + ", ".join(item.identifier for item in install_selected))
+    if uninstall_selected:
+        summary.append("uninstall " + ", ".join(item.identifier for item in uninstall_selected))
+    if input(f"Apply: {'; '.join(summary)}? [y/N]: ").strip().lower() not in {"y", "yes"}:
+        print("No changes made.")
+        return
+    if uninstall_selected:
+        uninstall(path, uninstall_selected)
+    if install_selected:
+        install(path, install_selected)
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="agent-snippets",
+        description="Review, install, and uninstall marked agent-instruction snippets.",
+    )
+    subparsers = parser.add_subparsers(dest="command")
+    list_parser = subparsers.add_parser("list", help="list available snippets")
+    list_parser.add_argument("--details", action="store_true", help="include notes and full content")
+    show_parser = subparsers.add_parser("show", help="show one snippet in full")
+    show_parser.add_argument("snippet")
+    for command in ("install", "uninstall", "status"):
+        child = subparsers.add_parser(command, help=f"{command} snippets")
+        if command != "status":
+            child.add_argument("snippets", nargs="+", metavar="SNIPPET")
+            child.add_argument("--dry-run", action="store_true")
+        child.add_argument("--target", help="explicit instruction Markdown file")
+        child.add_argument("--agent", choices=("claude", "codex", "pi"), default="claude")
+        child.add_argument("--project", action="store_true", help="target the current project")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    try:
+        catalog = load_catalog()
+        parser = build_parser()
+        args = parser.parse_args(argv)
+        if args.command is None:
+            interactive(catalog)
+        elif args.command == "list":
+            print_catalog(catalog, args.details)
+        elif args.command == "show":
+            snippet = select_snippets(catalog, [args.snippet])[0]
+            print(f"{snippet.name}\n{snippet.description}\n\nNotes: {snippet.details}\n\n{snippet.content.rstrip()}")
+        elif args.command == "status":
+            path = resolve_target(args)
+            installed = managed_ranges(read_target(path))
+            print(f"Target: {path}")
+            for identifier, snippet in catalog.items():
+                state = "installed" if identifier in installed else "not installed"
+                print(f"{identifier}: {state} — {snippet.name}")
+            unknown = sorted(set(installed) - set(catalog))
+            for identifier in unknown:
+                print(f"{identifier}: installed — not present in this catalog")
+        else:
+            path = resolve_target(args)
+            selected = select_snippets(catalog, args.snippets)
+            if args.command == "install":
+                install(path, selected, args.dry_run)
+            else:
+                uninstall(path, selected, args.dry_run)
+        return 0
+    except (SnippetError, EOFError, KeyboardInterrupt) as exc:
+        message = str(exc) or "cancelled"
+        print(f"agent-snippets: {message}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
