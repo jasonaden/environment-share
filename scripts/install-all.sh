@@ -10,52 +10,57 @@ echo "============================================"
 echo ""
 
 # 1. Core tools (brew, zsh, tmux, node, yarn, gh, jq, claude, cmux)
-echo "--- Step 1/10: Core Tools ---"
+echo "--- Step 1/11: Core Tools ---"
 "$SCRIPT_DIR/install-core.sh"
 echo ""
 
 # 2. Git aliases and settings
-echo "--- Step 2/10: Git ---"
+echo "--- Step 2/11: Git ---"
 "$REPO_DIR/git/install.sh"
 echo ""
 
 # 3. tmux configuration
-echo "--- Step 3/10: tmux ---"
+echo "--- Step 3/11: tmux ---"
 "$REPO_DIR/tmux/install.sh"
 echo ""
 
 # 4. iTerm2 preferences
-echo "--- Step 4/10: iTerm2 ---"
+echo "--- Step 4/11: iTerm2 ---"
 "$REPO_DIR/iterm/install.sh"
 echo ""
 
 # 5. Claude Code settings
-echo "--- Step 5/10: Claude Code ---"
+echo "--- Step 5/11: Claude Code ---"
 "$REPO_DIR/claude/install.sh"
 echo ""
 
 # 6. Codex and shared skills
-echo "--- Step 6/10: Codex ---"
+echo "--- Step 6/11: Codex ---"
 "$REPO_DIR/codex/install.sh"
 echo ""
 
 # 7. Pi coding agent
-echo "--- Step 7/10: Pi Coding Agent ---"
+echo "--- Step 7/11: Pi Coding Agent ---"
 "$REPO_DIR/pi/install.sh"
 echo ""
 
 # 8. Cmux skills, catalog, and Pi hook (Pi must be installed first)
-echo "--- Step 8/10: Cmux Agent Integration ---"
+echo "--- Step 8/11: Cmux Agent Integration ---"
 "$REPO_DIR/cmux/install.sh"
 echo ""
 
 # 9. Justfile (global task runner)
-echo "--- Step 9/10: Justfile ---"
+echo "--- Step 9/11: Justfile ---"
 "$REPO_DIR/just/install.sh"
 echo ""
 
-# 10. Claude Code status line
-echo "--- Step 10/10: ccstatusline ---"
+# 10. Optional agent-instruction snippet CLI
+echo "--- Step 10/11: Agent instruction snippets ---"
+"$REPO_DIR/agent-snippets/install.sh"
+echo ""
+
+# 11. Claude Code status line
+echo "--- Step 11/11: ccstatusline ---"
 "$REPO_DIR/ccstatusline/install.sh"
 echo ""
 
